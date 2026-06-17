@@ -1,0 +1,62 @@
+name: controlex
+description: A new Flutter project.
+publish_to: 'none'
+
+version: 2.2.0
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.6.0
+  shared_preferences: ^2.5.3
+  provider: ^6.1.5+1
+  cupertino_icons: ^1.0.8
+  flutter_joystick: ^0.2.2
+  socket_io_client: ^3.0.1
+  google_sign_in: ^6.2.1
+  firebase_core: any
+  firebase_auth: any
+  flutter_secure_storage: ^9.2.2
+  google_fonts: ^6.2.1
+  speech_to_text: ^7.3.0
+  permission_handler: ^12.0.1
+  url_launcher: ^6.3.2
+  device_info_plus: ^12.4.0
+  uuid: ^4.5.3
+  flutter_local_notifications: ^18.0.1
+  firebase_messaging: any
+  mobile_scanner: ^5.1.1
+  qr_flutter: ^4.1.0
+  share_plus: ^12.0.2
+  nfc_host_card_emulation: ^1.1.0
+  modal_bottom_sheet: ^3.0.0
+  lottie: ^3.3.1
+  app_settings: ^7.0.0
+  flutter_colorpicker: ^1.1.0
+  flutter_callkit_incoming: ^3.0.0
+  audioplayers: ^5.2.1
+  fl_chart: ^0.68.0
+  local_auth: ^2.3.0
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+  min_sdk_android: 21
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icon/app_icon.jpg
+    - assets/icon/app_icon.png
+    - assets/sounds/

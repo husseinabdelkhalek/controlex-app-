@@ -1,0 +1,23 @@
+﻿Analyzing controlex...                                          
+
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\dashboard_screen.dart:41:67 - deprecated_member_use
+   info - 'activeColor' is deprecated and shouldn't be used. Use activeTrackColor instead. This feature was deprecated after v3.24.0-0.2.pre - lib\screens\dashboard_screen.dart:155:13 - deprecated_member_use
+  error - Arguments of a constant creation must be constant expressions - lib\screens\login_screen.dart:88:26 - const_with_non_constant_argument
+  error - Expected to find ',' - lib\screens\login_screen.dart:88:26 - expected_token
+  error - Too many positional arguments: 1 expected, but 5 found - lib\screens\login_screen.dart:88:26 - extra_positional_arguments_could_be_named
+  error - Undefined name 't' - lib\screens\login_screen.dart:88:26 - undefined_identifier
+  error - Arguments of a constant creation must be constant expressions - lib\screens\login_screen.dart:88:28 - const_with_non_constant_argument
+  error - Expected to find ',' - lib\screens\login_screen.dart:88:28 - expected_token
+  error - Undefined name 'have' - lib\screens\login_screen.dart:88:28 - undefined_identifier
+  error - Arguments of a constant creation must be constant expressions - lib\screens\login_screen.dart:88:33 - const_with_non_constant_argument
+  error - Expected to find ',' - lib\screens\login_screen.dart:88:33 - expected_token
+  error - Undefined name 'an' - lib\screens\login_screen.dart:88:33 - undefined_identifier
+  error - Expected to find ',' - lib\screens\login_screen.dart:88:36 - expected_token
+  error - Invalid constant value - lib\screens\login_screen.dart:88:36 - invalid_constant
+  error - Undefined name 'account' - lib\screens\login_screen.dart:88:36 - undefined_identifier
+  error - Undefined name 'Register' - lib\screens\login_screen.dart:88:45 - undefined_identifier
+  error - Expected to find ':' - lib\screens\login_screen.dart:88:53 - expected_token
+  error - Unterminated string literal - lib\screens\login_screen.dart:88:54 - unterminated_string_literal
+  error - Expected to find ',' - lib\screens\login_screen.dart:89:19 - expected_token
+  error - The name 'MyApp' isn't a class - test\widget_test.dart:16:35 - creation_with_non_type
+

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "452616430959",
+    "project_id": "controlex-542d3",
+    "storage_bucket": "controlex-542d3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:452616430959:android:b6e91d2330527e3292349a",
+        "android_client_info": {
+          "package_name": "com.example.controlex"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "452616430959-mdf6rr9rarmgkhiank6ch98269itdpc4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.controlex",
+            "certificate_hash": "93e7f178ed5c82e40b975915450815d05183e796"
+          }
+        },
+        {
+          "client_id": "452616430959-c0m7u2blsesrlm3ifs64p1ifnbugsnol.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6hB88K-8SlbrHutCHf6PjfsQ4oErJJRo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "452616430959-c0m7u2blsesrlm3ifs64p1ifnbugsnol.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
