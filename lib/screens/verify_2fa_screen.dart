@@ -1,3 +1,4 @@
+import '../widgets/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
@@ -28,11 +29,11 @@ class _Verify2FAScreenState extends State<Verify2FAScreen> {
          await ApiService.saveToken(res['token']);
          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const DashboardScreen()), (r) => false);
       } else {
-         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res['msg'] ?? 'Invalid 2FA code')));
+         AppSnackbar.showInfo(context, res['msg'] ?? 'Invalid 2FA code');
       }
     } catch (e) {
       setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to verify code.')));
+      AppSnackbar.showError(context, 'Failed to verify code.');
     }
   }
 

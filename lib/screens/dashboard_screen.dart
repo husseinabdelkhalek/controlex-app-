@@ -942,21 +942,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     // Sync children
-    for(var i=0; i<_items.length; i++){
-       final raw = _rawWidgets.firstWhere((w) => w['id'] == _items[i].id, orElse: () => null);
-       if (raw != null) {
-          _items[i] = GridItemData(
-             id: _items[i].id,
-             x: _items[i].x, y: _items[i].y, w: _items[i].w, h: _items[i].h,
-             child: _buildWidgetByType(raw, _items[i])
-          );
-       }
-    }
-
-    return Scaffold(
+    for(var i=0; i<_items.len    return Scaffold(
       backgroundColor: AppTheme.backgroundBase,
-      appBar: AppBar(
-        title: Text(AppLocalization.get('dashboard')),
+      appBar: PremiumAppBar(
+        titleText: AppLocalization.get('dashboard'),
         leading: Builder(
           builder: (context) {
             return IconButton(
@@ -1019,110 +1008,162 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ],
       ),
       drawer: Drawer(
-        backgroundColor: AppTheme.backgroundBase,
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [AppTheme.neonBlue, AppTheme.backgroundBase],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                )
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                   if (_userProfile?['googleProfilePicture'] != null)
-                     CircleAvatar(
-                       radius: 30,
-                       backgroundImage: NetworkImage(_userProfile?['googleProfilePicture'] as String),
-                       backgroundColor: Colors.transparent,
-                     )
-                   else
-                     const Icon(Icons.account_circle, size: 50, color: AppTheme.primaryCyan),
-                   const SizedBox(height: 12),
-                   Text(_userProfile?['username'] ?? 'ControlEx User', 
-                     style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)
-                   ),
-                   if (_userProfile?['email'] != null)
-                     Text(_userProfile?['email'] as String, 
-                       style: const TextStyle(color: Colors.white54, fontSize: 12)
-                     ),
-                ],
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xDC080614), // Deep dark semi-translucent base
+            border: Border(
+              right: BorderSide(
+                color: AppTheme.primaryCyan.withOpacity(0.2),
+                width: 1.5,
               ),
             ),
-            ListTile(
-              leading: const Icon(Icons.dashboard, color: AppTheme.primaryCyan),
-              title: Text(AppLocalization.get('dashboard'), style: const TextStyle(color: Colors.white)),
-              onTap: () => Navigator.pop(context),
-            ),
-            if (_isLocalControlPinned)
-              ListTile(
-                leading: const Icon(Icons.wifi, color: Colors.orangeAccent),
-                title: Text(AppLocalization.get('local_control'), style: const TextStyle(color: Colors.white)),
-                subtitle: Text(AppLocalization.get('local_desc'), style: const TextStyle(color: Colors.white38, fontSize: 11)),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const LocalDashboardScreen()));
-                },
-              ),
-            ListTile(
-              leading: const Icon(Icons.settings, color: Colors.white54),
-              title: Text(AppLocalization.get('create_widgets'), style: const TextStyle(color: Colors.white)),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())).then((_) => _loadWidgets());
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.auto_awesome, color: Colors.purpleAccent),
-              title: Text(AppLocalization.get('automations'), style: const TextStyle(color: Colors.white)),
-              subtitle: Text(AppLocalization.get('automations_subtitle'), style: const TextStyle(color: Colors.white38, fontSize: 11)),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const AutomationsScreen()));
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.bolt, color: Colors.amberAccent),
-              title: Text(AppLocalization.get('smart_scenes'), style: const TextStyle(color: Colors.white)),
-              subtitle: Text(AppLocalization.get('smart_scenes_subtitle'), style: const TextStyle(color: Colors.white38, fontSize: 11)),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const SmartScenesScreen(isLocalMode: false))).then((_) {
-                  _loadScenes();
-                });
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.person, color: Colors.white54),
-              title: Text(AppLocalization.get('account'), style: const TextStyle(color: Colors.white)),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const AccountScreen())).then((result) {
-                  _loadPinState();
-                  if (result == 'start_tour') {
-                    Future.delayed(const Duration(milliseconds: 300), () {
-                      if (mounted) _startTour();
+          ),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                DrawerHeader(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [AppTheme.primaryViolet.withOpacity(0.15), Colors.transparent],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                    border: Border(
+                      bottom: BorderSide(color: Colors.white.withOpacity(0.06), width: 1),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                       if (_userProfile?['googleProfilePicture'] != null)
+                         Container(
+                           decoration: BoxDecoration(
+                             shape: BoxShape.circle,
+                             border: Border.all(color: AppTheme.primaryCyan.withOpacity(0.5), width: 1.5),
+                           ),
+                           child: CircleAvatar(
+                             radius: 30,
+                             backgroundImage: NetworkImage(_userProfile?['googleProfilePicture'] as String),
+                             backgroundColor: Colors.transparent,
+                           ),
+                         )
+                       else
+                         Container(
+                           padding: const EdgeInsets.all(8),
+                           decoration: BoxDecoration(
+                             shape: BoxShape.circle,
+                             color: AppTheme.primaryCyan.withOpacity(0.1),
+                           ),
+                           child: const Icon(Icons.account_circle, size: 48, color: AppTheme.primaryCyan),
+                         ),
+                       const SizedBox(height: 12),
+                       Text(_userProfile?['username'] ?? 'ControlEx User', 
+                         style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)
+                       ),
+                       if (_userProfile?['email'] != null)
+                         Text(_userProfile?['email'] as String, 
+                           style: const TextStyle(color: Colors.white38, fontSize: 11)
+                         ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _buildDrawerTile(
+                  icon: Icons.dashboard,
+                  iconColor: AppTheme.primaryCyan,
+                  title: AppLocalization.get('dashboard'),
+                  onTap: () => Navigator.pop(context),
+                ),
+                if (_isLocalControlPinned)
+                  _buildDrawerTile(
+                    icon: Icons.wifi,
+                    iconColor: Colors.orangeAccent,
+                    title: AppLocalization.get('local_control'),
+                    subtitle: AppLocalization.get('local_desc'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const LocalDashboardScreen()));
+                    },
+                  ),
+                _buildDrawerTile(
+                  icon: Icons.settings,
+                  iconColor: Colors.white54,
+                  title: AppLocalization.get('create_widgets'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())).then((_) => _loadWidgets());
+                  },
+                ),
+                _buildDrawerTile(
+                  icon: Icons.auto_awesome,
+                  iconColor: Colors.purpleAccent,
+                  title: AppLocalization.get('automations'),
+                  subtitle: AppLocalization.get('automations_subtitle'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AutomationsScreen()));
+                  },
+                ),
+                _buildDrawerTile(
+                  icon: Icons.bolt,
+                  iconColor: Colors.amberAccent,
+                  title: AppLocalization.get('smart_scenes'),
+                  subtitle: AppLocalization.get('smart_scenes_subtitle'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const SmartScenesScreen(isLocalMode: false))).then((_) {
+                      _loadScenes();
                     });
-                  } else {
-                    _loadWidgets();
-                  }
-                });
-              },
+                  },
+                ),
+                _buildDrawerTile(
+                  icon: Icons.person,
+                  iconColor: Colors.white54,
+                  title: AppLocalization.get('account'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AccountScreen())).then((result) {
+                      _loadPinState();
+                      if (result == 'start_tour') {
+                        Future.delayed(const Duration(milliseconds: 300), () {
+                          if (mounted) _startTour();
+                        });
+                      } else {
+                        _loadWidgets();
+                      }
+                    });
+                  },
+                ),
+                _buildDrawerTile(
+                  icon: Icons.android,
+                  iconColor: Colors.greenAccent,
+                  title: AppLocalization.isArabicNotifier.value ? 'تحميل التطبيق / مشاركة' : 'Download / Share App',
+                  onTap: () async {
+                    Navigator.pop(context);
+                    final uri = Uri.parse('https://drive.google.com/file/d/103HWObnaKqg6TGd4tn3DHEUs7M6UJ3To/view?usp=drive_link');
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                    } else {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('لا يمكن فتح الرابط')),
+                        );
+                      }
+                    }
+                  },
+                ),
+              ],
             ),
-
-            ListTile(
-              leading: const Icon(Icons.android, color: Colors.greenAccent),
-              title: Text(AppLocalization.isArabicNotifier.value ? 'تحميل التطبيق / مشاركة' : 'Download / Share App', style: const TextStyle(color: Colors.white)),
-              onTap: () async {
-                Navigator.pop(context);
-                final uri = Uri.parse('https://drive.google.com/file/d/103HWObnaKqg6TGd4tn3DHEUs7M6UJ3To/view?usp=drive_link');
-                if (await canLaunchUrl(uri)) {
-                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+          ),
+        ),
+      ),
+      body: Stack(
+        children: [ion);
                 } else {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(

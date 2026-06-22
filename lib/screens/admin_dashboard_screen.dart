@@ -1,3 +1,4 @@
+import '../widgets/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'dart:convert';
@@ -164,12 +165,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
 
   void _showToast(String msg) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      backgroundColor: AppTheme.primaryViolet,
-      content: Text(msg, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-    ));
+    AppSnackbar.showSuccess(context, msg);
   }
 
   @override

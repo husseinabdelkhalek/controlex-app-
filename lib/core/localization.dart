@@ -315,7 +315,7 @@ class AppLocalization {
     'password': 'كلمة المرور',
     'forgot_password': 'نسيت كلمة المرور؟',
     'login_btn': 'تسجيل الدخول',
-    'google_btn': 'تسجيل الدخول باستخدام جوجل',
+    'google_btn': 'تسجيل بجوجل',
     'no_account': 'ليس لديك حساب؟ إنشاء حساب',
     'dashboard': 'لوحة التحكم',
     'create_widgets': 'إعدادات الأدوات',

@@ -1,16 +1,16 @@
+import '../widgets/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'register_screen.dart';
 import 'dashboard_screen.dart';
 import 'local_dashboard_screen.dart';
 import 'forgot_password_screen.dart';
-import 'verify_2fa_screen.dart';
 import '../services/api_service.dart';
 import 'complete_google_profile_screen.dart';
 import '../core/localization.dart';
 import '../theme/app_theme.dart';
 import 'dart:ui';
 import 'banned_screen.dart';
-
+import '../widgets/glowing_button.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -70,9 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
        if (firebaseIdToken == null) {
          setState(() => _isLoading = false);
-         if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-           const SnackBar(content: Text('فشل الحصول على Firebase Token'))
-         );
+         if (mounted) AppSnackbar.showError(context, 'فشل الحصول على Firebase Token');
          return;
        }
 
@@ -97,22 +95,18 @@ class _LoginScreenState extends State<LoginScreen> {
            }
         } else if (res['twoFactorRequired'] == true) {
            if (mounted) {
-             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res['msg'] ?? 'تم إرسال رمز التحقق')));
+             AppSnackbar.showSuccess(context, res['msg'] ?? 'تم إرسال رمز التحقق');
              // Save the email we got from Google to use for verification
              _emailController.text = res['email'] ?? ''; 
              setState(() => _showOTPField = true);
            }
         } else {
           final errMsg = res['msg'] ?? 'فشل تسجيل الدخول بجوجل';
-          if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(errMsg), duration: const Duration(seconds: 4))
-          );
+          if (mounted) AppSnackbar.showInfo(context, errMsg);
        }
      } catch(e) {
        setState(() => _isLoading = false);
-       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-         const SnackBar(content: Text('فشل تسجيل الدخول بجوجل'), duration: Duration(seconds: 4))
-       );
+       if (mounted) AppSnackbar.showError(context, 'فشل تسجيل الدخول بجوجل');
      }
   }
 
@@ -123,9 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (email.isEmpty || password.isEmpty) return;
 
     if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('يرجى إدخال بريد إلكتروني صحيح'))
-      );
+      AppSnackbar.showInfo(context, 'يرجى إدخال بريد إلكتروني صحيح');
       return;
     }
 
@@ -139,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardScreen()));
       } else if (res['twoFactorRequired'] == true) {
         if (mounted) {
-           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res['msg'] ?? 'تم إرسال رمز التحقق')));
+           AppSnackbar.showSuccess(context, res['msg'] ?? 'تم إرسال رمز التحقق');
            setState(() => _showOTPField = true);
         }
       } else if (res['blocked'] == true) {
@@ -152,12 +144,12 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         }
       } else {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res['msg'] ?? AppLocalization.get('login_failed'))));
+        if (mounted) AppSnackbar.showError(context, res['msg'] ?? AppLocalization.get('login_failed'));
       }
     } catch (e) {
       if (mounted) {
          setState(() => _isLoading = false);
-         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalization.get('network_error'))));
+         AppSnackbar.showError(context, AppLocalization.get('network_error'));
       }
     }
   }
@@ -173,22 +165,53 @@ class _LoginScreenState extends State<LoginScreen> {
            await ApiService.saveToken(res['token']);
            if (mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardScreen()));
         } else {
-           if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res['msg'] ?? 'الرمز غير صحيح')));
+           if (mounted) AppSnackbar.showInfo(context, res['msg'] ?? 'الرمز غير صحيح');
         }
      } catch (e) {
         if (mounted) {
            setState(() => _isLoading = false);
-           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('فشل التحقق: $e')));
+           AppSnackbar.showError(context, 'فشل التحقق: $e');
         }
      }
   }
 
+  InputDecoration _buildInputDecoration(String label, IconData prefixIcon, {Widget? suffixIcon}) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+      prefixIcon: Icon(prefixIcon, color: AppTheme.primaryCyan, size: 20),
+      suffixIcon: suffixIcon,
+      filled: true,
+      fillColor: Colors.white.withValues(alpha: 0.03),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: AppTheme.primaryViolet.withValues(alpha: 0.2), width: 1.2),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: AppTheme.primaryCyan, width: 1.5),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final double topPadding = MediaQuery.of(context).padding.top;
+    
     return Scaffold(
       body: Stack(
         children: [
           Container(color: AppTheme.backgroundBase),
+          
+          // Cyber grid background
+          Positioned.fill(
+            child: CustomPaint(
+              painter: CyberGridPainter(),
+            ),
+          ),
+          
+          // Background blobs
           Positioned(
             top: -50,
             left: -50,
@@ -197,7 +220,7 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppTheme.primaryViolet.withOpacity(0.2),
+                color: AppTheme.primaryViolet.withValues(alpha: 0.15),
               ),
               child: BackdropFilter(filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100), child: Container()),
             ),
@@ -210,165 +233,334 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 350,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppTheme.primaryCyan.withOpacity(0.15),
+                color: AppTheme.primaryCyan.withValues(alpha: 0.1),
               ),
               child: BackdropFilter(filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100), child: Container()),
             ),
           ),
+          
+          // Main content
           Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Icon(Icons.dashboard_customize, size: 80, color: Color(0xFF00FFCC)),
-                const SizedBox(height: 24),
-                Text(AppLocalization.get('login_title'), textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                Text(AppLocalization.get('login_subtitle'), textAlign: TextAlign.center, style: const TextStyle(color: Colors.white54, fontSize: 16)),
-                const SizedBox(height: 48),
-                if (!_showOTPField) ...[
-                  TextField(
-                    controller: _emailController,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      labelText: AppLocalization.get('email'),
-                      labelStyle: const TextStyle(color: Colors.white54),
-                      prefixIcon: const Icon(Icons.email, color: Colors.white54),
-                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.white24)),
-                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF00FFCC))),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _passwordController,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      labelText: AppLocalization.get('password'),
-                      labelStyle: const TextStyle(color: Colors.white54),
-                      prefixIcon: const Icon(Icons.lock, color: Colors.white54),
-                      suffixIcon: IconButton(
-                         icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off, color: Colors.white54),
-                         onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 90,
+                      height: 90,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.rectangle,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(
+                          color: AppTheme.primaryCyan.withValues(alpha: 0.35),
+                          width: 2.0,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppTheme.primaryCyan.withValues(alpha: 0.25),
+                            blurRadius: 20,
+                            spreadRadius: 3,
+                          ),
+                        ],
                       ),
-                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.white24)),
-                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF00FFCC))),
-                    ),
-                    obscureText: !_isPasswordVisible,
-                    onSubmitted: (_) => _handleLogin(),
-                  ),
-                  const SizedBox(height: 12),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton(
-                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ForgotPasswordScreen())),
-                      child: Text(AppLocalization.get('forgot_password'), style: const TextStyle(color: Color(0xFF00FFCC))),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(22),
+                        child: Image.asset(
+                          'assets/icon/app_icon.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF8A2BE2),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ShaderMask(
+                    shaderCallback: (bounds) => const LinearGradient(
+                      colors: [AppTheme.primaryCyan, AppTheme.primaryViolet],
+                    ).createShader(bounds),
+                    child: Text(
+                      AppLocalization.get('login_title'),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 32,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.0,
                       ),
-                      onPressed: _isLoading ? null : _handleLogin,
-                      child: _isLoading 
-                          ? const CircularProgressIndicator(color: Colors.white) 
-                          : Text(AppLocalization.get('login_btn'), style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                      icon: const Icon(Icons.g_mobiledata, size: 32, color: Colors.red),
-                      label: Text(AppLocalization.get('google_btn'), style: const TextStyle(color: Colors.black87, fontSize: 16, fontWeight: FontWeight.bold)),
-                      onPressed: _isLoading ? null : _googleAuth,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const RegisterScreen()));
-                    },
-                    child: Text(AppLocalization.get('no_account'), style: const TextStyle(color: Color(0xFF00FFCC))),
-                  ),
-                  const Divider(color: Colors.white12, height: 32),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.orangeAccent,
-                        side: const BorderSide(color: Colors.orangeAccent, width: 1.5),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                      icon: const Icon(Icons.wifi, size: 22),
-                      label: const Text('التحكم المحلي / Local Control', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                      onPressed: () {
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LocalDashboardScreen()));
-                      },
-                    ),
-                  ),
-                ] else ...[
-                  const Icon(Icons.security, size: 64, color: Color(0xFF00FFCC)),
-                  const SizedBox(height: 16),
-                  const Text('أدخل رمز التحقق المرسل لبريدك', textAlign: TextAlign.center, style: TextStyle(color: Colors.white70)),
-                  const SizedBox(height: 24),
-                  TextField(
-                    controller: _otpController,
-                    keyboardType: TextInputType.number,
+                  const SizedBox(height: 8),
+                  Text(
+                    AppLocalization.get('login_subtitle'),
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.white, fontSize: 24, letterSpacing: 8),
-                    maxLength: 6,
-                    onChanged: (value) {
-                      if (value.length == 6) {
-                        _handleVerifyOTP();
-                      }
-                    },
-                    decoration: InputDecoration(
-                      counterText: "",
-                      hintText: '000000',
-                      hintStyle: const TextStyle(color: Colors.white24),
-                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.white24)),
-                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF00FFCC))),
-                    ),
+                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 15),
                   ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF8A2BE2),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  const SizedBox(height: 40),
+                  
+                  if (!_showOTPField) ...[
+                    TextField(
+                      controller: _emailController,
+                      style: const TextStyle(color: AppTheme.textPrimary),
+                      decoration: _buildInputDecoration(
+                        AppLocalization.get('email'),
+                        Icons.email_outlined,
                       ),
-                      onPressed: _isLoading ? null : _handleVerifyOTP,
-                      child: _isLoading 
-                          ? const CircularProgressIndicator(color: Colors.white) 
-                          : const Text('تحقق وادخل', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                     ),
-                  ),
-                  TextButton(
-                    onPressed: () => setState(() => _showOTPField = false),
-                    child: const Text('الغاء', style: TextStyle(color: Colors.white54)),
-                  ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: _passwordController,
+                      style: const TextStyle(color: AppTheme.textPrimary),
+                      decoration: _buildInputDecoration(
+                        AppLocalization.get('password'),
+                        Icons.lock_outline,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                            color: AppTheme.textSecondary,
+                          ),
+                          onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+                        ),
+                      ),
+                      obscureText: !_isPasswordVisible,
+                      onSubmitted: (_) => _handleLogin(),
+                    ),
+                    const SizedBox(height: 12),
+                    Align(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: TextButton(
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
+                        ),
+                        child: Text(
+                          AppLocalization.get('forgot_password'),
+                          style: const TextStyle(color: AppTheme.primaryCyan),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    GlowingButton(
+                      onPressed: _handleLogin,
+                      isLoading: _isLoading,
+                      child: Text(AppLocalization.get('login_btn')),
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    // Side-by-side action buttons
+                    Row(
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: _isLoading ? null : _googleAuth,
+                            borderRadius: BorderRadius.circular(16),
+                            child: Container(
+                              height: 50,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                color: Colors.white.withValues(alpha: 0.03),
+                                border: Border.all(color: AppTheme.glassBorder.withValues(alpha: 0.5)),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.g_mobiledata, size: 28, color: Colors.redAccent),
+                                  const SizedBox(width: 4),
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      AppLocalization.get('google_btn'),
+                                      style: const TextStyle(
+                                        color: AppTheme.textPrimary,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (_) => const LocalDashboardScreen()),
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(16),
+                            child: Container(
+                              height: 50,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                color: Colors.white.withValues(alpha: 0.03),
+                                border: Border.all(color: AppTheme.glassBorder.withValues(alpha: 0.5)),
+                              ),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.wifi, size: 18, color: Colors.orangeAccent),
+                                  const SizedBox(width: 6),
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      'Local Control',
+                                      style: TextStyle(
+                                        color: AppTheme.textPrimary,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Center(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                          );
+                        },
+                        child: RichText(
+                          text: TextSpan(
+                            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                            children: [
+                              TextSpan(text: AppLocalization.get('no_account') + " "),
+                              const TextSpan(
+                                text: "Sign Up",
+                                style: TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ] else ...[
+                    const Icon(Icons.security, size: 64, color: AppTheme.primaryCyan),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'أدخل رمز التحقق المرسل لبريدك',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: AppTheme.textSecondary),
+                    ),
+                    const SizedBox(height: 24),
+                    TextField(
+                      controller: _otpController,
+                      keyboardType: TextInputType.number,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: AppTheme.textPrimary, fontSize: 24, letterSpacing: 8),
+                      maxLength: 6,
+                      onChanged: (value) {
+                        if (value.length == 6) {
+                          _handleVerifyOTP();
+                        }
+                      },
+                      decoration: InputDecoration(
+                        counterText: "",
+                        hintText: '000000',
+                        hintStyle: const TextStyle(color: Colors.white24),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(color: Colors.white10),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(color: AppTheme.primaryCyan),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    GlowingButton(
+                      onPressed: _handleVerifyOTP,
+                      isLoading: _isLoading,
+                      child: const Text('تحقق وادخل'),
+                    ),
+                    TextButton(
+                      onPressed: () => setState(() => _showOTPField = false),
+                      child: const Text('الغاء', style: TextStyle(color: AppTheme.textSecondary)),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
-        ),
+          
+          // Floating language toggle
+          Positioned(
+            top: topPadding + 10,
+            right: 20,
+            child: InkWell(
+              onTap: () {
+                AppLocalization.isArabicNotifier.value = !AppLocalization.isArabicNotifier.value;
+              },
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.white.withValues(alpha: 0.03),
+                  border: Border.all(color: AppTheme.glassBorder.withValues(alpha: 0.5)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.language, size: 16, color: AppTheme.primaryCyan),
+                    const SizedBox(width: 6),
+                    Text(
+                      AppLocalization.isArabicNotifier.value ? "EN" : "العربية",
+                      style: const TextStyle(color: AppTheme.textPrimary, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 }
+
+class CyberGridPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = AppTheme.primaryViolet.withValues(alpha: 0.06)
+      ..strokeWidth = 1.0;
+
+    const double step = 25.0;
+    for (double x = 0; x < size.width; x += step) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    }
+    for (double y = 0; y < size.height; y += step) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+
+    // Add glowing diagonal lines
+    final neonPaint = Paint()
+      ..shader = LinearGradient(
+        colors: [
+          AppTheme.primaryCyan.withValues(alpha: 0.15),
+          Colors.transparent,
+        ],
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
+      ..strokeWidth = 1.5;
+
+    canvas.drawLine(Offset(0, 0), Offset(size.width, size.height * 0.7), neonPaint);
+    canvas.drawLine(Offset(size.width, 0), Offset(0, size.height * 0.7), neonPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+

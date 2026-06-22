@@ -1,3 +1,4 @@
+import '../widgets/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../core/localization.dart';
@@ -58,11 +59,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
 
   void _showToast(String msg) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      backgroundColor: AppTheme.primaryViolet,
-      content: Text(msg, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-      behavior: SnackBarBehavior.floating,
-    ));
+    AppSnackbar.showSuccess(context, msg);
   }
 
   void _deleteUser() async {

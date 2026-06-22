@@ -1,3 +1,4 @@
+import '../widgets/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -306,7 +307,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
      }
   }
 
-  void _showToast(String m) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
+  void _showToast(String m) => AppSnackbar.showInfo(context, m);
 
   Future<void> _setupNfc() async {
     if (_nfcToolNameCtrl.text.isEmpty) {

@@ -5,6 +5,7 @@ import '../services/api_service.dart';
 import '../core/localization.dart';
 import '../widgets/app_snackbar.dart';
 import '../widgets/glass_card.dart';
+import '../widgets/glass_popups.dart';
 
 class ManagePagesDialog extends StatefulWidget {
   final List<dynamic> currentPages;
@@ -46,10 +47,9 @@ class _ManagePagesDialogState extends State<ManagePagesDialog> {
 
   void _addPage() {
     _nameCtrl.clear();
-    showDialog(
+    showGlassDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.transparent, // Transparent for Glassmorphism
         surfaceTintColor: Colors.transparent,
         contentPadding: EdgeInsets.zero,
         content: GlassCard(
@@ -121,10 +121,9 @@ class _ManagePagesDialogState extends State<ManagePagesDialog> {
 
   void _editPage(int index) {
     _nameCtrl.text = _pages[index]['name'];
-    showDialog(
+    showGlassDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         contentPadding: EdgeInsets.zero,
         content: GlassCard(

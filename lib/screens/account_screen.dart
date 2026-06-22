@@ -1,3 +1,4 @@
+import '../widgets/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../theme/app_theme.dart';
@@ -880,6 +881,6 @@ class _AccountScreenState extends State<AccountScreen> {
    }
    
    void _showToast(String msg) {
-     ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: AppTheme.primaryViolet, content: Text(msg, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)), behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))));
+     AppSnackbar.showSuccess(context, msg);
    }
 }

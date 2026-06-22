@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_joystick/flutter_joystick.dart';
 import '../services/api_service.dart';
+import '../services/local_service.dart';
 import '../theme/app_theme.dart';
+
 import 'glass_card.dart';
 
 class JoystickWidget extends StatefulWidget {
@@ -26,10 +28,13 @@ class JoystickWidget extends StatefulWidget {
     this.rightCmd = 'RIGHT',
     this.onInteractionStart,
     this.onInteractionEnd,
+    this.isLocalMode = false,
   });
 
   final VoidCallback? onInteractionStart;
   final VoidCallback? onInteractionEnd;
+  final bool isLocalMode;
+
 
   @override
   State<JoystickWidget> createState() => _JoystickWidgetState();
@@ -112,7 +117,7 @@ class _JoystickWidgetState extends State<JoystickWidget> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: const LinearGradient(
-                            colors: [AppTheme.primaryCyan, AppTheme.neonBlue],
+                            colors: [AppTheme.primaryCyan, AppTheme.primaryCyan],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -140,7 +145,11 @@ class _JoystickWidgetState extends State<JoystickWidget> {
                               if (dir == 'Right') cmd = widget.rightCmd;
                               
                               if (cmd.isNotEmpty) {
-                                 ApiService.sendCommand(widget.id, cmd); // Send command
+                                 if (widget.isLocalMode) {
+                                    LocalService.sendCommand(widget.id, cmd);
+                                 } else {
+                                    ApiService.sendCommand(widget.id, cmd); // Send command
+                                 }
                               }
                           }
                         }
@@ -156,4 +165,5 @@ class _JoystickWidgetState extends State<JoystickWidget> {
     );
   }
 }
+
 

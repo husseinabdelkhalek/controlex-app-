@@ -7,20 +7,37 @@ import '../core/device_helper.dart';
 import '../core/localization.dart';
 import 'notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:home_widget/home_widget.dart';
 
 class ApiService {
   static const _storage = FlutterSecureStorage();
 
   static Future<String?> getToken() async {
-    return await _storage.read(key: 'x-auth-token');
+    try {
+      final token = await _storage.read(key: 'x-auth-token');
+      if (token != null) return token;
+    } catch (_) {
+      // Catch platform exceptions in background isolates
+    }
+    try {
+      return await HomeWidget.getWidgetData<String>('widget_auth_token');
+    } catch (_) {
+      return null;
+    }
   }
 
   static Future<void> saveToken(String token) async {
     await _storage.write(key: 'x-auth-token', value: token);
+    try {
+      await HomeWidget.saveWidgetData('widget_auth_token', token);
+    } catch (_) {}
   }
 
   static Future<void> clearAuth() async {
     await _storage.delete(key: 'x-auth-token');
+    try {
+      await HomeWidget.saveWidgetData('widget_auth_token', null);
+    } catch (_) {}
   }
 
   static Future<Map<String, String>> _getHeaders() async {
@@ -123,6 +140,7 @@ class ApiService {
     String firebaseSecret = '',
     String? subAdminPromoCode,
     String? parentAdminCode,
+    String? setupCode,
   }) async {
     final deviceInfo = await DeviceHelper.getDeviceIdentity();
     final response = await http.post(
@@ -139,11 +157,30 @@ class ApiService {
         'deviceInfo': deviceInfo,
         if (subAdminPromoCode != null && subAdminPromoCode.isNotEmpty) 'subAdminPromoCode': subAdminPromoCode,
         if (parentAdminCode != null && parentAdminCode.isNotEmpty) 'parentAdminCode': parentAdminCode,
+        if (setupCode != null && setupCode.isNotEmpty) 'setupCode': setupCode,
       }),
     );
     
     final res = json.decode(response.body);
     return res;
+  }
+
+  static Future<Map<String, dynamic>> verifySetupCode(String code) async {
+    final response = await http.post(
+      Uri.parse('${ApiConstants.baseUrl}/api/auth/verify-setup-code'),
+      headers: await _getHeaders(),
+      body: json.encode({'code': code}),
+    );
+    return json.decode(response.body);
+  }
+
+  static Future<Map<String, dynamic>> applySetupCode(String code) async {
+    final response = await http.post(
+      Uri.parse('${ApiConstants.baseUrl}/api/user/apply-setup-code'),
+      headers: await _getHeaders(),
+      body: json.encode({'code': code}),
+    );
+    return await _handleResponse(response);
   }
 
   static Future<Map<String, dynamic>> forgotPassword(String email) async {
@@ -852,23 +889,22 @@ class ApiService {
 
   // --- Merchant / Sub-Admin Provisioning Endpoints ---
 
-  // Verify Sub-Admin Promo Code (typed in password field)
-  static Future<bool> verifySubAdminCode(String code) async {
+  // Verify Sub-Admin Promo Code (typed in password field) — returns full response map
+  static Future<Map<String, dynamic>> verifySubAdminCode(String code) async {
     try {
       final response = await http.post(
         Uri.parse('${ApiConstants.baseUrl}/api/auth/verify-sub-admin-code'),
         headers: await _getHeaders(),
         body: json.encode({'code': code}),
       ).timeout(const Duration(seconds: 4));
-      if (response.statusCode == 200) {
-        final res = json.decode(response.body);
-        return res['valid'] == true;
+      final body = json.decode(response.body);
+      if (response.statusCode == 200 && body['valid'] == true) {
+        return body; // { valid: true, type: 'sub_admin'/'merchant_client', name: '...' }
       } else {
-        final errBody = json.decode(response.body);
-        throw http.ClientException(errBody['msg'] ?? 'Failed to verify code');
+        return {'valid': false};
       }
-    } catch (e) {
-      rethrow;
+    } catch (_) {
+      return {'valid': false};
     }
   }
 

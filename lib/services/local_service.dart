@@ -80,7 +80,7 @@ class LocalService {
     final raw = prefs.getString(_widgetsKey);
     if (raw == null || raw.isEmpty) return [];
     final List<dynamic> decoded = json.decode(raw);
-    return decoded.cast<Map<String, dynamic>>();
+    return decoded.map((item) => Map<String, dynamic>.from(item)).toList();
   }
 
   static Future<Map<String, dynamic>> createWidget(Map<String, dynamic> data) async {

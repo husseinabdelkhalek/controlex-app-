@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'dart:ui';
 import 'package:lottie/lottie.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import '../theme/app_theme.dart';
@@ -35,10 +36,13 @@ class NfcBottomSheet extends StatefulWidget {
     return showMaterialModalBottomSheet<String>(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => NfcBottomSheet(
-        payload: payload,
-        title: title,
-        description: description,
+      builder: (context) => BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
+        child: NfcBottomSheet(
+          payload: payload,
+          title: title,
+          description: description,
+        ),
       ),
     );
   }

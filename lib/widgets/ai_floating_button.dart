@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'ai_chat_overlay.dart';
+import 'glass_popups.dart';
 
 class AiFloatingButton extends StatelessWidget {
   final Key? tourKey;
@@ -14,9 +15,9 @@ class AiFloatingButton extends StatelessWidget {
       backgroundColor: Colors.transparent,
       elevation: 0,
       onPressed: () {
-        showDialog(
+        showGlassDialog(
           context: context,
-          barrierColor: Colors.black.withOpacity(0.5),
+          barrierColor: Colors.black.withValues(alpha: 0.5),
           builder: (context) => const AiChatOverlay(),
         );
       },
@@ -32,7 +33,7 @@ class AiFloatingButton extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF8A2BE2).withOpacity(0.5),
+              color: const Color(0xFF8A2BE2).withValues(alpha: 0.5),
               blurRadius: 15,
               spreadRadius: 2,
             )

@@ -7,6 +7,7 @@ import 'api_constants.dart';
 import 'device_helper.dart';
 import 'localization.dart';
 import '../theme/app_theme.dart';
+import '../widgets/glass_popups.dart';
 
 class ErrorHandler {
   // ==================== RATE LIMITING ====================
@@ -138,7 +139,7 @@ class ErrorHandler {
           'error': error,
           'stackTrace': stackTrace.length > 2000 ? stackTrace.substring(0, 2000) : stackTrace,
           'deviceInfo': deviceInfo,
-          'appVersion': '2.5', // TODO: للايجينت القادم: قم بزيادة هذا الرقم بمقدار 1 للتغييرات الكبيرة، أو 0.1/0.2 للتغييرات العادية
+          'appVersion': '2.6', // TODO: للايجينت القادم: قم بزيادة هذا الرقم بمقدار 1 للتغييرات الكبيرة، أو 0.1/0.2 للتغييرات العادية
         }),
       );
     } catch (e) {
@@ -233,20 +234,19 @@ class ErrorHandler {
     final desc = isArabic ? exp['desc_ar']! : exp['desc_en']!;
     final actionText = isArabic ? exp['action_ar']! : exp['action_en']!;
 
-    showModalBottomSheet(
+    showGlassModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      barrierColor: Colors.black.withValues(alpha: 0.6),
+      barrierColor: Colors.black.withValues(alpha: 0.25),
       builder: (ctx) {
         return Container(
           padding: const EdgeInsets.all(24).copyWith(
             bottom: MediaQuery.of(ctx).padding.bottom + 24,
           ),
-          decoration: BoxDecoration(
-            color: const Color(0xFF0F0B25).withValues(alpha: 0.96),
+          decoration: AppTheme.glassDecoration(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-            border: Border.all(color: const Color(0xFF00D2FF).withValues(alpha: 0.2), width: 1.5),
+            borderColor: const Color(0xFF00D2FF).withValues(alpha: 0.2),
+          ).copyWith(
             boxShadow: [
               BoxShadow(
                 color: const Color(0xFF9B51E0).withValues(alpha: 0.15),

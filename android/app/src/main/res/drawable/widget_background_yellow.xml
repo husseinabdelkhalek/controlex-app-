@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Glowing Yellow/Orange Border -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FFBD2E" />
+            <corners android:radius="20dp" />
+        </shape>
+    </item>
+    <!-- Background Card Content -->
+    <item android:left="2dp" android:top="2dp" android:right="2dp" android:bottom="2dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#F90D0C1D" />
+            <corners android:radius="18dp" />
+        </shape>
+    </item>
+</layer-list>

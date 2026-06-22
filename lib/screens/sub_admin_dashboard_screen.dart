@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import '../theme/app_theme.dart';
+import '../widgets/premium_app_bar.dart';
 import '../services/api_service.dart';
 import '../core/localization.dart';
 import '../widgets/app_snackbar.dart';
@@ -115,23 +116,14 @@ class _SubAdminDashboardScreenState extends State<SubAdminDashboardScreen> with 
 
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
-      appBar: AppBar(
-        title: Text(screenTitle, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+      appBar: PremiumAppBar(
+        titleText: screenTitle,
         leading: _selectedViewIndex > 0
             ? IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () => setState(() => _selectedViewIndex = 0),
               )
             : null,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [const Color(0xFF00FFCC).withValues(alpha: 0.15), AppTheme.darkBackground],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh, color: Color(0xFF00FFCC)),

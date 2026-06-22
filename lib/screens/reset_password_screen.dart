@@ -1,3 +1,4 @@
+import '../widgets/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
@@ -31,9 +32,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     if (code.isEmpty || password.isEmpty) return;
     
     if (password.length < 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('كلمة المرور يجب أن تكون 6 أحرف على الأقل'))
-      );
+      AppSnackbar.showInfo(context, 'كلمة المرور يجب أن تكون 6 أحرف على الأقل');
       return;
     }
     
@@ -45,14 +44,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       setState(() => _isLoading = false);
       
       if (res['msg'] != null && res['msg'].contains('نجاح')) {
-         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res['msg'])));
+         AppSnackbar.showInfo(context, res['msg']);
          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const LoginScreen()), (r) => false);
       } else {
-         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res['msg'] ?? 'Invalid code')));
+         AppSnackbar.showInfo(context, res['msg'] ?? 'Invalid code');
       }
     } catch (e) {
       setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to reset.')));
+      AppSnackbar.showError(context, 'Failed to reset.');
     }
   }
 

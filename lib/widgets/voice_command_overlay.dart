@@ -3,6 +3,7 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import '../theme/app_theme.dart';
 import '../services/voice_parser.dart';
 import '../core/localization.dart';
+import 'glass_popups.dart';
 
 class VoiceCommandOverlay extends StatefulWidget {
   final List<dynamic> widgets;
@@ -11,9 +12,8 @@ class VoiceCommandOverlay extends StatefulWidget {
   const VoiceCommandOverlay({super.key, required this.widgets, this.isLocalMode = false, this.onCommandExecuted});
 
   static Future<void> show(BuildContext context, List<dynamic> widgets, {bool isLocalMode = false, Function(String id, String type, dynamic value)? onCommandExecuted}) {
-    return showModalBottomSheet(
+    return showGlassModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (ctx) => VoiceCommandOverlay(widgets: widgets, isLocalMode: isLocalMode, onCommandExecuted: onCommandExecuted),
     );
@@ -145,11 +145,11 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.cardBaseColor.withValues(alpha: 0.95),
+        color: AppTheme.cardBaseColor.withValues(alpha: 0.65),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
         border: Border.all(color: AppTheme.primaryCyan.withValues(alpha: 0.3), width: 1.5),
         boxShadow: [
-          BoxShadow(color: AppTheme.neonBlue.withValues(alpha: 0.2), blurRadius: 20, spreadRadius: 2)
+          BoxShadow(color: AppTheme.primaryCyan.withValues(alpha: 0.2), blurRadius: 20, spreadRadius: 2)
         ]
       ),
       padding: EdgeInsets.only(
@@ -178,7 +178,7 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay> {
                color: Colors.white, 
                fontSize: 22, 
                fontWeight: FontWeight.bold,
-               shadows: [Shadow(color: AppTheme.neonBlue.withValues(alpha: 0.5), blurRadius: 10)]
+               shadows: [Shadow(color: AppTheme.primaryCyan.withValues(alpha: 0.5), blurRadius: 10)]
             ),
             textAlign: TextAlign.center,
           ),
@@ -254,3 +254,4 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay> {
     );
   }
 }
+

@@ -37,37 +37,45 @@ class _GlassCardState extends State<GlassCard> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(widget.borderRadius),
         border: Border.all(
-          color: (widget.borderColor ?? Colors.white).withValues(alpha: 0.15), 
-          width: 1.0
+          color: widget.borderColor ?? AppTheme.glassBorder, 
+          width: 1.0,
         ),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            widget.baseColor.withValues(alpha: 0.15),
-            widget.baseColor.withValues(alpha: 0.05),
+            widget.baseColor.withValues(alpha: 0.85),
+            widget.baseColor.withValues(alpha: 0.65),
           ],
         ),
         boxShadow: [
+          // Ambient shadow
           BoxShadow(
-            color: Colors.black.withOpacity(0.5),
-            blurRadius: _isPressed ? 25 : 15,
-            spreadRadius: _isPressed ? 4 : 2,
-            offset: const Offset(0, 0),
-          )
+            color: Colors.black.withValues(alpha: 0.5),
+            blurRadius: 15,
+            spreadRadius: 2,
+            offset: const Offset(0, 5),
+          ),
+          // Neon Glow Effect on Press/Hover
+          if (_isPressed)
+            BoxShadow(
+              color: AppTheme.violetGlow,
+              blurRadius: 20,
+              spreadRadius: 2,
+            ),
         ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(widget.borderRadius),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
+          filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
           child: Container(
              decoration: BoxDecoration(
                gradient: RadialGradient(
                  center: Alignment.topLeft,
                  radius: 1.5,
                  colors: [
-                   Colors.white.withValues(alpha: 0.08),
+                   Colors.white.withValues(alpha: 0.1),
                    Colors.transparent,
                  ],
                ),
@@ -82,11 +90,16 @@ class _GlassCardState extends State<GlassCard> {
       onPointerDown: (_) => setState(() => _isPressed = true),
       onPointerUp: (_) => setState(() => _isPressed = false),
       onPointerCancel: (_) => setState(() => _isPressed = false),
-      child: AnimatedScale(
-        scale: _isPressed ? 0.96 : 1.0,
-        duration: const Duration(milliseconds: 150),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
         curve: Curves.easeOutCubic,
-        child: card,
+        transform: Matrix4.translationValues(0, _isPressed ? -2 : 0, 0), // Elevate on press (resembles hover effect translate3d(0,-2px,0))
+        child: AnimatedScale(
+          scale: _isPressed ? 0.98 : 1.0,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOutCubic,
+          child: card,
+        ),
       ),
     );
 

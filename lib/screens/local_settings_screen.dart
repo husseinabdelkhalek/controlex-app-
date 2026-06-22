@@ -1,3 +1,4 @@
+import '../widgets/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../services/local_service.dart';
@@ -151,11 +152,7 @@ class _LocalSettingsScreenState extends State<LocalSettingsScreen> {
     super.dispose();
   }
 
-  void _showToast(String m) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    content: Text(m), backgroundColor: AppTheme.primaryViolet,
-    behavior: SnackBarBehavior.floating,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-  ));
+  void _showToast(String m) => AppSnackbar.showSuccess(context, m);
 
   @override
   Widget build(BuildContext context) {

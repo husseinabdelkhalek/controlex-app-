@@ -17,6 +17,11 @@ import 'package:flutter_callkit_incoming/entities/android_params.dart';
 import 'package:flutter_callkit_incoming/entities/ios_params.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:home_widget/home_widget.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'services/local_service.dart';
+
 // This MUST be a top-level function (not inside a class)
 // It runs in a separate isolate when the app is terminated/background
 @pragma('vm:entry-point')
@@ -78,12 +83,132 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
 }
 
+// Background handler for Widget clicks
+@pragma('vm:entry-point')
+Future<void> backgroundCallbackHandler(Uri? uri) async {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (uri == null) return;
+  
+  final String path = uri.path;
+  final String? toolId = uri.queryParameters['toolId'];
+  if (toolId == null) return;
+
+  if (path == '/toggle') {
+    final String? toolData = await HomeWidget.getWidgetData<String>('widget_data_$toolId');
+    final bool currentVal = toolData == 'ON';
+    final bool newVal = !currentVal;
+    final String cmd = newVal ? 'ON' : 'OFF';
+    
+    try {
+      await ApiService.sendCommand(toolId, cmd);
+      await HomeWidget.saveWidgetData('widget_data_$toolId', newVal ? 'ON' : 'OFF');
+      await HomeWidget.updateWidget(name: 'ControlExWidgetProvider', androidName: 'ControlExWidgetProvider');
+      await HomeWidget.updateWidget(name: 'ControlExLargeWidgetProvider', androidName: 'ControlExLargeWidgetProvider');
+    } catch (_) {}
+  } else if (path == '/push') {
+    try {
+      await ApiService.sendCommand(toolId, 'ON');
+    } catch (_) {}
+  } else if (path == '/refresh') {
+    try {
+      final widgets = await ApiService.getWidgets();
+      final tool = widgets.firstWhere((w) => w['id'] == toolId, orElse: () => null);
+      if (tool != null) {
+        final type = tool['type']?.toString().toLowerCase() ?? 'toggle';
+        String value = 'OFF';
+        if (type == 'sensor') {
+          value = '${tool['state']?['lastValue'] ?? 'N/A'}${tool['configuration']?['unit'] ?? ''}';
+        } else if (type == 'toggle') {
+          value = (tool['state']?['isActive'] == true || tool['state']?['lastValue'] == (tool['configuration']?['onCommand'] ?? 'ON')) ? 'ON' : 'OFF';
+        } else if (type == 'slider') {
+          value = '${tool['state']?['lastValue'] ?? '0'}${tool['configuration']?['unit'] ?? ''}';
+        } else if (type == 'terminal') {
+          value = tool['state']?['lastValue'] ?? 'Console Ready';
+        }
+        await HomeWidget.saveWidgetData('widget_data_$toolId', value);
+        await HomeWidget.updateWidget(name: 'ControlExWidgetProvider', androidName: 'ControlExWidgetProvider');
+        await HomeWidget.updateWidget(name: 'ControlExLargeWidgetProvider', androidName: 'ControlExLargeWidgetProvider');
+      }
+    } catch (_) {}
+  } else if (path == '/slider_adjust') {
+    final String? adjust = uri.queryParameters['adjust'];
+    if (adjust != null) {
+      final String? currentStr = await HomeWidget.getWidgetData<String>('widget_data_$toolId');
+      final double currentVal = double.tryParse(currentStr?.replaceAll(RegExp(r'[^0-9.]'), '') ?? '50') ?? 50.0;
+      final double diff = double.tryParse(adjust) ?? 0.0;
+      final double newVal = (currentVal + diff).clamp(0.0, 100.0);
+      try {
+        await ApiService.sendCommand(toolId, newVal.toStringAsFixed(0));
+        await HomeWidget.saveWidgetData('widget_data_$toolId', newVal.toStringAsFixed(0));
+        await HomeWidget.updateWidget(name: 'ControlExWidgetProvider', androidName: 'ControlExWidgetProvider');
+        await HomeWidget.updateWidget(name: 'ControlExLargeWidgetProvider', androidName: 'ControlExLargeWidgetProvider');
+      } catch (_) {}
+    }
+  } else if (path == '/color_pick') {
+    final String? colorHex = uri.queryParameters['color'];
+    if (colorHex != null) {
+      try {
+        await ApiService.sendCommand(toolId, colorHex);
+        await HomeWidget.saveWidgetData('widget_data_$toolId', colorHex);
+        await HomeWidget.updateWidget(name: 'ControlExWidgetProvider', androidName: 'ControlExWidgetProvider');
+        await HomeWidget.updateWidget(name: 'ControlExLargeWidgetProvider', androidName: 'ControlExLargeWidgetProvider');
+      } catch (_) {}
+    }
+  } else if (path == '/joystick_move') {
+    final String? dir = uri.queryParameters['dir'];
+    if (dir != null) {
+      try {
+        await ApiService.sendCommand(toolId, dir);
+      } catch (_) {}
+    }
+  } else if (path == '/scene_trigger') {
+    try {
+      if (toolId.startsWith('local_scene_')) {
+        final prefs = await SharedPreferences.getInstance();
+        final raw = prefs.getString('local_control_scenes_v1');
+        if (raw != null && raw.isNotEmpty) {
+          final List<dynamic> scenes = json.decode(raw);
+          final scene = scenes.firstWhere((s) => s['id'].toString() == toolId, orElse: () => null);
+          if (scene != null && scene['actions'] != null) {
+            await LocalService.loadIp();
+            for (var action in scene['actions']) {
+              await LocalService.sendCommand(action['widgetId'], action['value']).catchError((_) {});
+            }
+          }
+        }
+      } else {
+        await ApiService.executeScene(toolId, []);
+      }
+    } catch (_) {}
+  } else if (path == '/terminal_send') {
+    final String? cmd = uri.queryParameters['cmd'];
+    if (cmd != null) {
+      try {
+        if (cmd == 'clear') {
+          await HomeWidget.saveWidgetData('widget_data_$toolId', '');
+        } else {
+          await ApiService.sendCommand(toolId, cmd);
+          var reply = 'OK';
+          if (cmd == 'ping') reply = 'PONG';
+          else if (cmd == 'status') reply = 'All systems nominal';
+          await HomeWidget.saveWidgetData('widget_data_$toolId', '$cmd\n> $reply');
+        }
+        await HomeWidget.updateWidget(name: 'ControlExWidgetProvider', androidName: 'ControlExWidgetProvider');
+        await HomeWidget.updateWidget(name: 'ControlExLargeWidgetProvider', androidName: 'ControlExLargeWidgetProvider');
+      } catch (_) {}
+    }
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   
   // Register the background message handler BEFORE any other FCM setup
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  
+  // Register Widget Background Handler
+  HomeWidget.registerBackgroundCallback(backgroundCallbackHandler);
   
   await AppLocalization.loadSavedLanguage();
   await NotificationService.initialize();
@@ -150,7 +275,7 @@ class _AppInitializerState extends State<AppInitializer> {
       // [AI_AGENT_WARNING]: This is the current internal app version. 
       // If you are releasing a new feature or fix that requires an update, increment this number (e.g., 1.7)
       // AND also increment the 'latestVersion' on the server (server.js).
-      const double currentVersion = 2.5; 
+      const double currentVersion = 2.6; 
       if (latestVersion != null && (latestVersion is num) && latestVersion > currentVersion) {
         if (mounted) {
           setState(() {

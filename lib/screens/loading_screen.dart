@@ -106,7 +106,7 @@ class _ServerLoadingScreenState extends State<ServerLoadingScreen>
                         height: 400,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppTheme.neonBlue.withOpacity(0.15),
+                          color: AppTheme.primaryCyan.withOpacity(0.15),
                         ),
                       ),
                     ),
@@ -154,7 +154,7 @@ class _ServerLoadingScreenState extends State<ServerLoadingScreen>
                       width: 100,
                       height: 100,
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(AppTheme.accentNeon.withOpacity(0.6)),
+                        valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryViolet.withOpacity(0.6)),
                         strokeWidth: 2,
                       ),
                     ),
@@ -222,3 +222,4 @@ class _ServerLoadingScreenState extends State<ServerLoadingScreen>
     );
   }
 }
+

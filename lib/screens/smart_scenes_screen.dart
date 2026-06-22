@@ -873,14 +873,14 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                     ),
         ],
       ),
-      floatingActionButton: widget.isLocalMode
-          ? null
-          : Column(
+      floatingActionButton: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                const AiFloatingButton(),
-                const SizedBox(height: 16),
+                if (!widget.isLocalMode) ...[
+                  const AiFloatingButton(),
+                  const SizedBox(height: 16),
+                ],
                 AnimatedBuilder(
                   animation: _fabController,
                   builder: (ctx, child) => Transform.scale(

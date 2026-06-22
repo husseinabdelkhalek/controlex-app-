@@ -1,3 +1,4 @@
+import '../widgets/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
@@ -27,9 +28,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     
     // Email regex validation
     if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('يرجى إدخال بريد إلكتروني صحيح'))
-      );
+      AppSnackbar.showInfo(context, 'يرجى إدخال بريد إلكتروني صحيح');
       return;
     }
     
@@ -39,14 +38,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       setState(() => _isLoading = false);
       
       if (res['msg'] != null && res['msg'].contains('تم إرسال')) {
-         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res['msg'])));
+         AppSnackbar.showInfo(context, res['msg']);
          Navigator.push(context, MaterialPageRoute(builder: (_) => ResetPasswordScreen(email: email)));
       } else {
-         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res['msg'] ?? 'Error occurred')));
+         AppSnackbar.showError(context, res['msg'] ?? 'Error occurred');
       }
     } catch (e) {
       setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to request reset.')));
+      AppSnackbar.showError(context, 'Failed to request reset.');
     }
   }
 

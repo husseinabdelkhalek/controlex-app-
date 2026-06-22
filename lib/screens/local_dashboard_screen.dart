@@ -8,6 +8,7 @@ import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import '../widgets/glass_card.dart';
+import '../widgets/glowing_button.dart';
 import '../widgets/interactive_grid.dart';
 import '../theme/app_theme.dart';
 import 'local_settings_screen.dart';
@@ -19,6 +20,9 @@ import '../core/localization.dart';
 import '../services/biometric_service.dart';
 import '../widgets/voice_command_overlay.dart';
 import '../widgets/ai_floating_button.dart';
+import '../widgets/glass_popups.dart';
+import '../widgets/ai_chat_overlay.dart';
+import '../widgets/premium_app_bar.dart';
 import '../widgets/app_tour_overlay.dart';
 import 'account_screen.dart';
 import 'smart_scenes_screen.dart';
@@ -650,9 +654,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                           await LocalService.sendCommand(id, v.toStringAsFixed(0));
                        } catch (e) {
                           if (mounted) {
-                             ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('خطأ في إرسال القيمة: $e'))
-                             );
+                             AppSnackbar.showError(context, 'خطأ في إرسال القيمة: $e');
                              setState(() { _sliderValues.remove(id); });
                           }
                        }
@@ -844,6 +846,63 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
     );
   }
 
+  Widget _buildDockButton({
+    required Key? key,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      key: key,
+      onTap: () {
+        HapticHelper.lightFeedback();
+        onTap();
+      },
+      borderRadius: BorderRadius.circular(24),
+      child: Padding(
+        padding: const EdgeInsets.all(4),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color.withOpacity(0.12),
+            border: Border.all(color: color.withOpacity(0.3), width: 1.2),
+          ),
+          child: Icon(icon, color: color, size: 18),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCenterVoiceButton() {
+    return InkWell(
+      onTap: () {
+        HapticHelper.lightFeedback();
+        _showVoiceOverlay();
+      },
+      borderRadius: BorderRadius.circular(30),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: const LinearGradient(
+            colors: [AppTheme.primaryCyan, AppTheme.primaryViolet],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.primaryCyan.withOpacity(0.4),
+              blurRadius: 10,
+              spreadRadius: 1,
+            ),
+          ],
+        ),
+        child: const Icon(Icons.mic, color: Colors.black, size: 22),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     for(var i=0; i<_items.length; i++){
@@ -859,19 +918,27 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundBase,
-      appBar: AppBar(
+      appBar: PremiumAppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(AppLocalization.get('local_control'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            Row(children: [
-              Icon(_isConnected ? Icons.wifi : Icons.wifi_off, size: 12, color: _isConnected ? Colors.greenAccent : Colors.redAccent),
-              const SizedBox(width: 4),
-              Text(
-                LocalService.deviceIp.isEmpty ? AppLocalization.get('no_ip_selected') : LocalService.deviceIp,
-                style: TextStyle(fontSize: 11, color: _isConnected ? Colors.greenAccent : Colors.white38),
-              ),
-            ]),
+            Text(
+              AppLocalization.get('local_control'),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+            const SizedBox(height: 2),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(_isConnected ? Icons.wifi : Icons.wifi_off, size: 10, color: _isConnected ? Colors.greenAccent : Colors.redAccent),
+                const SizedBox(width: 4),
+                Text(
+                  LocalService.deviceIp.isEmpty ? AppLocalization.get('no_ip_selected') : LocalService.deviceIp,
+                  style: TextStyle(fontSize: 10, color: _isConnected ? Colors.greenAccent : Colors.white38),
+                ),
+              ],
+            ),
           ],
         ),
         actions: [
@@ -885,6 +952,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
       ),
       body: Stack(
         children: [
+          const SizedBox.expand(),
           Positioned(
             top: -150,
             right: -100,
@@ -938,21 +1006,48 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                       ? CustomScrollView(
                           slivers: [
                             SliverFillRemaining(
-                              child: Center(
-                                child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                  const Icon(Icons.wifi_tethering, size: 80, color: Colors.white24),
-                                  const SizedBox(height: 16),
-                                  Text(AppLocalization.get('no_widgets'), style: const TextStyle(color: Colors.white38, fontSize: 18)),
-                                  const SizedBox(height: 8),
-                                  Text(AppLocalization.get('add_ip_hint'), style: const TextStyle(color: Colors.white24, fontSize: 13)),
-                                  const SizedBox(height: 24),
-                                  ElevatedButton.icon(
-                                    style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryCyan, foregroundColor: Colors.black),
-                                    icon: const Icon(Icons.add),
-                                    label: Text(AppLocalization.get('add_widget')),
-                                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LocalSettingsScreen())).then((_) => _init()),
+                              hasScrollBody: false,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 48.0),
+                                child: Center(
+                                  child: GlassCard(
+                                    borderColor: AppTheme.primaryCyan.withOpacity(0.3),
+                                    baseColor: AppTheme.cardBaseColor,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 32.0, horizontal: 20.0),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(Icons.wifi_tethering_outlined, size: 64, color: AppTheme.primaryCyan),
+                                          const SizedBox(height: 16),
+                                          Text(
+                                            AppLocalization.get('no_widgets'),
+                                            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            AppLocalization.get('add_ip_hint'),
+                                            style: const TextStyle(color: Colors.white38, fontSize: 13),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          const SizedBox(height: 24),
+                                          GlowingButton(
+                                            width: double.infinity,
+                                            onPressed: () => Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (_) => const LocalSettingsScreen()),
+                                            ).then((_) => _init()),
+                                            child: Text(
+                                              AppLocalization.isArabicNotifier.value
+                                                  ? 'إنشاء / إعادة تعيين الأدوات المحلية'
+                                                  : 'Create / Reset Local Widgets',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
-                                ]),
+                                ),
                               ),
                             ),
                           ],
@@ -960,7 +1055,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                       : SingleChildScrollView(
                           key: _localGridKey,
                           physics: _isScrollingLocked ? const NeverScrollableScrollPhysics() : const BouncingScrollPhysics(),
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                          padding: const EdgeInsets.fromLTRB(12, 8, 12, 110),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -977,43 +1072,91 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                           ),
                         ),
                 ),
-        ],
-      ),
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          AiFloatingButton(tourKey: _aiTourKey),
-          const SizedBox(height: 8),
-          FloatingActionButton(
-            heroTag: 'local_voice',
-            mini: true,
-            backgroundColor: AppTheme.primaryViolet,
-            onPressed: _showVoiceOverlay,
-            child: const Icon(Icons.mic, color: Colors.white),
-          ),
-          const SizedBox(height: 8),
-          FloatingActionButton(
-            heroTag: 'local_scenes',
-            mini: true,
-            backgroundColor: Colors.amberAccent,
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SmartScenesScreen(isLocalMode: true))).then((_) => _loadScenes()),
-            child: const Icon(Icons.bolt, color: Colors.black),
-          ),
-          const SizedBox(height: 8),
-          FloatingActionButton(
-            heroTag: 'local_settings',
-            mini: true,
-            backgroundColor: AppTheme.primaryCyan.withValues(alpha: 0.8),
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LocalSettingsScreen())).then((_) { _init(); }),
-            child: const Icon(Icons.settings, color: Colors.black),
-          ),
-          const SizedBox(height: 8),
-          FloatingActionButton(
-            heroTag: 'local_exit',
-            mini: true,
-            backgroundColor: Colors.redAccent.withValues(alpha: 0.7),
-            onPressed: () => Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const LoginScreen()), (r) => false),
-            child: const Icon(Icons.logout, color: Colors.white, size: 20),
+          
+          // Unified Horizontal Floating Glass Quick-Action Dock
+          Positioned(
+            bottom: 20,
+            left: 15,
+            right: 15,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(40),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppTheme.cardBaseColor.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(40),
+                    border: Border.all(
+                      color: AppTheme.primaryCyan.withOpacity(0.3),
+                      width: 1.5,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.primaryCyan.withOpacity(0.1),
+                        blurRadius: 20,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      // Logout / Exit Button
+                      _buildDockButton(
+                        key: null,
+                        icon: Icons.logout,
+                        color: Colors.redAccent,
+                        onTap: () => Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (_) => const LoginScreen()),
+                          (r) => false,
+                        ),
+                      ),
+                      
+                      // Local Settings Button
+                      _buildDockButton(
+                        key: null,
+                        icon: Icons.settings,
+                        color: AppTheme.primaryCyan,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const LocalSettingsScreen()),
+                        ).then((_) => _init()),
+                      ),
+                      
+                      // Central Pulsing Mic / Voice Control Button
+                      _buildCenterVoiceButton(),
+                      
+                      // Smart Scenes Button
+                      _buildDockButton(
+                        key: null,
+                        icon: Icons.bolt,
+                        color: Colors.amberAccent,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const SmartScenesScreen(isLocalMode: true)),
+                        ).then((_) => _loadScenes()),
+                      ),
+                      
+                      // AI Assistant Button
+                      _buildDockButton(
+                        key: _aiTourKey,
+                        icon: Icons.auto_awesome,
+                        color: Colors.purpleAccent,
+                        onTap: () {
+                          showGlassDialog(
+                            context: context,
+                            barrierColor: Colors.black.withOpacity(0.5),
+                            builder: (context) => const AiChatOverlay(),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),

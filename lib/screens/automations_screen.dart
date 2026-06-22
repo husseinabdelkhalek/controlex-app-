@@ -1,3 +1,4 @@
+import '../widgets/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../theme/app_theme.dart';
@@ -102,10 +103,7 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
                 try {
                   await ApiService.setPowerSaving(true);
                   setState(() => _powerSaving = true);
-                  if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(AppLocalization.get('power_saving_enabled')),
-                    backgroundColor: Colors.orange,
-                  ));
+                  if (mounted) AppSnackbar.showSuccess(context, AppLocalization.get('power_saving_enabled'));
                 } catch (_) {}
               },
             ),
@@ -127,9 +125,9 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
           try {
             await ApiService.deleteAutomationRule(rule['id']);
             setState(() => _rules.removeAt(index));
-            if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalization.get('rule_deleted')), backgroundColor: Colors.redAccent));
+            if (mounted) AppSnackbar.showError(context, AppLocalization.get('rule_deleted'));
           } catch (e) {
-            if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString()), backgroundColor: Colors.redAccent));
+            if (mounted) AppSnackbar.showError(context, e.toString());
           }
         }, child: Text(AppLocalization.get('delete'), style: const TextStyle(color: Colors.redAccent))),
       ],
@@ -408,12 +406,9 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
                       }
                       Navigator.pop(ctx);
                       _loadData(); // Refresh from server
-                      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text(editIndex != null ? AppLocalization.get('rule_updated') : AppLocalization.get('rule_created')),
-                        backgroundColor: Colors.green,
-                      ));
+                      if (mounted) AppSnackbar.showSuccess(context, editIndex != null ? AppLocalization.get('rule_updated') : AppLocalization.get('rule_created'));
                     } catch (e) {
-                      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString()), backgroundColor: Colors.redAccent));
+                      if (mounted) AppSnackbar.showError(context, e.toString());
                     }
                   },
                   child: Text(AppLocalization.get('save_rule'), style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
@@ -775,12 +770,9 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
                               try {
                                 await ApiService.setPowerSaving(v);
                                 if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                    content: Text(v 
+                                  AppSnackbar.showSuccess(context, v 
                                       ? AppLocalization.get('power_saving_enabled')
-                                      : AppLocalization.get('power_saving_disabled')),
-                                    backgroundColor: v ? Colors.orange : Colors.green,
-                                  ));
+                                      : AppLocalization.get('power_saving_disabled'));
                                 }
                               } catch (_) {
                                 setState(() {

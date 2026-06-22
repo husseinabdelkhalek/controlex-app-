@@ -3,6 +3,7 @@ import '../theme/app_theme.dart';
 import '../widgets/interactive_grid.dart';
 import '../widgets/glass_card.dart';
 import '../core/localization.dart';
+import '../widgets/glass_popups.dart';
 import 'local_dashboard_screen.dart';
 
 class TutorialSandboxScreen extends StatefulWidget {
@@ -67,11 +68,10 @@ class _TutorialSandboxScreenState extends State<TutorialSandboxScreen> {
   void _showDummyForm() {
     setState(() => _step = 1);
     final ctrl = TextEditingController();
-    showDialog(
+    showGlassDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.darkBackground,
         title: Text(AppLocalization.isArabicNotifier.value ? 'إنشاء أداة تجريبية' : 'Create Dummy Widget', style: const TextStyle(color: AppTheme.primaryCyan)),
         content: TextField(
           controller: ctrl,
