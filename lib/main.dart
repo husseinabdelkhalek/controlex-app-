@@ -168,7 +168,8 @@ Future<void> backgroundCallbackHandler(Uri? uri) async {
         final raw = prefs.getString('local_control_scenes_v1');
         if (raw != null && raw.isNotEmpty) {
           final List<dynamic> scenes = json.decode(raw);
-          final scene = scenes.firstWhere((s) => s['id'].toString() == toolId, orElse: () => null);
+          final rawId = toolId.replaceFirst('local_scene_', '');
+          final scene = scenes.firstWhere((s) => s['id'].toString() == rawId, orElse: () => null);
           if (scene != null && scene['actions'] != null) {
             await LocalService.loadIp();
             for (var action in scene['actions']) {
@@ -177,7 +178,8 @@ Future<void> backgroundCallbackHandler(Uri? uri) async {
           }
         }
       } else {
-        await ApiService.executeScene(toolId, []);
+        final cleanId = toolId.replaceFirst('scene_', '');
+        await ApiService.executeScene(cleanId, []);
       }
     } catch (_) {}
   } else if (path == '/terminal_send') {
@@ -254,6 +256,7 @@ class _AppInitializerState extends State<AppInitializer> {
   bool _needsUpdate = false;
   String _downloadUrl = '';
   String? _token;
+  String? _widgetSetupId;
 
   @override
   void initState() {
@@ -262,13 +265,18 @@ class _AppInitializerState extends State<AppInitializer> {
   }
 
   Future<void> _initializeApp() async {
-    // Run both checks in parallel to save time
     final versionFuture = ApiService.checkAppVersion();
     final tokenFuture = ApiService.getToken();
+    final initialUriFuture = HomeWidget.initiallyLaunchedFromHomeWidget();
 
-    final results = await Future.wait([versionFuture, tokenFuture]);
+    final results = await Future.wait([versionFuture, tokenFuture, initialUriFuture]);
     final versionData = results[0] as Map<String, dynamic>;
     _token = results[1] as String?;
+    final Uri? initialUri = results[2] as Uri?;
+
+    if (initialUri != null && initialUri.path == '/setup') {
+      _widgetSetupId = initialUri.queryParameters['widgetId'];
+    }
 
     if (versionData.isNotEmpty) {
       final latestVersion = versionData['latestVersion'];
@@ -373,7 +381,7 @@ class _AppInitializerState extends State<AppInitializer> {
     }
 
     if (_token != null && _token!.isNotEmpty) {
-      return const DashboardScreen();
+      return DashboardScreen(widgetSetupId: _widgetSetupId);
     }
     return const LoginScreen();
   }

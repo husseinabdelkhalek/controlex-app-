@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/widget_background"
-    android:padding="12dp">
+    android:padding="10dp">
 
     <!-- Header Section -->
     <RelativeLayout
@@ -103,251 +103,111 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tap to setup large widget"
+                android:text="Tap to setup"
                 android:textColor="#B3FFFFFF"
-                android:textSize="13sp" />
+                android:textSize="12sp" />
         </LinearLayout>
 
-        <!-- 2. Terminal Layout -->
-        <RelativeLayout
-            android:id="@+id/layout_terminal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone">
-
-            <!-- Monospace logs container -->
-            <LinearLayout
-                android:id="@+id/terminal_console_box"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_above="@id/terminal_actions_container"
-                android:layout_marginBottom="6dp"
-                android:background="#E6000000"
-                android:orientation="vertical"
-                android:padding="8dp">
-
-                <!-- macOS-like buttons -->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="4dp">
-                    <ImageView android:layout_width="5dp" android:layout_height="5dp" android:background="#FF5F56" android:layout_marginEnd="3dp"/>
-                    <ImageView android:layout_width="5dp" android:layout_height="5dp" android:background="#FFBD2E" android:layout_marginEnd="3dp"/>
-                    <ImageView android:layout_width="5dp" android:layout_height="5dp" android:background="#27C93F"/>
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/widget_terminal_logs"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="guest@controlex:~$\n> waiting for logs..."
-                    android:textColor="#00FF00"
-                    android:textSize="10sp"
-                    android:fontFamily="monospace" />
-            </LinearLayout>
-
-            <!-- Bottom Interactive Commands Row -->
-            <LinearLayout
-                android:id="@+id/terminal_actions_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:id="@+id/btn_cmd_status"
-                    android:layout_width="0dp"
-                    android:layout_height="32dp"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="4dp"
-                    android:background="@drawable/widget_icon_bg"
-                    android:gravity="center"
-                    android:text="status"
-                    android:textColor="#00E5FF"
-                    android:textSize="10sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/btn_cmd_ping"
-                    android:layout_width="0dp"
-                    android:layout_height="32dp"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="4dp"
-                    android:background="@drawable/widget_icon_bg"
-                    android:gravity="center"
-                    android:text="ping"
-                    android:textColor="#00E5FF"
-                    android:textSize="10sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/btn_cmd_clear"
-                    android:layout_width="0dp"
-                    android:layout_height="32dp"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="4dp"
-                    android:background="@drawable/widget_icon_bg"
-                    android:gravity="center"
-                    android:text="clear"
-                    android:textColor="#00E5FF"
-                    android:textSize="10sp"
-                    android:textStyle="bold" />
-
-                <!-- Open Keyboard in App button -->
-                <ImageView
-                    android:id="@+id/btn_cmd_keyboard"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:background="@drawable/widget_icon_bg"
-                    android:padding="6dp"
-                    android:src="@android:drawable/ic_menu_edit"
-                    android:tint="#FFFFFF" />
-
-            </LinearLayout>
-
-        </RelativeLayout>
-
-        <!-- 3. Joystick Layout -->
-        <RelativeLayout
-            android:id="@+id/layout_joystick"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone">
-
-            <RelativeLayout
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_centerInParent="true"
-                android:background="@drawable/widget_joystick_base"
-                android:padding="8dp">
-
-                <GridLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:columnCount="3"
-                    android:rowCount="3">
-
-                    <!-- Row 1 -->
-                    <ImageView android:layout_width="44dp" android:layout_height="44dp" android:visibility="invisible" />
-                    
-                    <ImageView
-                        android:id="@+id/btn_joy_up"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:background="@drawable/widget_icon_bg"
-                        android:padding="10dp"
-                        android:src="@drawable/ic_widget_arrow"
-                        android:rotation="0"
-                        android:tint="#00E5FF" />
-                        
-                    <ImageView android:layout_width="44dp" android:layout_height="44dp" android:visibility="invisible" />
-
-                    <!-- Row 2 -->
-                    <ImageView
-                        android:id="@+id/btn_joy_left"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:background="@drawable/widget_icon_bg"
-                        android:padding="10dp"
-                        android:src="@drawable/ic_widget_arrow"
-                        android:rotation="270"
-                        android:tint="#00E5FF" />
-
-                    <ImageView
-                        android:id="@+id/btn_joy_center"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:background="@drawable/widget_joystick_stick"
-                        android:padding="12dp"
-                        android:src="@android:drawable/presence_online"
-                        android:tint="#FFFFFF" />
-
-                    <ImageView
-                        android:id="@+id/btn_joy_right"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:background="@drawable/widget_icon_bg"
-                        android:padding="10dp"
-                        android:src="@drawable/ic_widget_arrow"
-                        android:rotation="90"
-                        android:tint="#00E5FF" />
-
-                    <!-- Row 3 -->
-                    <ImageView android:layout_width="44dp" android:layout_height="44dp" android:visibility="invisible" />
-
-                    <ImageView
-                        android:id="@+id/btn_joy_down"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:background="@drawable/widget_icon_bg"
-                        android:padding="10dp"
-                        android:src="@drawable/ic_widget_arrow"
-                        android:rotation="180"
-                        android:tint="#00E5FF" />
-
-                    <ImageView android:layout_width="44dp" android:layout_height="44dp" android:visibility="invisible" />
-
-                </GridLayout>
-            </RelativeLayout>
-        </RelativeLayout>
-
-        <!-- 4. Toggle Layout -->
+        <!-- 2. Toggle Layout -->
         <RelativeLayout
             android:id="@+id/layout_toggle"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone">
 
-            <TextView
-                android:id="@+id/widget_toggle_status_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_alignParentStart="true"
-                android:text="OFF"
-                android:textColor="#B3FFFFFF"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+            <!-- Normal Toggle -->
+            <RelativeLayout
+                android:id="@+id/layout_toggle_normal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible">
+                <TextView
+                    android:id="@+id/widget_toggle_status_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentStart="true"
+                    android:text="OFF"
+                    android:textColor="#B3FFFFFF"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
-            <ImageView
-                android:id="@+id/widget_toggle_switch_img"
-                android:layout_width="60dp"
-                android:layout_height="36dp"
-                android:layout_centerVertical="true"
-                android:layout_alignParentEnd="true"
-                android:src="@drawable/widget_switch_off" />
+                <ImageView
+                    android:id="@+id/widget_toggle_switch_img"
+                    android:layout_width="50dp"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/widget_switch_off" />
+            </RelativeLayout>
+
+            <!-- Compact Toggle (1x1) -->
+            <FrameLayout
+                android:id="@+id/layout_toggle_compact"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone">
+                <ImageView
+                    android:id="@+id/widget_toggle_switch_img_compact"
+                    android:layout_width="50dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/widget_switch_off" />
+            </FrameLayout>
         </RelativeLayout>
 
-        <!-- 5. Push Layout -->
-        <LinearLayout
+        <!-- 3. Push Layout -->
+        <RelativeLayout
             android:id="@+id/layout_push"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            android:background="@drawable/widget_icon_bg"
-            android:padding="12dp">
+            android:visibility="gone">
 
-            <ImageView
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:src="@drawable/ic_widget_push"
-                android:layout_marginEnd="8dp" />
+            <!-- Normal Push/Scene Button -->
+            <LinearLayout
+                android:id="@+id/layout_push_normal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:background="@drawable/widget_icon_bg"
+                android:padding="8dp"
+                android:visibility="visible">
 
-            <TextView
-                android:id="@+id/btn_push_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TRIGGER PUSH"
-                android:textColor="#00E5FF"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+                <ImageView
+                    android:id="@+id/btn_push_icon_normal"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_widget_push"
+                    android:layout_marginEnd="6dp" />
 
-        <!-- 6. Sensor Layout -->
+                <TextView
+                    android:id="@+id/btn_push_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TRIGGER PUSH"
+                    android:textColor="#00E5FF"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Compact Push/Scene Button -->
+            <FrameLayout
+                android:id="@+id/layout_push_compact"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/widget_icon_bg"
+                android:visibility="gone">
+                <ImageView
+                    android:id="@+id/btn_push_icon_compact"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_widget_push" />
+            </FrameLayout>
+        </RelativeLayout>
+
+        <!-- 4. Sensor Layout -->
         <LinearLayout
             android:id="@+id/layout_sensor"
             android:layout_width="match_parent"
@@ -362,118 +222,268 @@
                 android:layout_height="wrap_content"
                 android:text="24"
                 android:textColor="#00E5FF"
-                android:textSize="40sp"
+                android:textSize="26sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/widget_sensor_unit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
+                android:layout_marginStart="2dp"
                 android:text="°C"
                 android:textColor="#B3FFFFFF"
-                android:textSize="20sp" />
+                android:textSize="14sp" />
         </LinearLayout>
 
-        <!-- 7. Slider Layout -->
-        <LinearLayout
+        <!-- 5. Terminal Layout -->
+        <RelativeLayout
+            android:id="@+id/layout_terminal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <!-- Normal Terminal Box -->
+            <LinearLayout
+                android:id="@+id/layout_terminal_normal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#D9000000"
+                android:orientation="vertical"
+                android:padding="6dp"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="4dp">
+                    <ImageView android:layout_width="5dp" android:layout_height="5dp" android:background="#FF5F56" android:layout_marginEnd="3dp"/>
+                    <ImageView android:layout_width="5dp" android:layout_height="5dp" android:background="#FFBD2E" android:layout_marginEnd="3dp"/>
+                    <ImageView android:layout_width="5dp" android:layout_height="5dp" android:background="#27C93F"/>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/widget_terminal_logs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="guest@controlex:~$\n> command sent"
+                    android:textColor="#00FF00"
+                    android:textSize="9sp"
+                    android:fontFamily="monospace" />
+            </LinearLayout>
+
+            <!-- Compact Terminal Icon -->
+            <FrameLayout
+                android:id="@+id/layout_terminal_compact"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/widget_icon_bg"
+                android:visibility="gone">
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_widget_terminal" />
+            </FrameLayout>
+        </RelativeLayout>
+
+        <!-- 6. Slider Layout -->
+        <RelativeLayout
             android:id="@+id/layout_slider"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
             android:visibility="gone">
 
-            <ImageView
-                android:id="@+id/btn_slider_minus"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@drawable/widget_icon_bg"
-                android:padding="10dp"
-                android:src="@drawable/ic_widget_minus"
-                android:tint="#00E5FF" />
-
+            <!-- Normal Horizontal Slider -->
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="12dp"
-                android:orientation="vertical">
+                android:id="@+id/layout_slider_normal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="visible">
 
-                <TextView
-                    android:id="@+id/widget_slider_value_text"
-                    android:layout_width="wrap_content"
+                <ImageView
+                    android:id="@+id/btn_slider_minus"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/widget_icon_bg"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_widget_minus"
+                    android:tint="#00E5FF" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="0%"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold"/>
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:orientation="vertical">
 
-                <ProgressBar
-                    android:id="@+id/widget_slider_progress"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="8dp"
-                    android:layout_marginTop="6dp"
-                    android:progress="0"
-                    android:max="100"
-                    android:progressTint="#00E5FF"
-                    android:progressBackgroundTint="#33FFFFFF"/>
+                    <TextView
+                        android:id="@+id/widget_slider_value_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="0%"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:textStyle="bold"/>
+
+                    <ProgressBar
+                        android:id="@+id/widget_slider_progress"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="6dp"
+                        android:layout_marginTop="4dp"
+                        android:progress="0"
+                        android:max="100"
+                        android:progressTint="#00E5FF"
+                        android:progressBackgroundTint="#33FFFFFF"/>
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/btn_slider_plus"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/widget_icon_bg"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_widget_plus"
+                    android:tint="#00E5FF" />
             </LinearLayout>
 
-            <ImageView
-                android:id="@+id/btn_slider_plus"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@drawable/widget_icon_bg"
-                android:padding="10dp"
-                android:src="@drawable/ic_widget_plus"
-                android:tint="#00E5FF" />
-        </LinearLayout>
+            <!-- Compact Vertical Slider Stack (1x1) -->
+            <LinearLayout
+                android:id="@+id/layout_slider_compact"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-        <!-- 8. ColorPicker Layout -->
-        <LinearLayout
+                <ImageView
+                    android:id="@+id/btn_slider_plus_compact"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:background="@drawable/widget_icon_bg"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_widget_plus"
+                    android:tint="#00E5FF" />
+
+                <TextView
+                    android:id="@+id/widget_slider_value_text_compact"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="0%"
+                    android:textColor="#FFFFFF"
+                    android:textSize="11sp"
+                    android:textStyle="bold"/>
+
+                <ImageView
+                    android:id="@+id/btn_slider_minus_compact"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:background="@drawable/widget_icon_bg"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_widget_minus"
+                    android:tint="#00E5FF" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <!-- 7. ColorPicker Layout -->
+        <RelativeLayout
             android:id="@+id/layout_colorpicker"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="horizontal"
             android:visibility="gone">
 
-            <ImageView
-                android:id="@+id/btn_color_red"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_margin="8dp"
-                android:background="@drawable/widget_icon_bg"
-                android:backgroundTint="#FF5F56" />
+            <!-- Normal Horizontal Swatches -->
+            <LinearLayout
+                android:id="@+id/layout_colorpicker_normal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="visible">
 
-            <ImageView
-                android:id="@+id/btn_color_green"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_margin="8dp"
-                android:background="@drawable/widget_icon_bg"
-                android:backgroundTint="#27C93F" />
+                <ImageView
+                    android:id="@+id/btn_color_red"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/widget_icon_bg"
+                    android:backgroundTint="#FF5F56" />
 
-            <ImageView
-                android:id="@+id/btn_color_blue"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_margin="8dp"
-                android:background="@drawable/widget_icon_bg"
-                android:backgroundTint="#2979FF" />
+                <ImageView
+                    android:id="@+id/btn_color_green"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/widget_icon_bg"
+                    android:backgroundTint="#27C93F" />
 
-            <ImageView
-                android:id="@+id/btn_color_purple"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_margin="8dp"
-                android:background="@drawable/widget_icon_bg"
-                android:backgroundTint="#AA00FF" />
-        </LinearLayout>
+                <ImageView
+                    android:id="@+id/btn_color_blue"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/widget_icon_bg"
+                    android:backgroundTint="#2979FF" />
+
+                <ImageView
+                    android:id="@+id/btn_color_purple"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/widget_icon_bg"
+                    android:backgroundTint="#AA00FF" />
+            </LinearLayout>
+
+            <!-- Compact 2x2 Grid Swatches (1x1) -->
+            <GridLayout
+                android:id="@+id/layout_colorpicker_compact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:columnCount="2"
+                android:rowCount="2"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/btn_color_red_compact"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_margin="2dp"
+                    android:background="@drawable/widget_icon_bg"
+                    android:backgroundTint="#FF5F56" />
+
+                <ImageView
+                    android:id="@+id/btn_color_green_compact"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_margin="2dp"
+                    android:background="@drawable/widget_icon_bg"
+                    android:backgroundTint="#27C93F" />
+
+                <ImageView
+                    android:id="@+id/btn_color_blue_compact"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_margin="2dp"
+                    android:background="@drawable/widget_icon_bg"
+                    android:backgroundTint="#2979FF" />
+
+                <ImageView
+                    android:id="@+id/btn_color_purple_compact"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_margin="2dp"
+                    android:background="@drawable/widget_icon_bg"
+                    android:backgroundTint="#AA00FF" />
+            </GridLayout>
+        </RelativeLayout>
 
     </FrameLayout>
 

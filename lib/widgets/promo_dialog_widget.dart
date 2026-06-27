@@ -108,12 +108,16 @@ class PromoDialogWidget extends StatelessWidget {
                 
                 // Action Button
                 GlowingButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const HomeWidgetSetupScreen()),
-                    );
+                  onPressed: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setBool('has_seen_promo_permanently', true);
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const HomeWidgetSetupScreen()),
+                      );
+                    }
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,

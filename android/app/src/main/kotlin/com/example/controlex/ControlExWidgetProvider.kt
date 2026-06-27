@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.widget.RemoteViews
+import es.antonborri.home_widget.HomeWidgetPlugin
 import es.antonborri.home_widget.HomeWidgetProvider
 import es.antonborri.home_widget.HomeWidgetLaunchIntent
 import es.antonborri.home_widget.HomeWidgetBackgroundIntent
@@ -17,9 +18,9 @@ class ControlExWidgetProvider : HomeWidgetProvider() {
         appWidgetIds: IntArray,
         widgetData: SharedPreferences
     ) {
-        val multiProcessData = context.getSharedPreferences("HomeWidgetPrefs", Context.MODE_MULTI_PROCESS)
+        val data = HomeWidgetPlugin.getData(context)
         appWidgetIds.forEach { widgetId ->
-            updateWidgetLayout(context, appWidgetManager, widgetId, multiProcessData)
+            updateWidgetLayout(context, appWidgetManager, widgetId, data)
         }
     }
 
@@ -29,8 +30,8 @@ class ControlExWidgetProvider : HomeWidgetProvider() {
         appWidgetId: Int,
         newOptions: android.os.Bundle
     ) {
-        val widgetData = context.getSharedPreferences("HomeWidgetPrefs", Context.MODE_MULTI_PROCESS)
-        updateWidgetLayout(context, appWidgetManager, appWidgetId, widgetData)
+        val data = HomeWidgetPlugin.getData(context)
+        updateWidgetLayout(context, appWidgetManager, appWidgetId, data)
         super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
     }
 
@@ -87,36 +88,7 @@ class ControlExWidgetProvider : HomeWidgetProvider() {
         }
 
         // Check if this specific widget is linked to a tool
-        var toolId = widgetData.getString("widget_tool_id_$widgetId", null)
-        
-        if (toolId == null) {
-            // Check if there is a pending tool pin request from within the app
-            val pendingToolId = widgetData.getString("widget_pending_tool_id", null)
-            val pendingToolName = widgetData.getString("widget_pending_tool_name", null)
-            val pendingToolType = widgetData.getString("widget_pending_tool_type", "toggle")
-            
-            if (pendingToolId != null && pendingToolName != null) {
-                val editor = widgetData.edit()
-                editor.putString("widget_tool_id_$widgetId", pendingToolId)
-                editor.putString("widget_name_$widgetId", pendingToolName)
-                editor.putString("widget_type_$widgetId", pendingToolType)
-                
-                val initialData = when (pendingToolType?.lowercase() ?: "toggle") {
-                    "sensor" -> "24°C"
-                    "slider" -> "50%"
-                    "colorpicker", "color" -> "#FF5F56"
-                    else -> "OFF"
-                }
-                editor.putString("widget_data_$pendingToolId", initialData)
-                
-                editor.remove("widget_pending_tool_id")
-                editor.remove("widget_pending_tool_name")
-                editor.remove("widget_pending_tool_type")
-                editor.apply()
-                
-                toolId = pendingToolId
-            }
-        }
+        val toolId = widgetData.getString("widget_tool_id_$widgetId", null)
         
         if (toolId == null) {
             // Widget is not configured yet - set off background

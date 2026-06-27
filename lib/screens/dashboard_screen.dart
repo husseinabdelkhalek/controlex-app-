@@ -2,6 +2,14 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'dart:convert';
+import 'package:home_widget/home_widget.dart';
+import '../widgets/glass_popups.dart';
+import '../widgets/widget_tool_selector_dialog.dart';
+import '../widgets/glowing_button.dart';
+import '../widgets/premium_app_bar.dart';
+import 'home_widget_setup_screen.dart';
+
+
 import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/glass_card.dart';
 import '../widgets/ai_floating_button.dart';
@@ -33,7 +41,9 @@ import '../widgets/ai_chat_overlay.dart';
 
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
+  final String? widgetSetupId;
+
+  const DashboardScreen({super.key, this.widgetSetupId});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -65,6 +75,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   static const int _maxRetries = 5;
   String? _serverStatusMessage;
   bool _isLocalControlPinned = false;
+  bool _hasProcessedWidgetSetup = false;
+  StreamSubscription<Uri?>? _widgetClickedSubscription;
+
 
   // GlobalKeys for App Tour highlights
   final GlobalKey _drawerKey = GlobalKey();
@@ -103,6 +116,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
     _setupSocket();
     
+    _widgetClickedSubscription = HomeWidget.widgetClicked.listen((Uri? uri) {
+      if (uri != null && uri.path == '/setup') {
+        final widgetId = uri.queryParameters['widgetId'];
+        if (widgetId != null && mounted) {
+          _triggerWidgetSetup(widgetId);
+        }
+      }
+    });
+
     // Register FCM token now that we have an active session
     NotificationService.registerAfterLogin();
   }
@@ -110,6 +132,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void dispose() {
     AppLocalization.isArabicNotifier.removeListener(_onLangChange);
+    _widgetClickedSubscription?.cancel();
     super.dispose();
   }
 
@@ -295,6 +318,146 @@ class _DashboardScreenState extends State<DashboardScreen> {
        return AppTheme.primaryCyan;
     }
   }
+
+  Future<void> _updateHomeWidgetData(String toolId, String value) async {
+    try {
+      await HomeWidget.saveWidgetData('widget_data_$toolId', value);
+      await HomeWidget.updateWidget(name: 'ControlExWidgetProvider', androidName: 'ControlExWidgetProvider');
+      await HomeWidget.updateWidget(name: 'ControlExLargeWidgetProvider', androidName: 'ControlExLargeWidgetProvider');
+    } catch (_) {}
+  }
+
+  Future<void> _triggerWidgetSetup(String widgetId) async {
+    // First: check if there's a pending tool pre-selected from settings/scenes pin button
+    final pendingToolId   = await HomeWidget.getWidgetData<String>('widget_pending_tool_id');
+    final pendingToolName = await HomeWidget.getWidgetData<String>('widget_pending_tool_name');
+    final pendingToolType = await HomeWidget.getWidgetData<String>('widget_pending_tool_type') ?? 'toggle';
+
+    Map<String, dynamic>? tool;
+
+    if (pendingToolId != null && pendingToolName != null) {
+      // Auto-apply the pre-selected tool — no dialog needed
+      tool = {'id': pendingToolId, 'name': pendingToolName, 'type': pendingToolType};
+      // Clear pending so it's never re-used for another widget
+      await HomeWidget.saveWidgetData('widget_pending_tool_id', null);
+      await HomeWidget.saveWidgetData('widget_pending_tool_name', null);
+      await HomeWidget.saveWidgetData('widget_pending_tool_type', null);
+    } else {
+      // No pending — show the tool selector dialog
+      if (!mounted) return;
+      tool = await showDialog<Map<String, dynamic>>(
+        context: context,
+        builder: (ctx) => WidgetToolSelectorDialog(widgetId: widgetId),
+      );
+    }
+
+    if (tool != null && mounted) {
+      final toolId   = tool['id'].toString();
+      final toolType = tool['type']?.toString() ?? 'toggle';
+      final toolName = tool['name']?.toString() ?? 'Device';
+      final initialData = toolType == 'sensor'
+          ? '24°C'
+          : (toolType == 'slider'
+              ? '50%'
+              : (toolType == 'colorpicker' || toolType == 'color'
+                  ? '#FF5F56'
+                  : 'OFF'));
+
+      // Save all keys using the ACTUAL widgetId we received from the deep link
+      await HomeWidget.saveWidgetData('widget_tool_id_$widgetId', toolId);
+      await HomeWidget.saveWidgetData('widget_name_$widgetId', toolName);
+      await HomeWidget.saveWidgetData('widget_type_$widgetId', toolType);
+      await HomeWidget.saveWidgetData('widget_data_$toolId', initialData);
+
+      await HomeWidget.updateWidget(name: 'ControlExWidgetProvider', androidName: 'ControlExWidgetProvider');
+      await HomeWidget.updateWidget(name: 'ControlExLargeWidgetProvider', androidName: 'ControlExLargeWidgetProvider');
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalization.isArabicNotifier.value
+            ? 'تم ربط الودجت بـ $toolName بنجاح!'
+            : 'Widget linked to $toolName successfully!')),
+        );
+        _loadWidgets();
+      }
+    }
+  }
+
+  Future<void> _checkWidgetPromo() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final permanentlyHidden = prefs.getBool('has_seen_promo_permanently') ?? false;
+    final hasWidget = prefs.getBool('has_home_widget') ?? false;
+
+    if (permanentlyHidden || hasWidget) return;
+
+    int launchCount = prefs.getInt('widget_promo_launch_count') ?? 0;
+    launchCount++;
+    await prefs.setInt('widget_promo_launch_count', launchCount);
+
+    if (launchCount % 10 != 0 && launchCount != 1) return;
+
+    if (mounted) {
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted) {
+          showGlassModalBottomSheet(
+            context: context,
+            builder: (ctx) => Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: AppTheme.darkBackground.withOpacity(0.8),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+                border: Border.all(color: AppTheme.primaryCyan.withOpacity(0.3)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.widgets, size: 60, color: AppTheme.primaryCyan),
+                  const SizedBox(height: 16),
+                  Text(
+                    AppLocalization.isArabicNotifier.value ? 'جرب أدوات الشاشة الرئيسية!' : 'Try Home Screen Widgets!',
+                    style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    AppLocalization.isArabicNotifier.value 
+                        ? 'يمكنك الآن إضافة أدوات التحكم الخاصة بك إلى شاشة هاتفك الرئيسية للوصول السريع.' 
+                        : 'You can now add your controls directly to your home screen for quick access.',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: GlowingButton(
+                      child: Text(AppLocalization.isArabicNotifier.value ? 'رائع، سأجربها!' : 'Awesome, I will try it!'),
+                      onPressed: () async {
+                        await prefs.setBool('has_seen_promo_permanently', true);
+                        if (ctx.mounted) Navigator.pop(ctx);
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const HomeWidgetSetupScreen()));
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextButton(
+                    onPressed: () async {
+                      await prefs.setBool('has_seen_promo_permanently', true);
+                      if (ctx.mounted) Navigator.pop(ctx);
+                    },
+                    child: Text(
+                      AppLocalization.isArabicNotifier.value ? 'لا تظهر هذه الرسالة مرة أخرى' : 'Do not show again',
+                      style: const TextStyle(color: Colors.white54, decoration: TextDecoration.underline),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        }
+      });
+    }
+  }
+
   Future<void> _loadLocalPositions() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -641,11 +804,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
          }
        });
        
-       if (mounted) {
-         WidgetsBinding.instance.addPostFrameCallback((_) {
-           _checkFirstTimeTour();
-         });
-       }
+        if (mounted) {
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            _checkFirstTimeTour();
+            _checkWidgetPromo();
+            if (widget.widgetSetupId != null && !_hasProcessedWidgetSetup) {
+              _hasProcessedWidgetSetup = true;
+              _triggerWidgetSetup(widget.widgetSetupId!);
+            }
+          });
+        }
        
     } catch (e) {
        print('❌ Error loading widgets: $e');
@@ -942,7 +1110,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     // Sync children
-    for(var i=0; i<_items.len    return Scaffold(
+    for (var i = 0; i < _items.length; i++) {
+       final raw = _rawWidgets.firstWhere((w) => w['id'] == _items[i].id, orElse: () => null);
+       if (raw != null) {
+          _items[i] = GridItemData(
+             id: _items[i].id,
+             x: _items[i].x, y: _items[i].y, w: _items[i].w, h: _items[i].h,
+             child: _buildWidgetByType(raw, _items[i])
+          );
+       }
+    }
+
+    return Scaffold(
       backgroundColor: AppTheme.backgroundBase,
       appBar: PremiumAppBar(
         titleText: AppLocalization.get('dashboard'),
@@ -1162,22 +1341,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
       ),
-      body: Stack(
-        children: [ion);
-                } else {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('لا يمكن فتح الرابط')),
-                    );
-                  }
-                }
-              },
-            ),
-          ],
-        ),
-      ),
+
       body: Stack(
         children: [
+          const SizedBox.expand(),
           // Vibrant Neon Background Mesh
           Positioned(
             top: -150,
@@ -1269,7 +1436,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: SingleChildScrollView(
                     key: _gridKey,
                     physics: _isScrollingLocked ? const NeverScrollableScrollPhysics() : const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                    padding: const EdgeInsets.fromLTRB(4, 8, 4, 110),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -1282,17 +1449,44 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(
-                                    _serverStatusMessage ?? AppLocalization.get('no_widgets'),
-                                    style: const TextStyle(color: Colors.white54),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  TextButton.icon(
-                                    icon: const Icon(Icons.refresh, color: AppTheme.primaryCyan),
-                                    label: Text(AppLocalization.get('retry'), style: const TextStyle(color: AppTheme.primaryCyan)),
-                                    onPressed: () => _loadWidgets(),
-                                  ),
+                                  if (_serverStatusMessage != null) ...
+                                    [
+                                      Text(
+                                        _serverStatusMessage!,
+                                        style: const TextStyle(color: Colors.white54),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      TextButton.icon(
+                                        icon: const Icon(Icons.refresh, color: AppTheme.primaryCyan),
+                                        label: Text(AppLocalization.get('retry'), style: const TextStyle(color: AppTheme.primaryCyan)),
+                                        onPressed: () => _loadWidgets(),
+                                      ),
+                                    ]
+                                  else ...
+                                    [
+                                      Icon(Icons.widgets_outlined, size: 64, color: AppTheme.primaryCyan.withOpacity(0.3)),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        AppLocalization.get('no_widgets'),
+                                        style: const TextStyle(color: Colors.white54, fontSize: 16),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      const SizedBox(height: 24),
+                                      ElevatedButton.icon(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: AppTheme.primaryViolet,
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                        ),
+                                        icon: const Icon(Icons.add, color: Colors.white),
+                                        label: Text(
+                                          AppLocalization.isArabicNotifier.value ? 'أنشئ أول أداة لك!' : 'Create your first widget!',
+                                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                        ),
+                                        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())).then((_) => _loadWidgets()),
+                                      ),
+                                    ],
                                 ],
                               ),
                             ),
@@ -1313,50 +1507,147 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
               ),
+
+          // Unified Horizontal Floating Glass Quick-Action Dock
+          Positioned(
+            bottom: 20,
+            left: 15,
+            right: 15,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(40),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppTheme.cardBaseColor.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(40),
+                    border: Border.all(
+                      color: AppTheme.primaryCyan.withOpacity(0.3),
+                      width: 1.5,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.primaryCyan.withOpacity(0.1),
+                        blurRadius: 20,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      // AI Assistant Button
+                      _buildDockButton(
+                        tourKey: _aiTourKey,
+                        icon: Icons.auto_awesome,
+                        color: Colors.purpleAccent,
+                        onTap: () {
+                          showGlassDialog(
+                            context: context,
+                            barrierColor: Colors.black.withOpacity(0.5),
+                            builder: (context) => const AiChatOverlay(),
+                          );
+                        },
+                      ),
+
+                      // Central Pulsing Mic / Voice Control Button
+                      _buildCenterVoiceButton(),
+
+                      // Create Widget Button
+                      _buildDockButton(
+                        tourKey: _addKey,
+                        icon: Icons.add_circle_outline,
+                        color: AppTheme.primaryViolet,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                        ).then((_) => _loadWidgets()),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          AiFloatingButton(tourKey: _aiTourKey),
-          const SizedBox(height: 16),
-          FloatingActionButton(
-            key: _micKey,
-            heroTag: 'micFAB',
-            backgroundColor: AppTheme.primaryCyan,
-            child: const Icon(Icons.mic, color: Colors.black),
-            onPressed: () {
-               VoiceCommandOverlay.show(
-                  context, 
-                  _rawWidgets,
-                  onCommandExecuted: (id, type, value) {
-                     if (mounted) {
-                        setState(() {
-                           if (type == 'toggle') {
-                              bool isTrue = (value == 'ON' || value == '1' || value == true);
-                              _localToggleStates[id] = isTrue;
-                           } else if (type == 'slider') {
-                              double? val = double.tryParse(value.toString());
-                              if (val != null) {
-                                 _sliderValues[id] = val;
-                                 _lastSliderUpdate[id] = DateTime.now();
-                              }
-                           }
-                        });
-                     }
-                  },
-               );
-            },
+    );
+  }
+
+  Widget _buildDockButton({
+    required Key? tourKey,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      key: tourKey,
+      onTap: () {
+        HapticHelper.lightFeedback();
+        onTap();
+      },
+      borderRadius: BorderRadius.circular(24),
+      child: Padding(
+        padding: const EdgeInsets.all(4),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color.withOpacity(0.12),
+            border: Border.all(color: color.withOpacity(0.3), width: 1.2),
           ),
-          const SizedBox(height: 16),
-          FloatingActionButton(
-            key: _addKey,
-            heroTag: 'addFAB',
-            backgroundColor: AppTheme.primaryViolet,
-            child: const Icon(Icons.add, color: Colors.white),
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())).then((_) => _loadWidgets()),
+          child: Icon(icon, color: color, size: 18),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCenterVoiceButton() {
+    return InkWell(
+      key: _micKey,
+      onTap: () {
+        HapticHelper.lightFeedback();
+        VoiceCommandOverlay.show(
+          context,
+          _rawWidgets,
+          onCommandExecuted: (id, type, value) {
+            if (mounted) {
+              setState(() {
+                if (type == 'toggle') {
+                  bool isTrue = (value == 'ON' || value == '1' || value == true);
+                  _localToggleStates[id] = isTrue;
+                } else if (type == 'slider') {
+                  double? val = double.tryParse(value.toString());
+                  if (val != null) {
+                    _sliderValues[id] = val;
+                    _lastSliderUpdate[id] = DateTime.now();
+                  }
+                }
+              });
+            }
+          },
+        );
+      },
+      borderRadius: BorderRadius.circular(30),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: const LinearGradient(
+            colors: [AppTheme.primaryCyan, AppTheme.primaryViolet],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-        ],
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.primaryCyan.withOpacity(0.4),
+              blurRadius: 10,
+              spreadRadius: 1,
+            ),
+          ],
+        ),
+        child: const Icon(Icons.mic, color: Colors.black, size: 22),
       ),
     );
   }
@@ -1479,6 +1770,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             setState(() => _localToggleStates[id] = newState);
             try {
                await ApiService.sendCommand(id, newState ? onCmd : offCmd);
+               _updateHomeWidgetData(id, newState ? 'ON' : 'OFF');
             } catch(e) {
                debugPrint('Toggle Error: $e');
                setState(() => _localToggleStates[id] = value);
@@ -1677,6 +1969,7 @@ onChangeEnd: (v) async {
                         _lastSliderUpdate[id] = DateTime.now();
                         try {
                           await ApiService.sendCommand(id, v.toStringAsFixed(0));
+                          _updateHomeWidgetData(id, v.toStringAsFixed(0));
                        } catch (e) {
                           if (mounted) {
                              ScaffoldMessenger.of(context).showSnackBar(
@@ -1716,6 +2009,28 @@ onChangeEnd: (v) async {
           ]
         ),
       ),
+    );
+  }
+
+  Widget _buildDrawerTile({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    String? subtitle,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: iconColor.withValues(alpha: 0.15),
+        ),
+        child: Icon(icon, color: iconColor, size: 20),
+      ),
+      title: Text(title, style: const TextStyle(color: Colors.white, fontSize: 14)),
+      subtitle: subtitle != null ? Text(subtitle, style: const TextStyle(color: Colors.white38, fontSize: 11)) : null,
+      onTap: onTap,
     );
   }
 
@@ -1804,6 +2119,7 @@ onChangeEnd: (v) async {
                                      });
                                      try {
                                        await ApiService.sendCommand(id, hexString);
+                                       _updateHomeWidgetData(id, hexString);
                                      } catch (_) {}
                                   });
                                 },
@@ -1817,35 +2133,40 @@ onChangeEnd: (v) async {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: [
-                                   _buildSwatch(Colors.white, (c) {
+                                    _buildSwatch(Colors.white, (c) async {
                                      setModalState(() => pickerColor = c);
                                      String hexString = '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
                                      setState(() { w['state'] ??= {}; w['state']['lastValue'] = hexString; });
-                                     ApiService.sendCommand(id, hexString);
+                                     await ApiService.sendCommand(id, hexString);
+                                     _updateHomeWidgetData(id, hexString);
                                    }),
-                                   _buildSwatch(const Color(0xFFFFD1A4), (c) { // Warm white
+                                   _buildSwatch(const Color(0xFFFFD1A4), (c) async { // Warm white
                                      setModalState(() => pickerColor = c);
                                      String hexString = '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
                                      setState(() { w['state'] ??= {}; w['state']['lastValue'] = hexString; });
-                                     ApiService.sendCommand(id, hexString);
+                                     await ApiService.sendCommand(id, hexString);
+                                     _updateHomeWidgetData(id, hexString);
                                    }),
-                                   _buildSwatch(Colors.red, (c) {
+                                   _buildSwatch(Colors.red, (c) async {
                                      setModalState(() => pickerColor = c);
                                      String hexString = '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
                                      setState(() { w['state'] ??= {}; w['state']['lastValue'] = hexString; });
-                                     ApiService.sendCommand(id, hexString);
+                                     await ApiService.sendCommand(id, hexString);
+                                     _updateHomeWidgetData(id, hexString);
                                    }),
-                                   _buildSwatch(Colors.green, (c) {
+                                   _buildSwatch(Colors.green, (c) async {
                                      setModalState(() => pickerColor = c);
                                      String hexString = '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
                                      setState(() { w['state'] ??= {}; w['state']['lastValue'] = hexString; });
-                                     ApiService.sendCommand(id, hexString);
+                                     await ApiService.sendCommand(id, hexString);
+                                     _updateHomeWidgetData(id, hexString);
                                    }),
-                                   _buildSwatch(Colors.blue, (c) {
+                                   _buildSwatch(Colors.blue, (c) async {
                                      setModalState(() => pickerColor = c);
                                      String hexString = '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
                                      setState(() { w['state'] ??= {}; w['state']['lastValue'] = hexString; });
-                                     ApiService.sendCommand(id, hexString);
+                                     await ApiService.sendCommand(id, hexString);
+                                     _updateHomeWidgetData(id, hexString);
                                    }),
                                 ]
                               ),
@@ -1914,6 +2235,11 @@ class _PushButtonWidgetState extends State<_PushButtonWidget> {
     try {
       final onCmd = config['onCommand'] ?? 'ON';
       await ApiService.sendCommand(widget.widgetData['id'], onCmd);
+      try {
+        await HomeWidget.saveWidgetData('widget_data_${widget.widgetData['id']}', 'ON');
+        await HomeWidget.updateWidget(name: 'ControlExWidgetProvider', androidName: 'ControlExWidgetProvider');
+        await HomeWidget.updateWidget(name: 'ControlExLargeWidgetProvider', androidName: 'ControlExLargeWidgetProvider');
+      } catch (_) {}
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(

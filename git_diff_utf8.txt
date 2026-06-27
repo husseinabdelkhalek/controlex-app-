@@ -1,0 +1,2082 @@
+﻿diff --git a/android/app/src/main/AndroidManifest.xml b/android/app/src/main/AndroidManifest.xml
+index 1341ba5..bd00e2b 100644
+--- a/android/app/src/main/AndroidManifest.xml
++++ b/android/app/src/main/AndroidManifest.xml
+@@ -43,6 +43,11 @@
+                 <action android:name="android.intent.action.MAIN"/>
+                 <category android:name="android.intent.category.LAUNCHER"/>
+             </intent-filter>
++            <intent-filter>
++                <action android:name="android.intent.action.VIEW" />
++                <category android:name="android.intent.category.DEFAULT" />
++                <data android:scheme="controlex" android:host="widget" />
++            </intent-filter>
+         </activity>
+         <!-- Don't delete the meta-data below.
+              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+diff --git a/android/app/src/main/kotlin/com/example/controlex/ControlExLargeWidgetProvider.kt b/android/app/src/main/kotlin/com/example/controlex/ControlExLargeWidgetProvider.kt
+index e21aa70..0926d6f 100644
+--- a/android/app/src/main/kotlin/com/example/controlex/ControlExLargeWidgetProvider.kt
++++ b/android/app/src/main/kotlin/com/example/controlex/ControlExLargeWidgetProvider.kt
+@@ -45,33 +45,31 @@ class ControlExLargeWidgetProvider : HomeWidgetProvider() {
+         widgetId: Int,
+         widgetData: SharedPreferences
+     ) {
++        // ╪º┘ä╪º╪«╪¬┘ä╪º┘ü ╪º┘ä┘ê╪¡┘è╪» ┘ç┘å╪º: ╪¿┘å╪│╪¬╪«╪»┘à widget_large_layout
+         val views = RemoteViews(context.packageName, R.layout.widget_large_layout)
+         
+-        // Retrieve size parameters to optimize for external screens and different bounds
+         val options = appWidgetManager.getAppWidgetOptions(widgetId)
+         val minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
+         val minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
+         
+-        val isCompact = (minWidth > 0 && minWidth < 120) || (minHeight > 0 && minHeight < 110)
++        val isCompact = (minWidth > 0 && minWidth < 100) || (minHeight > 0 && minHeight < 80)
+ 
+-        // Dynamic header scaling & padding based on height/width bounds
++        // ╪Ñ╪«┘ü╪º╪í ╪ú┘ê ╪Ñ╪╕┘ç╪º╪▒ ╪º┘ä┘ç┘è╪»╪▒ ╪¿┘å╪º╪í┘ï ╪╣┘ä┘ë ╪º┘ä╪¡╪¼┘à
+         if (isCompact) {
+             views.setViewVisibility(R.id.header_container, android.view.View.GONE)
+             views.setViewVisibility(R.id.widget_divider, android.view.View.GONE)
+-            views.setViewPadding(R.id.widget_root, dpToPx(context, 6), dpToPx(context, 6), dpToPx(context, 6), dpToPx(context, 6))
++            views.setViewPadding(R.id.widget_root, dpToPx(context, 4), dpToPx(context, 4), dpToPx(context, 4), dpToPx(context, 4))
+         } else {
+             views.setViewVisibility(R.id.header_container, android.view.View.VISIBLE)
+             views.setViewVisibility(R.id.widget_divider, android.view.View.VISIBLE)
+             
+-            // Adapt root padding
+-            if (minHeight > 0 && minHeight < 160) {
+-                views.setViewPadding(R.id.widget_root, dpToPx(context, 8), dpToPx(context, 8), dpToPx(context, 8), dpToPx(context, 8))
++            if (minHeight > 0 && minHeight < 120) {
++                views.setViewPadding(R.id.widget_root, dpToPx(context, 6), dpToPx(context, 6), dpToPx(context, 6), dpToPx(context, 6))
+             } else {
+-                views.setViewPadding(R.id.widget_root, dpToPx(context, 12), dpToPx(context, 12), dpToPx(context, 12), dpToPx(context, 12))
++                views.setViewPadding(R.id.widget_root, dpToPx(context, 10), dpToPx(context, 10), dpToPx(context, 10), dpToPx(context, 10))
+             }
+ 
+-            // Adjust sub-elements of the header based on height
+-            if (minHeight > 0 && minHeight < 140) {
++            if (minHeight > 0 && minHeight < 110) {
+                 views.setViewVisibility(R.id.widget_status, android.view.View.GONE)
+                 views.setTextViewTextSize(R.id.widget_title, android.util.TypedValue.COMPLEX_UNIT_SP, 12f)
+             } else {
+@@ -79,21 +77,19 @@ class ControlExLargeWidgetProvider : HomeWidgetProvider() {
+                 views.setTextViewTextSize(R.id.widget_title, android.util.TypedValue.COMPLEX_UNIT_SP, 14f)
+             }
+ 
+-            if (minHeight > 0 && minHeight < 125) {
++            if (minHeight > 0 && minHeight < 95) {
+                 views.setViewVisibility(R.id.icon_container, android.view.View.GONE)
+             } else {
+                 views.setViewVisibility(R.id.icon_container, android.view.View.VISIBLE)
+             }
+         }
+-        
+-        // Check if this specific widget is linked to a tool
++
+         var toolId = widgetData.getString("widget_tool_id_$widgetId", null)
+         
+         if (toolId == null) {
+-            // Check if there is a pending tool pin request from within the app
+             val pendingToolId = widgetData.getString("widget_pending_tool_id", null)
+             val pendingToolName = widgetData.getString("widget_pending_tool_name", null)
+-            val pendingToolType = widgetData.getString("widget_pending_tool_type", "terminal")
++            val pendingToolType = widgetData.getString("widget_pending_tool_type", "toggle")
+             
+             if (pendingToolId != null && pendingToolName != null) {
+                 val editor = widgetData.edit()
+@@ -101,12 +97,10 @@ class ControlExLargeWidgetProvider : HomeWidgetProvider() {
+                 editor.putString("widget_name_$widgetId", pendingToolName)
+                 editor.putString("widget_type_$widgetId", pendingToolType)
+                 
+-                val initialData = when (pendingToolType?.lowercase() ?: "terminal") {
+-                    "joystick" -> "CENTER"
++                val initialData = when (pendingToolType?.lowercase() ?: "toggle") {
+                     "sensor" -> "24┬░C"
+                     "slider" -> "50%"
+                     "colorpicker", "color" -> "#FF5F56"
+-                    "terminal" -> "guest@controlex:~$\n> Console Ready"
+                     else -> "OFF"
+                 }
+                 editor.putString("widget_data_$pendingToolId", initialData)
+@@ -121,19 +115,16 @@ class ControlExLargeWidgetProvider : HomeWidgetProvider() {
+         }
+         
+         if (toolId == null) {
+-            // Widget is not configured yet - set off background
+             views.setInt(R.id.widget_root, "setBackgroundResource", R.drawable.widget_background_off)
+-            
+             views.setViewVisibility(R.id.layout_setup, android.view.View.VISIBLE)
+-            views.setViewVisibility(R.id.layout_terminal, android.view.View.GONE)
+-            views.setViewVisibility(R.id.layout_joystick, android.view.View.GONE)
+             views.setViewVisibility(R.id.layout_toggle, android.view.View.GONE)
+             views.setViewVisibility(R.id.layout_push, android.view.View.GONE)
+             views.setViewVisibility(R.id.layout_sensor, android.view.View.GONE)
++            views.setViewVisibility(R.id.layout_terminal, android.view.View.GONE)
+             views.setViewVisibility(R.id.layout_slider, android.view.View.GONE)
+             views.setViewVisibility(R.id.layout_colorpicker, android.view.View.GONE)
+             
+-            views.setTextViewText(R.id.widget_title, "ControlEx Large")
++            views.setTextViewText(R.id.widget_title, "ControlEx")
+             views.setTextViewText(R.id.widget_status, "Setup Required")
+             views.setImageViewResource(R.id.widget_icon, R.drawable.ic_widget_setup)
+             
+@@ -144,155 +135,98 @@ class ControlExLargeWidgetProvider : HomeWidgetProvider() {
+             )
+             views.setOnClickPendingIntent(R.id.widget_root, pendingIntent)
+             views.setOnClickPendingIntent(R.id.widget_refresh_button, pendingIntent)
++            views.setOnClickPendingIntent(R.id.layout_setup, pendingIntent)
+         } else {
+-            // Widget is configured
+-            val toolType = widgetData.getString("widget_type_$widgetId", "terminal")?.lowercase() ?: "terminal"
++            val toolType = widgetData.getString("widget_type_$widgetId", "toggle")?.lowercase() ?: "toggle"
+             val toolName = widgetData.getString("widget_name_$widgetId", "Unknown Device")
+-            val toolData = widgetData.getString("widget_data_$toolId", "") ?: ""
++            val toolData = widgetData.getString("widget_data_$toolId", "OFF") ?: "OFF"
+             
+             views.setTextViewText(R.id.widget_title, toolName)
+             
+-            // Hide all and show matching layout
+             views.setViewVisibility(R.id.layout_setup, android.view.View.GONE)
+-            views.setViewVisibility(R.id.layout_terminal, if (toolType == "terminal") android.view.View.VISIBLE else android.view.View.GONE)
+-            views.setViewVisibility(R.id.layout_joystick, if (toolType == "joystick") android.view.View.VISIBLE else android.view.View.GONE)
+             views.setViewVisibility(R.id.layout_toggle, if (toolType == "toggle") android.view.View.VISIBLE else android.view.View.GONE)
+             views.setViewVisibility(R.id.layout_push, if (toolType == "push" || toolType == "scene") android.view.View.VISIBLE else android.view.View.GONE)
+             views.setViewVisibility(R.id.layout_sensor, if (toolType == "sensor") android.view.View.VISIBLE else android.view.View.GONE)
++            views.setViewVisibility(R.id.layout_terminal, if (toolType == "terminal") android.view.View.VISIBLE else android.view.View.GONE)
+             views.setViewVisibility(R.id.layout_slider, if (toolType == "slider") android.view.View.VISIBLE else android.view.View.GONE)
+             views.setViewVisibility(R.id.layout_colorpicker, if (toolType == "colorpicker" || toolType == "color") android.view.View.VISIBLE else android.view.View.GONE)
+             
+-            // Dynamic background setup based on state and tool type
+-            var bgResource = R.drawable.widget_background_active
++            // Toggle sub-layout visibility based on size
++            views.setViewVisibility(R.id.layout_toggle_normal, if (isCompact) android.view.View.GONE else android.view.View.VISIBLE)
++            views.setViewVisibility(R.id.layout_toggle_compact, if (isCompact) android.view.View.VISIBLE else android.view.View.GONE)
++            
++            views.setViewVisibility(R.id.layout_push_normal, if (isCompact) android.view.View.GONE else android.view.View.VISIBLE)
++            views.setViewVisibility(R.id.layout_push_compact, if (isCompact) android.view.View.VISIBLE else android.view.View.GONE)
++            
++            views.setViewVisibility(R.id.layout_slider_normal, if (isCompact) android.view.View.GONE else android.view.View.VISIBLE)
++            views.setViewVisibility(R.id.layout_slider_compact, if (isCompact) android.view.View.VISIBLE else android.view.View.GONE)
++            
++            views.setViewVisibility(R.id.layout_colorpicker_normal, if (isCompact) android.view.View.GONE else android.view.View.VISIBLE)
++            views.setViewVisibility(R.id.layout_colorpicker_compact, if (isCompact) android.view.View.VISIBLE else android.view.View.GONE)
++            
++            views.setViewVisibility(R.id.layout_terminal_normal, if (isCompact) android.view.View.GONE else android.view.View.VISIBLE)
++            views.setViewVisibility(R.id.layout_terminal_compact, if (isCompact) android.view.View.VISIBLE else android.view.View.GONE)
+ 
++            var bgResource = R.drawable.widget_background_active
++            
+             when (toolType) {
+-                "terminal" -> {
+-                    views.setImageViewResource(R.id.widget_icon, R.drawable.ic_widget_terminal)
+-                    views.setTextViewText(R.id.widget_status, "ΓÇó Terminal Console")
+-                    
+-                    bgResource = R.drawable.widget_background_blue
+-
+-                    val consoleText = if (toolData.isEmpty()) {
+-                        "guest@controlex:~$\n>"
+-                    } else {
+-                        if (toolData.contains("guest@controlex")) toolData else "guest@controlex:~$\n> $toolData"
+-                    }
+-                    views.setTextViewText(R.id.widget_terminal_logs, consoleText)
+-                    
+-                    // Setup quick buttons actions using Background Intent
+-                    val statusIntent = HomeWidgetBackgroundIntent.getBroadcast(
+-                        context,
+-                        Uri.parse("controlex://widget/terminal_send?toolId=$toolId&cmd=status")
+-                    )
+-                    val pingIntent = HomeWidgetBackgroundIntent.getBroadcast(
+-                        context,
+-                        Uri.parse("controlex://widget/terminal_send?toolId=$toolId&cmd=ping")
+-                    )
+-                    val clearIntent = HomeWidgetBackgroundIntent.getBroadcast(
+-                        context,
+-                        Uri.parse("controlex://widget/terminal_send?toolId=$toolId&cmd=clear")
+-                    )
+-                    
+-                    // Keyboard button opens app to input command
+-                    val keyboardIntent = HomeWidgetLaunchIntent.getActivity(
+-                        context,
+-                        MainActivity::class.java,
+-                        Uri.parse("controlex://widget/open?toolId=$toolId")
+-                    )
+-                    
+-                    views.setOnClickPendingIntent(R.id.btn_cmd_status, statusIntent)
+-                    views.setOnClickPendingIntent(R.id.btn_cmd_ping, pingIntent)
+-                    views.setOnClickPendingIntent(R.id.btn_cmd_clear, clearIntent)
+-                    views.setOnClickPendingIntent(R.id.btn_cmd_keyboard, keyboardIntent)
+-                    views.setOnClickPendingIntent(R.id.terminal_console_box, keyboardIntent)
+-                    views.setOnClickPendingIntent(R.id.layout_terminal, keyboardIntent)
+-                }
+-                "joystick" -> {
+-                    views.setImageViewResource(R.id.widget_icon, R.drawable.ic_widget_joystick)
+-                    views.setTextViewText(R.id.widget_status, "ΓÇó Joystick D-Pad")
+-                    
+-                    bgResource = R.drawable.widget_background_active
+-
+-                    // Set up movement buttons actions using Background Intent
+-                    val upIntent = HomeWidgetBackgroundIntent.getBroadcast(
+-                        context,
+-                        Uri.parse("controlex://widget/joystick_move?toolId=$toolId&dir=UP")
+-                    )
+-                    val downIntent = HomeWidgetBackgroundIntent.getBroadcast(
+-                        context,
+-                        Uri.parse("controlex://widget/joystick_move?toolId=$toolId&dir=DOWN")
+-                    )
+-                    val leftIntent = HomeWidgetBackgroundIntent.getBroadcast(
+-                        context,
+-                        Uri.parse("controlex://widget/joystick_move?toolId=$toolId&dir=LEFT")
+-                    )
+-                    val rightIntent = HomeWidgetBackgroundIntent.getBroadcast(
+-                        context,
+-                        Uri.parse("controlex://widget/joystick_move?toolId=$toolId&dir=RIGHT")
+-                    )
+-                    val centerIntent = HomeWidgetBackgroundIntent.getBroadcast(
+-                        context,
+-                        Uri.parse("controlex://widget/joystick_move?toolId=$toolId&dir=CENTER")
+-                    )
+-                    
+-                    views.setOnClickPendingIntent(R.id.btn_joy_up, upIntent)
+-                    views.setOnClickPendingIntent(R.id.btn_joy_down, downIntent)
+-                    views.setOnClickPendingIntent(R.id.btn_joy_left, leftIntent)
+-                    views.setOnClickPendingIntent(R.id.btn_joy_right, rightIntent)
+-                    views.setOnClickPendingIntent(R.id.btn_joy_center, centerIntent)
+-                }
+                 "toggle" -> {
+                     views.setImageViewResource(R.id.widget_icon, R.drawable.ic_widget_toggle)
+                     views.setTextViewText(R.id.widget_status, "ΓÇó Toggle Switch")
+                     
+                     val isON = toolData.equals("ON", ignoreCase = true)
+                     views.setTextViewText(R.id.widget_toggle_status_text, if (isON) "ON" else "OFF")
+-                    views.setImageViewResource(
+-                        R.id.widget_toggle_switch_img,
+-                        if (isON) R.drawable.widget_switch_on else R.drawable.widget_switch_off
+-                    )
++                    val switchImg = if (isON) R.drawable.widget_switch_on else R.drawable.widget_switch_off
++                    views.setImageViewResource(R.id.widget_toggle_switch_img, switchImg)
++                    views.setImageViewResource(R.id.widget_toggle_switch_img_compact, switchImg)
+                     
+                     bgResource = if (isON) R.drawable.widget_background_green else R.drawable.widget_background_off
+-
++                    
+                     val toggleIntent = HomeWidgetBackgroundIntent.getBroadcast(
+                         context,
+                         Uri.parse("controlex://widget/toggle?toolId=$toolId")
+                     )
+                     views.setOnClickPendingIntent(R.id.layout_toggle, toggleIntent)
++                    views.setOnClickPendingIntent(R.id.layout_toggle_compact, toggleIntent)
+                     views.setOnClickPendingIntent(R.id.widget_toggle_switch_img, toggleIntent)
++                    views.setOnClickPendingIntent(R.id.widget_toggle_switch_img_compact, toggleIntent)
+                 }
+                 "push" -> {
+-                    views.setImageViewResource(R.id.widget_icon, R.drawable.ic_widget_push)
++                    val pushIcon = R.drawable.ic_widget_push
++                    views.setImageViewResource(R.id.widget_icon, pushIcon)
++                    views.setImageViewResource(R.id.btn_push_icon_normal, pushIcon)
++                    views.setImageViewResource(R.id.btn_push_icon_compact, pushIcon)
+                     views.setTextViewText(R.id.widget_status, "ΓÇó Push Button")
+                     views.setTextViewText(R.id.btn_push_text, "TRIGGER PUSH")
+-                    
+                     bgResource = R.drawable.widget_background_active
+-
++                    
+                     val pushIntent = HomeWidgetBackgroundIntent.getBroadcast(
+                         context,
+                         Uri.parse("controlex://widget/push?toolId=$toolId")
+                     )
+                     views.setOnClickPendingIntent(R.id.layout_push, pushIntent)
++                    views.setOnClickPendingIntent(R.id.layout_push_compact, pushIntent)
+                 }
+                 "scene" -> {
+-                    views.setImageViewResource(R.id.widget_icon, R.drawable.ic_widget_scene)
++                    val sceneIcon = R.drawable.ic_widget_scene
++                    views.setImageViewResource(R.id.widget_icon, sceneIcon)
++                    views.setImageViewResource(R.id.btn_push_icon_normal, sceneIcon)
++                    views.setImageViewResource(R.id.btn_push_icon_compact, sceneIcon)
+                     views.setTextViewText(R.id.widget_status, "ΓÇó Smart Scene")
+                     views.setTextViewText(R.id.btn_push_text, "ACTIVATE")
+-                    
+                     bgResource = R.drawable.widget_background_purple
+-
++                    
+                     val sceneIntent = HomeWidgetBackgroundIntent.getBroadcast(
+                         context,
+                         Uri.parse("controlex://widget/scene_trigger?toolId=$toolId")
+                     )
+                     views.setOnClickPendingIntent(R.id.layout_push, sceneIntent)
++                    views.setOnClickPendingIntent(R.id.layout_push_compact, sceneIntent)
+                 }
+                 "sensor" -> {
+                     views.setImageViewResource(R.id.widget_icon, R.drawable.ic_widget_sensor)
+                     views.setTextViewText(R.id.widget_status, "ΓÇó Sensor Node")
+-                    
+                     bgResource = R.drawable.widget_background_active
+-
+                     var valueText = toolData
+                     var unitText = ""
+                     val numRegex = Regex("^[-\\d.]+")
+@@ -301,36 +235,29 @@ class ControlExLargeWidgetProvider : HomeWidgetProvider() {
+                         valueText = match.value
+                         unitText = toolData.substring(match.value.length)
+                     }
+-                    
+                     views.setTextViewText(R.id.widget_sensor_value, valueText)
+                     views.setTextViewText(R.id.widget_sensor_unit, unitText)
+                 }
+                 "slider" -> {
+                     views.setImageViewResource(R.id.widget_icon, R.drawable.ic_widget_slider)
+                     views.setTextViewText(R.id.widget_status, "ΓÇó Slider")
+-                    
+                     bgResource = R.drawable.widget_background_active
+-
+                     val currentVal = toolData.replace(Regex("[^0-9.]"), "").toDoubleOrNull() ?: 50.0
+-                    views.setTextViewText(R.id.widget_slider_value_text, "${currentVal.toInt()}%")
++                    val valStr = "${currentVal.toInt()}%"
++                    views.setTextViewText(R.id.widget_slider_value_text, valStr)
++                    views.setTextViewText(R.id.widget_slider_value_text_compact, valStr)
+                     views.setProgressBar(R.id.widget_slider_progress, 100, currentVal.toInt(), false)
+                     
+-                    val minusIntent = HomeWidgetBackgroundIntent.getBroadcast(
+-                        context,
+-                        Uri.parse("controlex://widget/slider_adjust?toolId=$toolId&adjust=-10")
+-                    )
+-                    val plusIntent = HomeWidgetBackgroundIntent.getBroadcast(
+-                        context,
+-                        Uri.parse("controlex://widget/slider_adjust?toolId=$toolId&adjust=10")
+-                    )
++                    val minusIntent = HomeWidgetBackgroundIntent.getBroadcast(context, Uri.parse("controlex://widget/slider_adjust?toolId=$toolId&adjust=-10"))
++                    val plusIntent = HomeWidgetBackgroundIntent.getBroadcast(context, Uri.parse("controlex://widget/slider_adjust?toolId=$toolId&adjust=10"))
+                     views.setOnClickPendingIntent(R.id.btn_slider_minus, minusIntent)
+                     views.setOnClickPendingIntent(R.id.btn_slider_plus, plusIntent)
++                    views.setOnClickPendingIntent(R.id.btn_slider_minus_compact, minusIntent)
++                    views.setOnClickPendingIntent(R.id.btn_slider_plus_compact, plusIntent)
+                 }
+                 "colorpicker", "color" -> {
+                     views.setImageViewResource(R.id.widget_icon, R.drawable.ic_widget_colorpicker)
+                     views.setTextViewText(R.id.widget_status, "ΓÇó Color Swatches")
+-                    
+-                    // Match glowing border dynamically to selected color!
+                     bgResource = when {
+                         toolData.equals("#FF5F56", ignoreCase = true) -> R.drawable.widget_background_red
+                         toolData.equals("#27C93F", ignoreCase = true) -> R.drawable.widget_background_green
+@@ -338,27 +265,28 @@ class ControlExLargeWidgetProvider : HomeWidgetProvider() {
+                         toolData.equals("#AA00FF", ignoreCase = true) -> R.drawable.widget_background_purple
+                         else -> R.drawable.widget_background_active
+                     }
+-
+-                    val redIntent = HomeWidgetBackgroundIntent.getBroadcast(
+-                        context,
+-                        Uri.parse("controlex://widget/color_pick?toolId=$toolId&color=%23FF5F56")
+-                    )
+-                    val greenIntent = HomeWidgetBackgroundIntent.getBroadcast(
+-                        context,
+-                        Uri.parse("controlex://widget/color_pick?toolId=$toolId&color=%2327C93F")
+-                    )
+-                    val blueIntent = HomeWidgetBackgroundIntent.getBroadcast(
+-                        context,
+-                        Uri.parse("controlex://widget/color_pick?toolId=$toolId&color=%232979FF")
+-                    )
+-                    val purpleIntent = HomeWidgetBackgroundIntent.getBroadcast(
+-                        context,
+-                        Uri.parse("controlex://widget/color_pick?toolId=$toolId&color=%23AA00FF")
+-                    )
++                    val redIntent = HomeWidgetBackgroundIntent.getBroadcast(context, Uri.parse("controlex://widget/color_pick?toolId=$toolId&color=%23FF5F56"))
++                    val greenIntent = HomeWidgetBackgroundIntent.getBroadcast(context, Uri.parse("controlex://widget/color_pick?toolId=$toolId&color=%2327C93F"))
++                    val blueIntent = HomeWidgetBackgroundIntent.getBroadcast(context, Uri.parse("controlex://widget/color_pick?toolId=$toolId&color=%232979FF"))
++                    val purpleIntent = HomeWidgetBackgroundIntent.getBroadcast(context, Uri.parse("controlex://widget/color_pick?toolId=$toolId&color=%23AA00FF"))
+                     views.setOnClickPendingIntent(R.id.btn_color_red, redIntent)
+                     views.setOnClickPendingIntent(R.id.btn_color_green, greenIntent)
+                     views.setOnClickPendingIntent(R.id.btn_color_blue, blueIntent)
+                     views.setOnClickPendingIntent(R.id.btn_color_purple, purpleIntent)
++                    views.setOnClickPendingIntent(R.id.btn_color_red_compact, redIntent)
++                    views.setOnClickPendingIntent(R.id.btn_color_green_compact, greenIntent)
++                    views.setOnClickPendingIntent(R.id.btn_color_blue_compact, blueIntent)
++                    views.setOnClickPendingIntent(R.id.btn_color_purple_compact, purpleIntent)
++                }
++                "terminal" -> {
++                    views.setImageViewResource(R.id.widget_icon, R.drawable.ic_widget_terminal)
++                    views.setTextViewText(R.id.widget_status, "ΓÇó Terminal Log")
++                    views.setTextViewText(R.id.widget_terminal_logs, "guest@controlex:~$\n> $toolData")
++                    bgResource = R.drawable.widget_background_blue
++                    val keyboardIntent = HomeWidgetLaunchIntent.getActivity(context, MainActivity::class.java, Uri.parse("controlex://widget/open?toolId=$toolId"))
++                    views.setOnClickPendingIntent(R.id.layout_terminal, keyboardIntent)
++                    views.setOnClickPendingIntent(R.id.layout_terminal_compact, keyboardIntent)
++                    views.setOnClickPendingIntent(R.id.widget_terminal_logs, keyboardIntent)
+                 }
+                 else -> {
+                     views.setImageViewResource(R.id.widget_icon, R.drawable.ic_widget_setup)
+@@ -367,10 +295,8 @@ class ControlExLargeWidgetProvider : HomeWidgetProvider() {
+                 }
+             }
+             
+-            // Set dynamic background
+             views.setInt(R.id.widget_root, "setBackgroundResource", bgResource)
+-
+-            // Normal tap on header container opens the app for that tool
++            
+             val openIntent = HomeWidgetLaunchIntent.getActivity(
+                 context,
+                 MainActivity::class.java,
+@@ -378,7 +304,6 @@ class ControlExLargeWidgetProvider : HomeWidgetProvider() {
+             )
+             views.setOnClickPendingIntent(R.id.header_container, openIntent)
+             
+-            // Refresh button triggers background refresh
+             val refreshIntent = HomeWidgetBackgroundIntent.getBroadcast(
+                 context,
+                 Uri.parse("controlex://widget/refresh?toolId=$toolId")
+@@ -388,4 +313,4 @@ class ControlExLargeWidgetProvider : HomeWidgetProvider() {
+         
+         appWidgetManager.updateAppWidget(widgetId, views)
+     }
+-}
++}
+\ No newline at end of file
+diff --git a/android/app/src/main/res/layout/widget_large_layout.xml b/android/app/src/main/res/layout/widget_large_layout.xml
+index 689bc9d..516629e 100644
+--- a/android/app/src/main/res/layout/widget_large_layout.xml
++++ b/android/app/src/main/res/layout/widget_large_layout.xml
+@@ -4,7 +4,7 @@
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+     android:background="@drawable/widget_background"
+-    android:padding="12dp">
++    android:padding="10dp">
+ 
+     <!-- Header Section -->
+     <RelativeLayout
+@@ -103,251 +103,111 @@
+             <TextView
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+-                android:text="Tap to setup large widget"
++                android:text="Tap to setup"
+                 android:textColor="#B3FFFFFF"
+-                android:textSize="13sp" />
++                android:textSize="12sp" />
+         </LinearLayout>
+ 
+-        <!-- 2. Terminal Layout -->
++        <!-- 2. Toggle Layout -->
+         <RelativeLayout
+-            android:id="@+id/layout_terminal"
++            android:id="@+id/layout_toggle"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:visibility="gone">
+ 
+-            <!-- Monospace logs container -->
+-            <LinearLayout
+-                android:id="@+id/terminal_console_box"
++            <!-- Normal Toggle -->
++            <RelativeLayout
++                android:id="@+id/layout_toggle_normal"
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent"
+-                android:layout_above="@id/terminal_actions_container"
+-                android:layout_marginBottom="6dp"
+-                android:background="#E6000000"
+-                android:orientation="vertical"
+-                android:padding="8dp">
+-
+-                <!-- macOS-like buttons -->
+-                <LinearLayout
++                android:visibility="visible">
++                <TextView
++                    android:id="@+id/widget_toggle_status_text"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+-                    android:orientation="horizontal"
+-                    android:layout_marginBottom="4dp">
+-                    <ImageView android:layout_width="5dp" android:layout_height="5dp" android:background="#FF5F56" android:layout_marginEnd="3dp"/>
+-                    <ImageView android:layout_width="5dp" android:layout_height="5dp" android:background="#FFBD2E" android:layout_marginEnd="3dp"/>
+-                    <ImageView android:layout_width="5dp" android:layout_height="5dp" android:background="#27C93F"/>
+-                </LinearLayout>
+-
+-                <TextView
+-                    android:id="@+id/widget_terminal_logs"
+-                    android:layout_width="match_parent"
+-                    android:layout_height="match_parent"
+-                    android:text="guest@controlex:~$\n> waiting for logs..."
+-                    android:textColor="#00FF00"
+-                    android:textSize="10sp"
+-                    android:fontFamily="monospace" />
+-            </LinearLayout>
+-
+-            <!-- Bottom Interactive Commands Row -->
+-            <LinearLayout
+-                android:id="@+id/terminal_actions_container"
+-                android:layout_width="match_parent"
+-                android:layout_height="wrap_content"
+-                android:layout_alignParentBottom="true"
+-                android:orientation="horizontal"
+-                android:gravity="center_vertical">
+-
+-                <TextView
+-                    android:id="@+id/btn_cmd_status"
+-                    android:layout_width="0dp"
+-                    android:layout_height="32dp"
+-                    android:layout_weight="1"
+-                    android:layout_marginEnd="4dp"
+-                    android:background="@drawable/widget_icon_bg"
+-                    android:gravity="center"
+-                    android:text="status"
+-                    android:textColor="#00E5FF"
+-                    android:textSize="10sp"
+-                    android:textStyle="bold" />
+-
+-                <TextView
+-                    android:id="@+id/btn_cmd_ping"
+-                    android:layout_width="0dp"
+-                    android:layout_height="32dp"
+-                    android:layout_weight="1"
+-                    android:layout_marginEnd="4dp"
+-                    android:background="@drawable/widget_icon_bg"
+-                    android:gravity="center"
+-                    android:text="ping"
+-                    android:textColor="#00E5FF"
+-                    android:textSize="10sp"
+-                    android:textStyle="bold" />
+-
+-                <TextView
+-                    android:id="@+id/btn_cmd_clear"
+-                    android:layout_width="0dp"
+-                    android:layout_height="32dp"
+-                    android:layout_weight="1"
+-                    android:layout_marginEnd="4dp"
+-                    android:background="@drawable/widget_icon_bg"
+-                    android:gravity="center"
+-                    android:text="clear"
+-                    android:textColor="#00E5FF"
+-                    android:textSize="10sp"
++                    android:layout_centerVertical="true"
++                    android:layout_alignParentStart="true"
++                    android:text="OFF"
++                    android:textColor="#B3FFFFFF"
++                    android:textSize="20sp"
+                     android:textStyle="bold" />
+ 
+-                <!-- Open Keyboard in App button -->
+                 <ImageView
+-                    android:id="@+id/btn_cmd_keyboard"
+-                    android:layout_width="32dp"
+-                    android:layout_height="32dp"
+-                    android:background="@drawable/widget_icon_bg"
+-                    android:padding="6dp"
+-                    android:src="@android:drawable/ic_menu_edit"
+-                    android:tint="#FFFFFF" />
+-
+-            </LinearLayout>
++                    android:id="@+id/widget_toggle_switch_img"
++                    android:layout_width="50dp"
++                    android:layout_height="30dp"
++                    android:layout_centerVertical="true"
++                    android:layout_alignParentEnd="true"
++                    android:src="@drawable/widget_switch_off" />
++            </RelativeLayout>
+ 
++            <!-- Compact Toggle (1x1) -->
++            <FrameLayout
++                android:id="@+id/layout_toggle_compact"
++                android:layout_width="match_parent"
++                android:layout_height="match_parent"
++                android:visibility="gone">
++                <ImageView
++                    android:id="@+id/widget_toggle_switch_img_compact"
++                    android:layout_width="50dp"
++                    android:layout_height="30dp"
++                    android:layout_gravity="center"
++                    android:src="@drawable/widget_switch_off" />
++            </FrameLayout>
+         </RelativeLayout>
+ 
+-        <!-- 3. Joystick Layout -->
++        <!-- 3. Push Layout -->
+         <RelativeLayout
+-            android:id="@+id/layout_joystick"
++            android:id="@+id/layout_push"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:visibility="gone">
+ 
+-            <RelativeLayout
+-                android:layout_width="150dp"
+-                android:layout_height="150dp"
+-                android:layout_centerInParent="true"
+-                android:background="@drawable/widget_joystick_base"
+-                android:padding="8dp">
+-
+-                <GridLayout
+-                    android:layout_width="match_parent"
+-                    android:layout_height="match_parent"
+-                    android:columnCount="3"
+-                    android:rowCount="3">
+-
+-                    <!-- Row 1 -->
+-                    <ImageView android:layout_width="44dp" android:layout_height="44dp" android:visibility="invisible" />
+-                    
+-                    <ImageView
+-                        android:id="@+id/btn_joy_up"
+-                        android:layout_width="44dp"
+-                        android:layout_height="44dp"
+-                        android:background="@drawable/widget_icon_bg"
+-                        android:padding="10dp"
+-                        android:src="@drawable/ic_widget_arrow"
+-                        android:rotation="0"
+-                        android:tint="#00E5FF" />
+-                        
+-                    <ImageView android:layout_width="44dp" android:layout_height="44dp" android:visibility="invisible" />
+-
+-                    <!-- Row 2 -->
+-                    <ImageView
+-                        android:id="@+id/btn_joy_left"
+-                        android:layout_width="44dp"
+-                        android:layout_height="44dp"
+-                        android:background="@drawable/widget_icon_bg"
+-                        android:padding="10dp"
+-                        android:src="@drawable/ic_widget_arrow"
+-                        android:rotation="270"
+-                        android:tint="#00E5FF" />
+-
+-                    <ImageView
+-                        android:id="@+id/btn_joy_center"
+-                        android:layout_width="44dp"
+-                        android:layout_height="44dp"
+-                        android:background="@drawable/widget_joystick_stick"
+-                        android:padding="12dp"
+-                        android:src="@android:drawable/presence_online"
+-                        android:tint="#FFFFFF" />
+-
+-                    <ImageView
+-                        android:id="@+id/btn_joy_right"
+-                        android:layout_width="44dp"
+-                        android:layout_height="44dp"
+-                        android:background="@drawable/widget_icon_bg"
+-                        android:padding="10dp"
+-                        android:src="@drawable/ic_widget_arrow"
+-                        android:rotation="90"
+-                        android:tint="#00E5FF" />
+-
+-                    <!-- Row 3 -->
+-                    <ImageView android:layout_width="44dp" android:layout_height="44dp" android:visibility="invisible" />
+-
+-                    <ImageView
+-                        android:id="@+id/btn_joy_down"
+-                        android:layout_width="44dp"
+-                        android:layout_height="44dp"
+-                        android:background="@drawable/widget_icon_bg"
+-                        android:padding="10dp"
+-                        android:src="@drawable/ic_widget_arrow"
+-                        android:rotation="180"
+-                        android:tint="#00E5FF" />
+-
+-                    <ImageView android:layout_width="44dp" android:layout_height="44dp" android:visibility="invisible" />
+-
+-                </GridLayout>
+-            </RelativeLayout>
+-        </RelativeLayout>
++            <!-- Normal Push/Scene Button -->
++            <LinearLayout
++                android:id="@+id/layout_push_normal"
++                android:layout_width="match_parent"
++                android:layout_height="match_parent"
++                android:gravity="center"
++                android:orientation="horizontal"
++                android:background="@drawable/widget_icon_bg"
++                android:padding="8dp"
++                android:visibility="visible">
+ 
+-        <!-- 4. Toggle Layout -->
+-        <RelativeLayout
+-            android:id="@+id/layout_toggle"
+-            android:layout_width="match_parent"
+-            android:layout_height="match_parent"
+-            android:visibility="gone">
++                <ImageView
++                    android:id="@+id/btn_push_icon_normal"
++                    android:layout_width="20dp"
++                    android:layout_height="20dp"
++                    android:src="@drawable/ic_widget_push"
++                    android:layout_marginEnd="6dp" />
+ 
+-            <TextView
+-                android:id="@+id/widget_toggle_status_text"
+-                android:layout_width="wrap_content"
+-                android:layout_height="wrap_content"
+-                android:layout_centerVertical="true"
+-                android:layout_alignParentStart="true"
+-                android:text="OFF"
+-                android:textColor="#B3FFFFFF"
+-                android:textSize="24sp"
+-                android:textStyle="bold" />
++                <TextView
++                    android:id="@+id/btn_push_text"
++                    android:layout_width="wrap_content"
++                    android:layout_height="wrap_content"
++                    android:text="TRIGGER PUSH"
++                    android:textColor="#00E5FF"
++                    android:textSize="12sp"
++                    android:textStyle="bold" />
++            </LinearLayout>
+ 
+-            <ImageView
+-                android:id="@+id/widget_toggle_switch_img"
+-                android:layout_width="60dp"
+-                android:layout_height="36dp"
+-                android:layout_centerVertical="true"
+-                android:layout_alignParentEnd="true"
+-                android:src="@drawable/widget_switch_off" />
++            <!-- Compact Push/Scene Button -->
++            <FrameLayout
++                android:id="@+id/layout_push_compact"
++                android:layout_width="match_parent"
++                android:layout_height="match_parent"
++                android:background="@drawable/widget_icon_bg"
++                android:visibility="gone">
++                <ImageView
++                    android:id="@+id/btn_push_icon_compact"
++                    android:layout_width="28dp"
++                    android:layout_height="28dp"
++                    android:layout_gravity="center"
++                    android:src="@drawable/ic_widget_push" />
++            </FrameLayout>
+         </RelativeLayout>
+ 
+-        <!-- 5. Push Layout -->
+-        <LinearLayout
+-            android:id="@+id/layout_push"
+-            android:layout_width="match_parent"
+-            android:layout_height="match_parent"
+-            android:gravity="center"
+-            android:orientation="horizontal"
+-            android:visibility="gone"
+-            android:background="@drawable/widget_icon_bg"
+-            android:padding="12dp">
+-
+-            <ImageView
+-                android:layout_width="28dp"
+-                android:layout_height="28dp"
+-                android:src="@drawable/ic_widget_push"
+-                android:layout_marginEnd="8dp" />
+-
+-            <TextView
+-                android:id="@+id/btn_push_text"
+-                android:layout_width="wrap_content"
+-                android:layout_height="wrap_content"
+-                android:text="TRIGGER PUSH"
+-                android:textColor="#00E5FF"
+-                android:textSize="16sp"
+-                android:textStyle="bold" />
+-        </LinearLayout>
+-
+-        <!-- 6. Sensor Layout -->
++        <!-- 4. Sensor Layout -->
+         <LinearLayout
+             android:id="@+id/layout_sensor"
+             android:layout_width="match_parent"
+@@ -362,118 +222,268 @@
+                 android:layout_height="wrap_content"
+                 android:text="24"
+                 android:textColor="#00E5FF"
+-                android:textSize="40sp"
++                android:textSize="26sp"
+                 android:textStyle="bold" />
+ 
+             <TextView
+                 android:id="@+id/widget_sensor_unit"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+-                android:layout_marginStart="6dp"
++                android:layout_marginStart="2dp"
+                 android:text="┬░C"
+                 android:textColor="#B3FFFFFF"
+-                android:textSize="20sp" />
++                android:textSize="14sp" />
+         </LinearLayout>
+ 
+-        <!-- 7. Slider Layout -->
+-        <LinearLayout
+-            android:id="@+id/layout_slider"
++        <!-- 5. Terminal Layout -->
++        <RelativeLayout
++            android:id="@+id/layout_terminal"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+-            android:gravity="center_vertical"
+-            android:orientation="horizontal"
+             android:visibility="gone">
+ 
+-            <ImageView
+-                android:id="@+id/btn_slider_minus"
+-                android:layout_width="40dp"
+-                android:layout_height="40dp"
++            <!-- Normal Terminal Box -->
++            <LinearLayout
++                android:id="@+id/layout_terminal_normal"
++                android:layout_width="match_parent"
++                android:layout_height="match_parent"
++                android:background="#D9000000"
++                android:orientation="vertical"
++                android:padding="6dp"
++                android:visibility="visible">
++
++                <LinearLayout
++                    android:layout_width="wrap_content"
++                    android:layout_height="wrap_content"
++                    android:orientation="horizontal"
++                    android:layout_marginBottom="4dp">
++                    <ImageView android:layout_width="5dp" android:layout_height="5dp" android:background="#FF5F56" android:layout_marginEnd="3dp"/>
++                    <ImageView android:layout_width="5dp" android:layout_height="5dp" android:background="#FFBD2E" android:layout_marginEnd="3dp"/>
++                    <ImageView android:layout_width="5dp" android:layout_height="5dp" android:background="#27C93F"/>
++                </LinearLayout>
++
++                <TextView
++                    android:id="@+id/widget_terminal_logs"
++                    android:layout_width="match_parent"
++                    android:layout_height="wrap_content"
++                    android:text="guest@controlex:~$\n> command sent"
++                    android:textColor="#00FF00"
++                    android:textSize="9sp"
++                    android:fontFamily="monospace" />
++            </LinearLayout>
++
++            <!-- Compact Terminal Icon -->
++            <FrameLayout
++                android:id="@+id/layout_terminal_compact"
++                android:layout_width="match_parent"
++                android:layout_height="match_parent"
+                 android:background="@drawable/widget_icon_bg"
+-                android:padding="10dp"
+-                android:src="@drawable/ic_widget_minus"
+-                android:tint="#00E5FF" />
++                android:visibility="gone">
++                <ImageView
++                    android:layout_width="28dp"
++                    android:layout_height="28dp"
++                    android:layout_gravity="center"
++                    android:src="@drawable/ic_widget_terminal" />
++            </FrameLayout>
++        </RelativeLayout>
+ 
++        <!-- 6. Slider Layout -->
++        <RelativeLayout
++            android:id="@+id/layout_slider"
++            android:layout_width="match_parent"
++            android:layout_height="match_parent"
++            android:visibility="gone">
++
++            <!-- Normal Horizontal Slider -->
+             <LinearLayout
+-                android:layout_width="0dp"
+-                android:layout_height="wrap_content"
+-                android:layout_weight="1"
+-                android:layout_marginStart="12dp"
+-                android:layout_marginEnd="12dp"
+-                android:orientation="vertical">
++                android:id="@+id/layout_slider_normal"
++                android:layout_width="match_parent"
++                android:layout_height="match_parent"
++                android:gravity="center_vertical"
++                android:orientation="horizontal"
++                android:visibility="visible">
++
++                <ImageView
++                    android:id="@+id/btn_slider_minus"
++                    android:layout_width="32dp"
++                    android:layout_height="32dp"
++                    android:background="@drawable/widget_icon_bg"
++                    android:padding="8dp"
++                    android:src="@drawable/ic_widget_minus"
++                    android:tint="#00E5FF" />
++
++                <LinearLayout
++                    android:layout_width="0dp"
++                    android:layout_height="wrap_content"
++                    android:layout_weight="1"
++                    android:layout_marginStart="8dp"
++                    android:layout_marginEnd="8dp"
++                    android:orientation="vertical">
++
++                    <TextView
++                        android:id="@+id/widget_slider_value_text"
++                        android:layout_width="wrap_content"
++                        android:layout_height="wrap_content"
++                        android:layout_gravity="center_horizontal"
++                        android:text="0%"
++                        android:textColor="#FFFFFF"
++                        android:textSize="12sp"
++                        android:textStyle="bold"/>
++
++                    <ProgressBar
++                        android:id="@+id/widget_slider_progress"
++                        style="?android:attr/progressBarStyleHorizontal"
++                        android:layout_width="match_parent"
++                        android:layout_height="6dp"
++                        android:layout_marginTop="4dp"
++                        android:progress="0"
++                        android:max="100"
++                        android:progressTint="#00E5FF"
++                        android:progressBackgroundTint="#33FFFFFF"/>
++                </LinearLayout>
++
++                <ImageView
++                    android:id="@+id/btn_slider_plus"
++                    android:layout_width="32dp"
++                    android:layout_height="32dp"
++                    android:background="@drawable/widget_icon_bg"
++                    android:padding="8dp"
++                    android:src="@drawable/ic_widget_plus"
++                    android:tint="#00E5FF" />
++            </LinearLayout>
++
++            <!-- Compact Vertical Slider Stack (1x1) -->
++            <LinearLayout
++                android:id="@+id/layout_slider_compact"
++                android:layout_width="match_parent"
++                android:layout_height="match_parent"
++                android:gravity="center"
++                android:orientation="vertical"
++                android:visibility="gone">
++
++                <ImageView
++                    android:id="@+id/btn_slider_plus_compact"
++                    android:layout_width="26dp"
++                    android:layout_height="26dp"
++                    android:background="@drawable/widget_icon_bg"
++                    android:padding="6dp"
++                    android:src="@drawable/ic_widget_plus"
++                    android:tint="#00E5FF" />
+ 
+                 <TextView
+-                    android:id="@+id/widget_slider_value_text"
++                    android:id="@+id/widget_slider_value_text_compact"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+-                    android:layout_gravity="center_horizontal"
++                    android:layout_marginTop="2dp"
++                    android:layout_marginBottom="2dp"
+                     android:text="0%"
+                     android:textColor="#FFFFFF"
+-                    android:textSize="14sp"
++                    android:textSize="11sp"
+                     android:textStyle="bold"/>
+ 
+-                <ProgressBar
+-                    android:id="@+id/widget_slider_progress"
+-                    style="?android:attr/progressBarStyleHorizontal"
+-                    android:layout_width="match_parent"
+-                    android:layout_height="8dp"
+-                    android:layout_marginTop="6dp"
+-                    android:progress="0"
+-                    android:max="100"
+-                    android:progressTint="#00E5FF"
+-                    android:progressBackgroundTint="#33FFFFFF"/>
++                <ImageView
++                    android:id="@+id/btn_slider_minus_compact"
++                    android:layout_width="26dp"
++                    android:layout_height="26dp"
++                    android:background="@drawable/widget_icon_bg"
++                    android:padding="6dp"
++                    android:src="@drawable/ic_widget_minus"
++                    android:tint="#00E5FF" />
+             </LinearLayout>
++        </RelativeLayout>
+ 
+-            <ImageView
+-                android:id="@+id/btn_slider_plus"
+-                android:layout_width="40dp"
+-                android:layout_height="40dp"
+-                android:background="@drawable/widget_icon_bg"
+-                android:padding="10dp"
+-                android:src="@drawable/ic_widget_plus"
+-                android:tint="#00E5FF" />
+-        </LinearLayout>
+-
+-        <!-- 8. ColorPicker Layout -->
+-        <LinearLayout
++        <!-- 7. ColorPicker Layout -->
++        <RelativeLayout
+             android:id="@+id/layout_colorpicker"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+-            android:gravity="center"
+-            android:orientation="horizontal"
+             android:visibility="gone">
+ 
+-            <ImageView
+-                android:id="@+id/btn_color_red"
+-                android:layout_width="44dp"
+-                android:layout_height="44dp"
+-                android:layout_margin="8dp"
+-                android:background="@drawable/widget_icon_bg"
+-                android:backgroundTint="#FF5F56" />
++            <!-- Normal Horizontal Swatches -->
++            <LinearLayout
++                android:id="@+id/layout_colorpicker_normal"
++                android:layout_width="match_parent"
++                android:layout_height="match_parent"
++                android:gravity="center"
++                android:orientation="horizontal"
++                android:visibility="visible">
+ 
+-            <ImageView
+-                android:id="@+id/btn_color_green"
+-                android:layout_width="44dp"
+-                android:layout_height="44dp"
+-                android:layout_margin="8dp"
+-                android:background="@drawable/widget_icon_bg"
+-                android:backgroundTint="#27C93F" />
++                <ImageView
++                    android:id="@+id/btn_color_red"
++                    android:layout_width="32dp"
++                    android:layout_height="32dp"
++                    android:layout_margin="4dp"
++                    android:background="@drawable/widget_icon_bg"
++                    android:backgroundTint="#FF5F56" />
+ 
+-            <ImageView
+-                android:id="@+id/btn_color_blue"
+-                android:layout_width="44dp"
+-                android:layout_height="44dp"
+-                android:layout_margin="8dp"
+-                android:background="@drawable/widget_icon_bg"
+-                android:backgroundTint="#2979FF" />
++                <ImageView
++                    android:id="@+id/btn_color_green"
++                    android:layout_width="32dp"
++                    android:layout_height="32dp"
++                    android:layout_margin="4dp"
++                    android:background="@drawable/widget_icon_bg"
++                    android:backgroundTint="#27C93F" />
+ 
+-            <ImageView
+-                android:id="@+id/btn_color_purple"
+-                android:layout_width="44dp"
+-                android:layout_height="44dp"
+-                android:layout_margin="8dp"
+-                android:background="@drawable/widget_icon_bg"
+-                android:backgroundTint="#AA00FF" />
+-        </LinearLayout>
++                <ImageView
++                    android:id="@+id/btn_color_blue"
++                    android:layout_width="32dp"
++                    android:layout_height="32dp"
++                    android:layout_margin="4dp"
++                    android:background="@drawable/widget_icon_bg"
++                    android:backgroundTint="#2979FF" />
++
++                <ImageView
++                    android:id="@+id/btn_color_purple"
++                    android:layout_width="32dp"
++                    android:layout_height="32dp"
++                    android:layout_margin="4dp"
++                    android:background="@drawable/widget_icon_bg"
++                    android:backgroundTint="#AA00FF" />
++            </LinearLayout>
++
++            <!-- Compact 2x2 Grid Swatches (1x1) -->
++            <GridLayout
++                android:id="@+id/layout_colorpicker_compact"
++                android:layout_width="wrap_content"
++                android:layout_height="wrap_content"
++                android:layout_centerInParent="true"
++                android:columnCount="2"
++                android:rowCount="2"
++                android:visibility="gone">
++
++                <ImageView
++                    android:id="@+id/btn_color_red_compact"
++                    android:layout_width="22dp"
++                    android:layout_height="22dp"
++                    android:layout_margin="2dp"
++                    android:background="@drawable/widget_icon_bg"
++                    android:backgroundTint="#FF5F56" />
++
++                <ImageView
++                    android:id="@+id/btn_color_green_compact"
++                    android:layout_width="22dp"
++                    android:layout_height="22dp"
++                    android:layout_margin="2dp"
++                    android:background="@drawable/widget_icon_bg"
++                    android:backgroundTint="#27C93F" />
++
++                <ImageView
++                    android:id="@+id/btn_color_blue_compact"
++                    android:layout_width="22dp"
++                    android:layout_height="22dp"
++                    android:layout_margin="2dp"
++                    android:background="@drawable/widget_icon_bg"
++                    android:backgroundTint="#2979FF" />
++
++                <ImageView
++                    android:id="@+id/btn_color_purple_compact"
++                    android:layout_width="22dp"
++                    android:layout_height="22dp"
++                    android:layout_margin="2dp"
++                    android:background="@drawable/widget_icon_bg"
++                    android:backgroundTint="#AA00FF" />
++            </GridLayout>
++        </RelativeLayout>
+ 
+     </FrameLayout>
+ 
+diff --git a/lib/main.dart b/lib/main.dart
+index 1251dee..20c3c07 100644
+--- a/lib/main.dart
++++ b/lib/main.dart
+@@ -21,6 +21,8 @@ import 'package:home_widget/home_widget.dart';
+ import 'dart:convert';
+ import 'package:shared_preferences/shared_preferences.dart';
+ import 'services/local_service.dart';
++import 'screens/home_widget_setup_screen.dart';
++import 'widgets/widget_tool_selector_dialog.dart';
+ 
+ // This MUST be a top-level function (not inside a class)
+ // It runs in a separate isolate when the app is terminated/background
+@@ -216,9 +218,59 @@ void main() async {
+   runApp(const ControlExApp());
+ }
+ 
+-class ControlExApp extends StatelessWidget {
++/// Navigate to the tool page from a widget tap
++void navigateToTool(Uri uri, BuildContext context) {
++  final String path = uri.path;
++  final String? widgetId = uri.queryParameters['widgetId'];
++
++  if (path == '/setup') {
++    if (widgetId != null) {
++      Navigator.pushAndRemoveUntil(
++        context,
++        MaterialPageRoute(builder: (_) => DashboardScreen(widgetSetupId: widgetId)),
++        (r) => false,
++      );
++    } else {
++      Navigator.push(context, MaterialPageRoute(builder: (_) => const HomeWidgetSetupScreen()));
++    }
++  } else {
++    Navigator.pushAndRemoveUntil(
++      context,
++      MaterialPageRoute(builder: (_) => const DashboardScreen()),
++      (r) => false,
++    );
++  }
++}
++
++final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
++
++class ControlExApp extends StatefulWidget {
+   const ControlExApp({super.key});
+ 
++  @override
++  State<ControlExApp> createState() => _ControlExAppState();
++}
++
++class _ControlExAppState extends State<ControlExApp> {
++  @override
++  void initState() {
++    super.initState();
++    _listenWidgetClicks();
++  }
++
++  void _listenWidgetClicks() {
++    try {
++      HomeWidget.widgetClicked.listen((Uri? uri) {
++        if (uri != null) {
++          final ctx = navigatorKey.currentContext;
++          if (ctx != null && ctx.mounted) {
++            navigateToTool(uri, ctx);
++          }
++        }
++      });
++    } catch (_) {}
++  }
++
+   @override
+   Widget build(BuildContext context) {
+     return ValueListenableBuilder<bool>(
+@@ -226,6 +278,7 @@ class ControlExApp extends StatelessWidget {
+       builder: (context, isArabic, child) {
+          return MaterialApp(
+            key: ValueKey(isArabic),
++           navigatorKey: navigatorKey,
+            title: 'ControlEx',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.darkTheme,
+diff --git a/lib/screens/dashboard_screen.dart b/lib/screens/dashboard_screen.dart
+index 9f4d00f..9384925 100644
+--- a/lib/screens/dashboard_screen.dart
++++ b/lib/screens/dashboard_screen.dart
+@@ -21,19 +21,25 @@ import '../widgets/voice_command_overlay.dart';
+ import '../services/notification_service.dart';
+ import 'package:url_launcher/url_launcher.dart';
+ import '../widgets/app_tour_overlay.dart';
+-import '../services/voice_parser.dart';
+ import 'automations_screen.dart';
+ import 'smart_scenes_screen.dart';
+ import '../widgets/app_snackbar.dart';
+ import 'manage_pages_dialog.dart';
++import 'home_widget_setup_screen.dart';
+ import 'dart:async';
++import 'package:home_widget/home_widget.dart';
+ import '../core/haptic_helper.dart';
+ import '../core/localization.dart';
+-import '../widgets/ai_chat_overlay.dart';
++import '../widgets/glass_popups.dart';
++import '../widgets/glowing_button.dart';
++import '../widgets/widget_tool_selector_dialog.dart';
++import '../widgets/premium_app_bar.dart';
+ 
+ 
+ class DashboardScreen extends StatefulWidget {
+-  const DashboardScreen({super.key});
++  final String? widgetSetupId;
++
++  const DashboardScreen({super.key, this.widgetSetupId});
+ 
+   @override
+   State<DashboardScreen> createState() => _DashboardScreenState();
+@@ -77,6 +83,56 @@ class _DashboardScreenState extends State<DashboardScreen> {
+ 
+   void _onLangChange() => setState(() {});
+ 
++  Widget _buildDrawerTile({
++    required IconData icon,
++    required Color iconColor,
++    required String title,
++    String? subtitle,
++    required VoidCallback onTap,
++  }) {
++    return Container(
++      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
++      decoration: BoxDecoration(
++        borderRadius: BorderRadius.circular(12),
++      ),
++      child: Material(
++        color: Colors.transparent,
++        child: InkWell(
++          borderRadius: BorderRadius.circular(12),
++          splashColor: AppTheme.primaryCyan.withValues(alpha: 0.1),
++          highlightColor: Colors.transparent,
++          onTap: onTap,
++          child: Padding(
++            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
++            child: Row(
++              children: [
++                Container(
++                  padding: const EdgeInsets.all(6),
++                  decoration: BoxDecoration(
++                    color: iconColor.withValues(alpha: 0.1),
++                    borderRadius: BorderRadius.circular(8),
++                  ),
++                  child: Icon(icon, color: iconColor, size: 20),
++                ),
++                const SizedBox(width: 14),
++                Expanded(
++                  child: Column(
++                    crossAxisAlignment: CrossAxisAlignment.start,
++                    children: [
++                      Text(title, style: const TextStyle(color: Colors.white, fontSize: 14)),
++                      if (subtitle != null)
++                        Text(subtitle, style: const TextStyle(color: Colors.white38, fontSize: 10, height: 1.3)),
++                    ],
++                  ),
++                ),
++              ],
++            ),
++          ),
++        ),
++      ),
++    );
++  }
++
+   void _loadPinState() async {
+     try {
+       final prefs = await SharedPreferences.getInstance();
+@@ -295,6 +351,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
+        return AppTheme.primaryCyan;
+     }
+   }
++
++  Future<void> _updateHomeWidgetData(String toolId, String value) async {
++    try {
++      await HomeWidget.saveWidgetData('widget_data_$toolId', value);
++      await HomeWidget.updateWidget(name: 'ControlExWidgetProvider', androidName: 'ControlExWidgetProvider');
++      await HomeWidget.updateWidget(name: 'ControlExLargeWidgetProvider', androidName: 'ControlExLargeWidgetProvider');
++    } catch (_) {}
++  }
+   Future<void> _loadLocalPositions() async {
+     try {
+       final prefs = await SharedPreferences.getInstance();
+@@ -338,14 +402,78 @@ class _DashboardScreenState extends State<DashboardScreen> {
+     } catch (_) {}
+   }
+ 
+-  Future<void> _checkFirstTimeTour() async {
+-    try {
+-      final prefs = await SharedPreferences.getInstance();
+-      final hasSeen = prefs.getBool('has_completed_tour_v1') ?? false;
+-      if (!hasSeen && mounted) {
+-        _startTour();
+-      }
+-    } catch (_) {}
++  Future<void> _checkWidgetPromo() async {
++    final prefs = await SharedPreferences.getInstance();
++
++    final permanentlyHidden = prefs.getBool('has_seen_promo_permanently') ?? false;
++    final hasWidget = prefs.getBool('has_home_widget') ?? false;
++
++    if (permanentlyHidden || hasWidget) return;
++
++    int launchCount = prefs.getInt('widget_promo_launch_count') ?? 0;
++    launchCount++;
++    await prefs.setInt('widget_promo_launch_count', launchCount);
++
++    if (launchCount % 10 != 0 && launchCount != 1) return;
++
++    if (mounted) {
++      Future.delayed(const Duration(seconds: 3), () {
++        if (mounted) {
++          showGlassModalBottomSheet(
++            context: context,
++            builder: (ctx) => Container(
++              padding: const EdgeInsets.all(24),
++              decoration: BoxDecoration(
++                color: AppTheme.darkBackground.withValues(alpha: 0.8),
++                borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
++                border: Border.all(color: AppTheme.primaryCyan.withValues(alpha: 0.3)),
++              ),
++              child: Column(
++                mainAxisSize: MainAxisSize.min,
++                children: [
++                  const Icon(Icons.widgets, size: 60, color: AppTheme.primaryCyan),
++                  const SizedBox(height: 16),
++                  Text(
++                    AppLocalization.isArabicNotifier.value ? '╪¼╪▒╪¿ ╪ú╪»┘ê╪º╪¬ ╪º┘ä╪┤╪º╪┤╪⌐ ╪º┘ä╪▒╪ª┘è╪│┘è╪⌐!' : 'Try Home Screen Widgets!',
++                    style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
++                  ),
++                  const SizedBox(height: 12),
++                  Text(
++                    AppLocalization.isArabicNotifier.value 
++                        ? '┘è┘à┘â┘å┘â ╪º┘ä╪ó┘å ╪Ñ╪╢╪º┘ü╪⌐ ╪ú╪»┘ê╪º╪¬ ╪º┘ä╪¬╪¡┘â┘à ╪º┘ä╪«╪º╪╡╪⌐ ╪¿┘â ╪Ñ┘ä┘ë ╪┤╪º╪┤╪⌐ ┘ç╪º╪¬┘ü┘â ╪º┘ä╪▒╪ª┘è╪│┘è╪⌐ ┘ä┘ä┘ê╪╡┘ê┘ä ╪º┘ä╪│╪▒┘è╪╣.' 
++                        : 'You can now add your controls directly to your home screen for quick access.',
++                    textAlign: TextAlign.center,
++                    style: const TextStyle(color: Colors.white70, fontSize: 14),
++                  ),
++                  const SizedBox(height: 24),
++                  SizedBox(
++                    width: double.infinity,
++                    child: GlowingButton(
++                      child: Text(AppLocalization.isArabicNotifier.value ? '╪▒╪º╪ª╪╣╪î ╪│╪ú╪¼╪▒╪¿┘ç╪º!' : 'Awesome, I will try it!'),
++                      onPressed: () {
++                        Navigator.pop(ctx);
++                        Navigator.push(context, MaterialPageRoute(builder: (_) => const HomeWidgetSetupScreen()));
++                      },
++                    ),
++                  ),
++                  const SizedBox(height: 12),
++                  TextButton(
++                    onPressed: () async {
++                      await prefs.setBool('has_seen_promo_permanently', true);
++                      if (ctx.mounted) Navigator.pop(ctx);
++                    },
++                    child: Text(
++                      AppLocalization.isArabicNotifier.value ? '┘ä╪º ╪¬╪╕┘ç╪▒ ┘ç╪░┘ç ╪º┘ä╪▒╪│╪º┘ä╪⌐ ┘à╪▒╪⌐ ╪ú╪«╪▒┘ë' : 'Do not show again',
++                      style: const TextStyle(color: Colors.white54, decoration: TextDecoration.underline),
++                    ),
++                  )
++                ],
++              ),
++            )
++          );
++        }
++      });
++    }
+   }
+ 
+   void _startTour() {
+@@ -641,11 +769,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
+          }
+        });
+        
+-       if (mounted) {
+-         WidgetsBinding.instance.addPostFrameCallback((_) {
+-           _checkFirstTimeTour();
+-         });
+-       }
++        if (mounted) {
++           WidgetsBinding.instance.addPostFrameCallback((_) async {
++            _checkWidgetPromo();
++            if (widget.widgetSetupId != null) {
++              final tool = await showDialog<Map<String, dynamic>>(
++                context: context,
++                builder: (ctx) => WidgetToolSelectorDialog(widgetId: widget.widgetSetupId!),
++              );
++              if (tool != null && mounted) {
++                final widgetId = widget.widgetSetupId!;
++                final toolId = tool['id'].toString();
++                final toolType = tool['type']?.toString() ?? '';
++                await HomeWidget.saveWidgetData('widget_tool_id_$widgetId', toolId);
++                await HomeWidget.saveWidgetData('widget_data_$toolId', {
++                  'type': toolType,
++                  'value': '',
++                  'lastUpdate': DateTime.now().toIso8601String(),
++                });
++                await HomeWidget.updateWidget(
++                  androidName: 'ControlExWidgetProvider',
++                  iOSName: 'ControlExWidgetProvider',
++                );
++                if (mounted) {
++                  ScaffoldMessenger.of(context).showSnackBar(
++                    SnackBar(content: Text(AppLocalization.isArabicNotifier.value
++                      ? '╪¬┘à ╪▒╪¿╪╖ ╪º┘ä┘ê╪»╪¼╪¬ ╪¿╪º┘ä╪ú╪»╪º╪⌐ ╪¿┘å╪¼╪º╪¡!'
++                      : 'Widget linked to ${tool['name']?.toString() ?? toolType} successfully!')),
++                  );
++                  _loadWidgets();
++                }
++              }
++            }
++           });
++         }
+        
+     } catch (e) {
+        print('Γ¥î Error loading widgets: $e');
+@@ -942,7 +1099,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
+   @override
+   Widget build(BuildContext context) {
+     // Sync children
+-    for(var i=0; i<_items.len    return Scaffold(
++    for(var i=0; i<_items.length; i++){
++       final raw = _rawWidgets.firstWhere((w) => w['id'] == _items[i].id, orElse: () => null);
++       if (raw != null) {
++          _items[i] = GridItemData(
++             id: _items[i].id,
++             x: _items[i].x, y: _items[i].y, w: _items[i].w, h: _items[i].h,
++             child: _buildWidgetByType(raw, _items[i])
++          );
++       }
++    }
++
++    return Scaffold(
+       backgroundColor: AppTheme.backgroundBase,
+       appBar: PremiumAppBar(
+         titleText: AppLocalization.get('dashboard'),
+@@ -955,67 +1123,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
+             );
+           }
+         ),
+-        actions: [
+-          Stack(
+-            key: _notificationsKey,
+-            alignment: Alignment.center,
+-            children: [
+-              IconButton(
+-                icon: const Icon(Icons.notifications, color: Colors.white),
+-                onPressed: _showNotifications,
+-              ),
+-              if (_unreadCount > 0)
+-                Positioned(
+-                  right: 8,
+-                  top: 8,
+-                  child: Container(
+-                    padding: const EdgeInsets.all(2),
+-                    decoration: BoxDecoration(
+-                      color: Colors.red,
+-                      borderRadius: BorderRadius.circular(10),
+-                    ),
+-                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+-                    child: Text('$_unreadCount', style: const TextStyle(color: Colors.white, fontSize: 10), textAlign: TextAlign.center),
+-                  ),
+-                )
+-            ],
+-          ),
+-          IconButton(
+-            icon: const Icon(Icons.settings, color: AppTheme.primaryCyan),
+-            onPressed: () async {
+-              final updatedPages = await showDialog<List<dynamic>>(
+-                context: context,
+-                builder: (ctx) => ManagePagesDialog(currentPages: _pages),
+-              );
+-              if (updatedPages != null) {
+-                setState(() {
+-                  _pages = updatedPages;
+-                  if (!_pages.any((p) => p['id'] == _activePageId)) {
+-                    _activePageId = 'all';
+-                  }
+-                });
+-                _packItemsForCurrentPage();
+-              }
+-            },
+-          ),
+-          IconButton(
+-            key: _editKey,
+-            icon: Icon(_isEditMode ? Icons.check_circle : Icons.edit, color: _isEditMode ? Colors.green : AppTheme.primaryCyan),
+-            onPressed: () {
+-              setState(() => _isEditMode = !_isEditMode);
+-            },
+-          )
+-        ],
++        actions: const [],
+       ),
+       drawer: Drawer(
+         backgroundColor: Colors.transparent,
+         elevation: 0,
+         child: Container(
+           decoration: BoxDecoration(
+-            color: const Color(0xDC080614), // Deep dark semi-translucent base
++            color: const Color(0xDC080614),
+             border: Border(
+               right: BorderSide(
+-                color: AppTheme.primaryCyan.withOpacity(0.2),
++                color: AppTheme.primaryCyan.withValues(alpha: 0.2),
+                 width: 1.5,
+               ),
+             ),
+@@ -1028,12 +1146,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
+                 DrawerHeader(
+                   decoration: BoxDecoration(
+                     gradient: LinearGradient(
+-                      colors: [AppTheme.primaryViolet.withOpacity(0.15), Colors.transparent],
++                      colors: [AppTheme.primaryViolet.withValues(alpha: 0.15), Colors.transparent],
+                       begin: Alignment.topCenter,
+                       end: Alignment.bottomCenter,
+                     ),
+                     border: Border(
+-                      bottom: BorderSide(color: Colors.white.withOpacity(0.06), width: 1),
++                      bottom: BorderSide(color: Colors.white.withValues(alpha: 0.06), width: 1),
+                     ),
+                   ),
+                   child: Column(
+@@ -1044,7 +1162,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+-                             border: Border.all(color: AppTheme.primaryCyan.withOpacity(0.5), width: 1.5),
++                             border: Border.all(color: AppTheme.primaryCyan.withValues(alpha: 0.5), width: 1.5),
+                            ),
+                            child: CircleAvatar(
+                              radius: 30,
+@@ -1057,7 +1175,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+-                             color: AppTheme.primaryCyan.withOpacity(0.1),
++                             color: AppTheme.primaryCyan.withValues(alpha: 0.1),
+                            ),
+                            child: const Icon(Icons.account_circle, size: 48, color: AppTheme.primaryCyan),
+                          ),
+@@ -1162,20 +1280,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
+           ),
+         ),
+       ),
+-      body: Stack(
+-        children: [ion);
+-                } else {
+-                  if (context.mounted) {
+-                    ScaffoldMessenger.of(context).showSnackBar(
+-                      const SnackBar(content: Text('┘ä╪º ┘è┘à┘â┘å ┘ü╪¬╪¡ ╪º┘ä╪▒╪º╪¿╪╖')),
+-                    );
+-                  }
+-                }
+-              },
+-            ),
+-          ],
+-        ),
+-      ),
+       body: Stack(
+         children: [
+           // Vibrant Neon Background Mesh
+@@ -1275,45 +1379,131 @@ class _DashboardScreenState extends State<DashboardScreen> {
+                       children: [
+                         _buildQuickScenes(_scenes.where((s) => s['showOnDashboard'] == true).toList()),
+                         if (_pages.isNotEmpty) _buildPageTabs(),
+-                        if (_items.isEmpty)
+-                          Padding(
+-                            padding: const EdgeInsets.symmetric(vertical: 64.0),
+-                            child: Center(
+-                              child: Column(
+-                                mainAxisAlignment: MainAxisAlignment.center,
+-                                children: [
+-                                  Text(
+-                                    _serverStatusMessage ?? AppLocalization.get('no_widgets'),
+-                                    style: const TextStyle(color: Colors.white54),
+-                                    textAlign: TextAlign.center,
+-                                  ),
+-                                  const SizedBox(height: 16),
+-                                  TextButton.icon(
+-                                    icon: const Icon(Icons.refresh, color: AppTheme.primaryCyan),
+-                                    label: Text(AppLocalization.get('retry'), style: const TextStyle(color: AppTheme.primaryCyan)),
+-                                    onPressed: () => _loadWidgets(),
+-                                  ),
+-                                ],
+-                              ),
++                  if (_items.isEmpty)
++                    Padding(
++                      padding: const EdgeInsets.symmetric(vertical: 64.0),
++                      child: Center(
++                        child: Column(
++                          mainAxisAlignment: MainAxisAlignment.center,
++                          children: [
++                            Text(
++                              _serverStatusMessage ?? AppLocalization.get('no_widgets'),
++                              style: const TextStyle(color: Colors.white54),
++                              textAlign: TextAlign.center,
+                             ),
+-                          )
+-                        else
+-                          InteractiveGrid(
+-                             items: _items,
+-                             crossAxisCount: 4,
+-                             isEditMode: _isEditMode,
+-                             onItemChanged: (item) => _updateWidgetPosition(item, true),
+-                             onMoveRequest: _pages.isEmpty ? null : (item) => _showMoveToPageDialog(item),
+-                             onInteractionStateChanged: (active) {
+-                               setState(() => _isScrollingLocked = active);
+-                             },
+-                          ),
+-                      ],
++                            const SizedBox(height: 16),
++                            TextButton.icon(
++                              icon: const Icon(Icons.refresh, color: AppTheme.primaryCyan),
++                              label: Text(AppLocalization.get('retry'), style: const TextStyle(color: AppTheme.primaryCyan)),
++                              onPressed: () => _loadWidgets(),
++                            ),
++                          ],
++                        ),
++                      ),
++                    )
++                  else
++                    InteractiveGrid(
++                       items: _items,
++                       crossAxisCount: 4,
++                       isEditMode: _isEditMode,
++                       onItemChanged: (item) => _updateWidgetPosition(item, true),
++                       onMoveRequest: _pages.isEmpty ? null : (item) => _showMoveToPageDialog(item),
++                       onInteractionStateChanged: (active) {
++                         setState(() => _isScrollingLocked = active);
++                       },
+                     ),
+-                  ),
++                ],
++              ),
++            ),
++          ),
++        ),
++      ],
++      ),
++      bottomNavigationBar: Container(
++        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
++        decoration: BoxDecoration(
++          border: Border(
++            top: BorderSide(color: AppTheme.primaryCyan.withValues(alpha: 0.15), width: 0.5),
++          ),
++        ),
++        child: ClipRect(
++          child: BackdropFilter(
++            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
++            child: Container(
++              height: 56,
++              decoration: BoxDecoration(
++                color: const Color(0x99080614),
++                gradient: LinearGradient(
++                  begin: Alignment.topCenter,
++                  end: Alignment.bottomCenter,
++                  colors: [
++                    AppTheme.primaryViolet.withValues(alpha: 0.05),
++                    Colors.transparent,
++                  ],
+                 ),
+               ),
+-        ],
++              child: Row(
++                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
++                children: [
++                  // Notifications
++                  Stack(
++                    key: _notificationsKey,
++                    alignment: Alignment.center,
++                    children: [
++                      IconButton(
++                        icon: const Icon(Icons.notifications_outlined, color: Colors.white70),
++                        onPressed: _showNotifications,
++                      ),
++                      if (_unreadCount > 0)
++                        Positioned(
++                          right: 6,
++                          top: 6,
++                          child: Container(
++                            padding: const EdgeInsets.all(2),
++                            decoration: BoxDecoration(
++                              color: Colors.red,
++                              borderRadius: BorderRadius.circular(10),
++                            ),
++                            constraints: const BoxConstraints(minWidth: 14, minHeight: 14),
++                            child: Text('$_unreadCount', style: const TextStyle(color: Colors.white, fontSize: 8), textAlign: TextAlign.center),
++                          ),
++                        ),
++                    ],
++                  ),
++                  Container(width: 1, height: 28, color: Colors.white12),
++                  // Manage Pages
++                  IconButton(
++                    icon: const Icon(Icons.dashboard_customize_outlined, color: Colors.white70),
++                    onPressed: () async {
++                      final updatedPages = await showDialog<List<dynamic>>(
++                        context: context,
++                        builder: (ctx) => ManagePagesDialog(currentPages: _pages),
++                      );
++                      if (updatedPages != null) {
++                        setState(() {
++                          _pages = updatedPages;
++                          if (!_pages.any((p) => p['id'] == _activePageId)) {
++                            _activePageId = 'all';
++                          }
++                        });
++                        _packItemsForCurrentPage();
++                      }
++                    },
++                  ),
++                  Container(width: 1, height: 28, color: Colors.white12),
++                  // Edit Mode
++                  IconButton(
++                    key: _editKey,
++                    icon: Icon(_isEditMode ? Icons.check_circle : Icons.edit_outlined, color: _isEditMode ? Colors.greenAccent : Colors.white70),
++                    onPressed: () {
++                      setState(() => _isEditMode = !_isEditMode);
++                    },
++                  ),
++                ],
++              ),
++            ),
++          ),
++        ),
+       ),
+       floatingActionButton: Column(
+         mainAxisAlignment: MainAxisAlignment.end,
+@@ -1479,6 +1669,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
+             setState(() => _localToggleStates[id] = newState);
+             try {
+                await ApiService.sendCommand(id, newState ? onCmd : offCmd);
++               _updateHomeWidgetData(id, newState ? 'ON' : 'OFF');
+             } catch(e) {
+                debugPrint('Toggle Error: $e');
+                setState(() => _localToggleStates[id] = value);
+@@ -1673,16 +1864,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
+                           _sliderValues[id] = v;
+                        });
+                     },
+-onChangeEnd: (v) async {
++                    onChangeEnd: (v) async {
+                         _lastSliderUpdate[id] = DateTime.now();
+                         try {
+                           await ApiService.sendCommand(id, v.toStringAsFixed(0));
++                          _updateHomeWidgetData(id, v.toStringAsFixed(0));
+                        } catch (e) {
+                           if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                 SnackBar(content: Text('╪«╪╖╪ú ┘ü┘è ╪Ñ╪▒╪│╪º┘ä ╪º┘ä┘é┘è┘à╪⌐: $e'))
+                              );
+-                             // Revert local value on failure
+                              setState(() {
+                                 _sliderValues.remove(id);
+                              });
+@@ -1795,17 +1986,18 @@ onChangeEnd: (v) async {
+                                   setModalState(() => pickerColor = color);
+                                   HapticHelper.lightFeedback();
+                                   
+-                                  if (debounceTimer?.isActive ?? false) debounceTimer!.cancel();
+-                                  debounceTimer = Timer(const Duration(milliseconds: 150), () async {
+-                                     String hexString = '#${color.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+-                                     setState(() {
+-                                         w['state'] ??= {};
+-                                         w['state']['lastValue'] = hexString;
+-                                     });
+-                                     try {
+-                                       await ApiService.sendCommand(id, hexString);
+-                                     } catch (_) {}
+-                                  });
++                                    if (debounceTimer?.isActive ?? false) debounceTimer!.cancel();
++                                   debounceTimer = Timer(const Duration(milliseconds: 150), () async {
++                                      String hexString = '#${color.value.toRadixString(16).padLeft(8, '0').substring(2)}';
++                                      setState(() {
++                                          w['state'] ??= {};
++                                          w['state']['lastValue'] = hexString;
++                                      });
++                                      try {
++                                        await ApiService.sendCommand(id, hexString);
++                                        _updateHomeWidgetData(id, hexString);
++                                      } catch (_) {}
++                                   });
+                                 },
+                                 pickerAreaHeightPercent: 0.7,
+                                 enableAlpha: true,
+@@ -1817,35 +2009,40 @@ onChangeEnd: (v) async {
+                               Row(
+                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                 children: [
+-                                   _buildSwatch(Colors.white, (c) {
++                                   _buildSwatch(Colors.white, (c) async {
+                                      setModalState(() => pickerColor = c);
+                                      String hexString = '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+                                      setState(() { w['state'] ??= {}; w['state']['lastValue'] = hexString; });
+-                                     ApiService.sendCommand(id, hexString);
++                                     await ApiService.sendCommand(id, hexString);
++                                     _updateHomeWidgetData(id, hexString);
+                                    }),
+-                                   _buildSwatch(const Color(0xFFFFD1A4), (c) { // Warm white
++                                   _buildSwatch(const Color(0xFFFFD1A4), (c) async { // Warm white
+                                      setModalState(() => pickerColor = c);
+                                      String hexString = '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+                                      setState(() { w['state'] ??= {}; w['state']['lastValue'] = hexString; });
+-                                     ApiService.sendCommand(id, hexString);
++                                     await ApiService.sendCommand(id, hexString);
++                                     _updateHomeWidgetData(id, hexString);
+                                    }),
+-                                   _buildSwatch(Colors.red, (c) {
++                                   _buildSwatch(Colors.red, (c) async {
+                                      setModalState(() => pickerColor = c);
+                                      String hexString = '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+                                      setState(() { w['state'] ??= {}; w['state']['lastValue'] = hexString; });
+-                                     ApiService.sendCommand(id, hexString);
++                                     await ApiService.sendCommand(id, hexString);
++                                     _updateHomeWidgetData(id, hexString);
+                                    }),
+-                                   _buildSwatch(Colors.green, (c) {
++                                   _buildSwatch(Colors.green, (c) async {
+                                      setModalState(() => pickerColor = c);
+                                      String hexString = '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+                                      setState(() { w['state'] ??= {}; w['state']['lastValue'] = hexString; });
+-                                     ApiService.sendCommand(id, hexString);
++                                     await ApiService.sendCommand(id, hexString);
++                                     _updateHomeWidgetData(id, hexString);
+                                    }),
+-                                   _buildSwatch(Colors.blue, (c) {
++                                   _buildSwatch(Colors.blue, (c) async {
+                                      setModalState(() => pickerColor = c);
+                                      String hexString = '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+                                      setState(() { w['state'] ??= {}; w['state']['lastValue'] = hexString; });
+-                                     ApiService.sendCommand(id, hexString);
++                                     await ApiService.sendCommand(id, hexString);
++                                     _updateHomeWidgetData(id, hexString);
+                                    }),
+                                 ]
+                               ),
+@@ -1914,6 +2111,13 @@ class _PushButtonWidgetState extends State<_PushButtonWidget> {
+     try {
+       final onCmd = config['onCommand'] ?? 'ON';
+       await ApiService.sendCommand(widget.widgetData['id'], onCmd);
++      if (mounted) {
++        try {
++          await HomeWidget.saveWidgetData('widget_data_${widget.widgetData['id']}', 'ON');
++          await HomeWidget.updateWidget(name: 'ControlExWidgetProvider', androidName: 'ControlExWidgetProvider');
++          await HomeWidget.updateWidget(name: 'ControlExLargeWidgetProvider', androidName: 'ControlExLargeWidgetProvider');
++        } catch (_) {}
++      }
+     } catch (e) {
+       if (mounted) {
+         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+diff --git a/lib/screens/local_dashboard_screen.dart b/lib/screens/local_dashboard_screen.dart
+index 6d61eb3..21e47cf 100644
+--- a/lib/screens/local_dashboard_screen.dart
++++ b/lib/screens/local_dashboard_screen.dart
+@@ -22,7 +22,6 @@ import '../widgets/voice_command_overlay.dart';
+ import '../widgets/ai_floating_button.dart';
+ import '../widgets/glass_popups.dart';
+ import '../widgets/ai_chat_overlay.dart';
+-import '../widgets/premium_app_bar.dart';
+ import '../widgets/app_tour_overlay.dart';
+ import 'account_screen.dart';
+ import 'smart_scenes_screen.dart';
+@@ -918,27 +917,19 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
+ 
+     return Scaffold(
+       backgroundColor: AppTheme.backgroundBase,
+-      appBar: PremiumAppBar(
++      appBar: AppBar(
+         title: Column(
+           crossAxisAlignment: CrossAxisAlignment.start,
+-          mainAxisSize: MainAxisSize.min,
+           children: [
+-            Text(
+-              AppLocalization.get('local_control'),
+-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+-            ),
+-            const SizedBox(height: 2),
+-            Row(
+-              mainAxisSize: MainAxisSize.min,
+-              children: [
+-                Icon(_isConnected ? Icons.wifi : Icons.wifi_off, size: 10, color: _isConnected ? Colors.greenAccent : Colors.redAccent),
+-                const SizedBox(width: 4),
+-                Text(
+-                  LocalService.deviceIp.isEmpty ? AppLocalization.get('no_ip_selected') : LocalService.deviceIp,
+-                  style: TextStyle(fontSize: 10, color: _isConnected ? Colors.greenAccent : Colors.white38),
+-                ),
+-              ],
+-            ),
++            Text(AppLocalization.get('local_control'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
++            Row(children: [
++              Icon(_isConnected ? Icons.wifi : Icons.wifi_off, size: 12, color: _isConnected ? Colors.greenAccent : Colors.redAccent),
++              const SizedBox(width: 4),
++              Text(
++                LocalService.deviceIp.isEmpty ? AppLocalization.get('no_ip_selected') : LocalService.deviceIp,
++                style: TextStyle(fontSize: 11, color: _isConnected ? Colors.greenAccent : Colors.white38),
++              ),
++            ]),
+           ],
+         ),
+         actions: [
+@@ -952,7 +943,6 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
+       ),
+       body: Stack(
+         children: [
+-          const SizedBox.expand(),
+           Positioned(
+             top: -150,
+             right: -100,
+diff --git a/lib/screens/settings_screen.dart b/lib/screens/settings_screen.dart
+index 9612b2b..e77524a 100644
+--- a/lib/screens/settings_screen.dart
++++ b/lib/screens/settings_screen.dart
+@@ -8,7 +8,7 @@ import '../core/localization.dart';
+ import '../widgets/app_tour_overlay.dart';
+ import 'local_dashboard_screen.dart';
+ import '../widgets/nfc_bottom_sheet.dart';
+-
++import 'package:home_widget/home_widget.dart';
+ class SettingsScreen extends StatefulWidget {
+   final bool startTour;
+   const SettingsScreen({super.key, this.startTour = false});
+@@ -948,7 +948,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
+     );
+   }
+ 
+-  Widget _buildExistingWidgetsTab(bool isArabic) {
++Widget _buildExistingWidgetsTab(bool isArabic) {
+     return _isLoadingList 
+        ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan))
+        : _existingWidgets.isEmpty 
+@@ -1032,6 +1032,72 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
+                         trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
++                              // 1. ╪▓╪▒ ╪Ñ╪╢╪º┘ü╪⌐ ╪º┘ä┘ê┘è╪»╪¼╪¬ ┘ä┘ä╪┤╪º╪┤╪⌐ ╪º┘ä╪▒╪ª┘è╪│┘è╪⌐
++                              Container(
++                                decoration: BoxDecoration(
++                                  color: AppTheme.primaryViolet.withValues(alpha: 0.1),
++                                  shape: BoxShape.circle,
++                                ),
++                                child: IconButton(
++                                  icon: const Icon(Icons.push_pin_outlined, color: AppTheme.primaryViolet), 
++                                  onPressed: () {
++                                    showDialog(
++                                      context: context,
++                                      builder: (ctx) => AlertDialog(
++                                        backgroundColor: const Color(0xFF15132C),
++                                        shape: RoundedRectangleBorder(
++                                          borderRadius: BorderRadius.circular(16),
++                                          side: const BorderSide(color: AppTheme.primaryCyan, width: 1),
++                                        ),
++                                        title: const Text('╪º╪«╪¬╪▒ ╪¡╪¼┘à ╪º┘ä┘ê┘è╪»╪¼╪¬', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
++                                        content: Column(
++                                          mainAxisSize: MainAxisSize.min,
++                                          children: [
++                                            ListTile(
++                                              leading: const Icon(Icons.space_dashboard_outlined, color: AppTheme.primaryCyan),
++                                              title: const Text('┘ê╪»╪¼╪¬ ╪╡╪║┘è╪▒ (2x1)', style: TextStyle(color: Colors.white)),
++                                              onTap: () async {
++                                                Navigator.pop(ctx);
++                                                try {
++                                                  final prefs = await SharedPreferences.getInstance();
++                                                  await prefs.setString('widget_pending_tool_id', w['id']);
++                                                  await prefs.setString('widget_pending_tool_name', w['name']);
++                                                  await prefs.setString('widget_pending_tool_type', type);
++                                                  await HomeWidget.requestPinWidget(name: 'ControlExWidgetProvider', androidName: 'ControlExWidgetProvider');
++                                                  if (context.mounted) AppSnackbar.showSuccess(context, '╪¬┘à ╪Ñ╪▒╪│╪º┘ä ╪╖┘ä╪¿ ╪Ñ╪╢╪º┘ü╪⌐ ╪º┘ä┘ê┘è╪»╪¼╪¬ ╪º┘ä╪╡╪║┘è╪▒');
++                                                } catch (e) {
++                                                  if (context.mounted) AppSnackbar.showError(context, '┘ü╪┤┘ä ╪Ñ┘å╪┤╪º╪í ╪º┘ä┘ê┘è╪»╪¼╪¬');
++                                                }
++                                              },
++                                            ),
++                                            const Divider(color: Colors.white24),
++                                            ListTile(
++                                              leading: const Icon(Icons.dashboard, color: AppTheme.primaryViolet),
++                                              title: const Text('┘ê╪»╪¼╪¬ ┘à╪¬┘ê╪│╪╖ (2x2)', style: TextStyle(color: Colors.white)),
++                                              onTap: () async {
++                                                Navigator.pop(ctx);
++                                                try {
++                                                  final prefs = await SharedPreferences.getInstance();
++                                                  await prefs.setString('widget_pending_tool_id', w['id']);
++                                                  await prefs.setString('widget_pending_tool_name', w['name']);
++                                                  await prefs.setString('widget_pending_tool_type', type);
++                                                  await HomeWidget.requestPinWidget(name: 'ControlExLargeWidgetProvider', androidName: 'ControlExLargeWidgetProvider');
++                                                  if (context.mounted) AppSnackbar.showSuccess(context, '╪¬┘à ╪Ñ╪▒╪│╪º┘ä ╪╖┘ä╪¿ ╪Ñ╪╢╪º┘ü╪⌐ ╪º┘ä┘ê┘è╪»╪¼╪¬ ╪º┘ä┘à╪¬┘ê╪│╪╖');
++                                                } catch (e) {
++                                                  if (context.mounted) AppSnackbar.showError(context, '┘ü╪┤┘ä ╪Ñ┘å╪┤╪º╪í ╪º┘ä┘ê┘è╪»╪¼╪¬');
++                                                }
++                                              },
++                                            ),
++                                          ],
++                                        ),
++                                      ),
++                                    );
++                                  },
++                                ),
++                              ),
++                              const SizedBox(width: 8),
++                              
++                              // 2. ╪▓╪▒ ╪º┘ä╪¬╪╣╪»┘è┘ä
+                               Container(
+                                 decoration: BoxDecoration(
+                                   color: AppTheme.primaryCyan.withValues(alpha: 0.1),
+@@ -1043,6 +1109,8 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
+                                 ),
+                               ),
+                               const SizedBox(width: 8),
++                              
++                              // 3. ╪▓╪▒ ╪º┘ä╪¡╪░┘ü
+                               Container(
+                                 decoration: BoxDecoration(
+                                   color: Colors.redAccent.withValues(alpha: 0.1),
+@@ -1068,7 +1136,6 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
+      buffer.write(hexString.replaceFirst('#', ''));
+      return Color(int.parse(buffer.toString(), radix: 16));
+   }
+-
+   Widget _buildGlassSection(String title, List<Widget> children, {Key? key}) {
+      return Container(
+         key: key,
+diff --git a/lib/services/api_service.dart b/lib/services/api_service.dart
+index 49a573b..ee2a9b9 100644
+--- a/lib/services/api_service.dart
++++ b/lib/services/api_service.dart
+@@ -28,6 +28,8 @@ class ApiService {
+ 
+   static Future<void> saveToken(String token) async {
+     await _storage.write(key: 'x-auth-token', value: token);
++    final prefs = await SharedPreferences.getInstance();
++    await prefs.setString('background_auth_token', token);
+     try {
+       await HomeWidget.saveWidgetData('widget_auth_token', token);
+     } catch (_) {}
+diff --git a/lib/widgets/terminal_widget.dart b/lib/widgets/terminal_widget.dart
+index 4243c37..424270e 100644
+--- a/lib/widgets/terminal_widget.dart
++++ b/lib/widgets/terminal_widget.dart
+@@ -1,4 +1,5 @@
+ import 'package:flutter/material.dart';
++import 'package:home_widget/home_widget.dart';
+ import '../services/api_service.dart';
+ import '../services/socket_service.dart';
+ import 'dart:convert';
+@@ -146,6 +147,11 @@ class _TerminalWidgetState extends State<TerminalWidget> {
+          } else {
+            await ApiService.sendCommand(widget.id, text);
+          }
++         try {
++           await HomeWidget.saveWidgetData('widget_data_${widget.id}', text);
++           await HomeWidget.updateWidget(name: 'ControlExWidgetProvider', androidName: 'ControlExWidgetProvider');
++           await HomeWidget.updateWidget(name: 'ControlExLargeWidgetProvider', androidName: 'ControlExLargeWidgetProvider');
++         } catch (_) {}
+       } catch (e) {
+          if (mounted) {
+             setState(() { _logs.add({"message": "CONNECTION FATAL ERROR: $e", "type": "error"}); });

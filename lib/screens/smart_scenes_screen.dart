@@ -11,6 +11,8 @@ import '../widgets/glass_card.dart';
 import '../widgets/app_snackbar.dart';
 import '../widgets/smart_hint.dart';
 import '../widgets/ai_floating_button.dart';
+import 'package:home_widget/home_widget.dart';
+
 
 class SmartScenesScreen extends StatefulWidget {
   final bool isLocalMode;
@@ -45,6 +47,84 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
     _fabController.dispose();
     super.dispose();
   }
+
+  void _pinWidgetForScene(String sceneId, String sceneName) async {
+    final bool isArabic = AppLocalization.isArabicNotifier.value;
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF15132C),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: AppTheme.primaryCyan, width: 1),
+        ),
+        title: Text(
+          isArabic ? 'اختر حجم أداة المشهد' : 'Select Scene Widget Size',
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.space_dashboard_outlined, color: AppTheme.primaryCyan),
+              title: Text(
+                isArabic ? 'ودجت صغير (2x1)' : 'Small Widget (2x1)',
+                style: const TextStyle(color: Colors.white),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                _executePinRequest(sceneId, sceneName, 'ControlExWidgetProvider');
+              },
+            ),
+            const Divider(color: Colors.white24),
+            ListTile(
+              leading: const Icon(Icons.dashboard, color: AppTheme.primaryViolet),
+              title: Text(
+                isArabic ? 'ودجت متوسط (2x2)' : 'Medium Widget (2x2)',
+                style: const TextStyle(color: Colors.white),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                _executePinRequest(sceneId, sceneName, 'ControlExLargeWidgetProvider');
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _executePinRequest(String sceneId, String sceneName, String providerName) async {
+    final isArabic = AppLocalization.isArabicNotifier.value;
+    try {
+      final String sceneKey = widget.isLocalMode ? 'local_scene_$sceneId' : 'scene_$sceneId';
+      
+      await HomeWidget.saveWidgetData('widget_pending_tool_id', sceneKey);
+      await HomeWidget.saveWidgetData('widget_pending_tool_name', sceneName);
+      await HomeWidget.saveWidgetData('widget_pending_tool_type', 'scene');
+      
+      await HomeWidget.requestPinWidget(
+        name: providerName,
+        androidName: providerName,
+      );
+      
+      if (mounted) {
+        AppSnackbar.showSuccess(
+          context,
+          isArabic ? 'تم إرسال طلب إضافة ودجت المشهد بنجاح' : 'Scene Widget pin request sent successfully',
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        AppSnackbar.showError(
+          context,
+          isArabic ? 'فشل إنشاء ودجت المشهد' : 'Failed to create Scene widget',
+        );
+      }
+    }
+  }
+
 
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
@@ -738,6 +818,20 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                         child: isExecuting
                             ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                             : Icon(Icons.play_arrow, color: themeColor, size: 20),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    // Pin/Widget Button
+                    GestureDetector(
+                      onTap: () => _pinWidgetForScene(id, name),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppTheme.primaryViolet.withValues(alpha: 0.1),
+                          border: Border.all(color: AppTheme.primaryViolet.withValues(alpha: 0.3), width: 1.5),
+                        ),
+                        child: const Icon(Icons.widgets_outlined, color: AppTheme.primaryViolet, size: 20),
                       ),
                     ),
                     const SizedBox(width: 8),

@@ -28,6 +28,8 @@ class ApiService {
 
   static Future<void> saveToken(String token) async {
     await _storage.write(key: 'x-auth-token', value: token);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('background_auth_token', token);
     try {
       await HomeWidget.saveWidgetData('widget_auth_token', token);
     } catch (_) {}
@@ -35,6 +37,8 @@ class ApiService {
 
   static Future<void> clearAuth() async {
     await _storage.delete(key: 'x-auth-token');
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('background_auth_token');
     try {
       await HomeWidget.saveWidgetData('widget_auth_token', null);
     } catch (_) {}

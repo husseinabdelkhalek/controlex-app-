@@ -7,6 +7,7 @@ import '../core/api_constants.dart';
 import '../services/local_service.dart';
 import '../core/localization.dart';
 import '../services/biometric_service.dart';
+import 'package:home_widget/home_widget.dart';
 
 class TerminalWidget extends StatefulWidget {
   final String id;
@@ -146,6 +147,11 @@ class _TerminalWidgetState extends State<TerminalWidget> {
          } else {
            await ApiService.sendCommand(widget.id, text);
          }
+         try {
+           await HomeWidget.saveWidgetData('widget_data_${widget.id}', text);
+           await HomeWidget.updateWidget(name: 'ControlExWidgetProvider', androidName: 'ControlExWidgetProvider');
+           await HomeWidget.updateWidget(name: 'ControlExLargeWidgetProvider', androidName: 'ControlExLargeWidgetProvider');
+         } catch (_) {}
       } catch (e) {
          if (mounted) {
             setState(() { _logs.add({"message": "CONNECTION FATAL ERROR: $e", "type": "error"}); });

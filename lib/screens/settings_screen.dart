@@ -8,6 +8,7 @@ import '../core/localization.dart';
 import '../widgets/app_tour_overlay.dart';
 import 'local_dashboard_screen.dart';
 import '../widgets/nfc_bottom_sheet.dart';
+import 'package:home_widget/home_widget.dart';
 
 class SettingsScreen extends StatefulWidget {
   final bool startTour;
@@ -1032,6 +1033,103 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                         trailing: Row(
                            mainAxisSize: MainAxisSize.min,
                            children: [
+                              // Pin widget to home screen button
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primaryViolet.withValues(alpha: 0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: IconButton(
+                                  icon: const Icon(Icons.push_pin_outlined, color: AppTheme.primaryViolet), 
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (ctx) => AlertDialog(
+                                        backgroundColor: const Color(0xFF15132C),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(16),
+                                          side: const BorderSide(color: AppTheme.primaryCyan, width: 1),
+                                        ),
+                                        title: Text(
+                                          isArabic ? 'اختر حجم الأداة' : 'Select Widget Size',
+                                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                        ),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            ListTile(
+                                              leading: const Icon(Icons.space_dashboard_outlined, color: AppTheme.primaryCyan),
+                                              title: Text(
+                                                isArabic ? 'ودجت صغير (2x1)' : 'Small Widget (2x1)',
+                                                style: const TextStyle(color: Colors.white),
+                                              ),
+                                              onTap: () async {
+                                                Navigator.pop(ctx);
+                                                try {
+                                                  await HomeWidget.saveWidgetData('widget_pending_tool_id', w['id']);
+                                                  await HomeWidget.saveWidgetData('widget_pending_tool_name', w['name']);
+                                                  await HomeWidget.saveWidgetData('widget_pending_tool_type', type);
+                                                  await HomeWidget.requestPinWidget(
+                                                    name: 'ControlExWidgetProvider',
+                                                    androidName: 'ControlExWidgetProvider',
+                                                  );
+                                                  if (context.mounted) {
+                                                    AppSnackbar.showSuccess(
+                                                      context,
+                                                      isArabic ? 'تم إرسال طلب إضافة الودجت الصغير' : 'Small Widget pin request sent',
+                                                    );
+                                                  }
+                                                } catch (e) {
+                                                  if (context.mounted) {
+                                                    AppSnackbar.showError(
+                                                      context,
+                                                      isArabic ? 'فشل إنشاء الودجت' : 'Failed to create widget',
+                                                    );
+                                                  }
+                                                }
+                                              },
+                                            ),
+                                            const Divider(color: Colors.white24),
+                                            ListTile(
+                                              leading: const Icon(Icons.dashboard, color: AppTheme.primaryViolet),
+                                              title: Text(
+                                                isArabic ? 'ودجت متوسط (2x2)' : 'Medium Widget (2x2)',
+                                                style: const TextStyle(color: Colors.white),
+                                              ),
+                                              onTap: () async {
+                                                Navigator.pop(ctx);
+                                                try {
+                                                  await HomeWidget.saveWidgetData('widget_pending_tool_id', w['id']);
+                                                  await HomeWidget.saveWidgetData('widget_pending_tool_name', w['name']);
+                                                  await HomeWidget.saveWidgetData('widget_pending_tool_type', type);
+                                                  await HomeWidget.requestPinWidget(
+                                                    name: 'ControlExLargeWidgetProvider',
+                                                    androidName: 'ControlExLargeWidgetProvider',
+                                                  );
+                                                  if (context.mounted) {
+                                                    AppSnackbar.showSuccess(
+                                                      context,
+                                                      isArabic ? 'تم إرسال طلب إضافة الودجت المتوسط' : 'Medium Widget pin request sent',
+                                                    );
+                                                  }
+                                                } catch (e) {
+                                                  if (context.mounted) {
+                                                    AppSnackbar.showError(
+                                                      context,
+                                                      isArabic ? 'فشل إنشاء الودجت' : 'Failed to create widget',
+                                                    );
+                                                  }
+                                                }
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 8),
                               Container(
                                 decoration: BoxDecoration(
                                   color: AppTheme.primaryCyan.withValues(alpha: 0.1),
