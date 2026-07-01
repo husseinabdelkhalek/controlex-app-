@@ -206,14 +206,14 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay> {
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                  shape: BoxShape.circle,
-                 color: _isListening ? Colors.redAccent.withValues(alpha: 0.2) : AppTheme.primaryViolet.withValues(alpha: 0.2),
+                 color: _isListening ? AppTheme.semanticError.withValues(alpha: 0.2) : AppTheme.primaryBrand.withValues(alpha: 0.2),
                  border: Border.all(
-                   color: _isListening ? Colors.redAccent : AppTheme.primaryViolet, 
+                   color: _isListening ? AppTheme.semanticError : AppTheme.primaryBrand, 
                    width: _isListening ? 3 : 2
                  ),
                  boxShadow: [
                     BoxShadow(
-                       color: (_isListening ? Colors.redAccent : AppTheme.primaryViolet).withValues(alpha: _isListening ? 0.6 : 0.3),
+                       color: (_isListening ? AppTheme.semanticError : AppTheme.primaryBrand).withValues(alpha: _isListening ? 0.6 : 0.3),
                        blurRadius: _isListening ? 30 : 15,
                        spreadRadius: _isListening ? 10 : 2
                     )
@@ -221,7 +221,7 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay> {
               ),
               child: Icon(
                 _isListening ? Icons.mic : Icons.mic_none,
-                color: _isListening ? Colors.redAccent : Colors.white,
+                color: _isListening ? AppTheme.semanticError : Colors.white,
                 size: 40,
               ),
             ),
@@ -236,13 +236,13 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay> {
              Container(
                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                decoration: BoxDecoration(
-                 color: _result!.success ? Colors.green.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1),
+                 color: _result!.success ? AppTheme.semanticSuccess.withValues(alpha: 0.1) : AppTheme.semanticError.withValues(alpha: 0.1),
                  borderRadius: BorderRadius.circular(12),
-                 border: Border.all(color: _result!.success ? Colors.green : Colors.red, width: 1),
+                 border: Border.all(color: _result!.success ? AppTheme.semanticSuccess : AppTheme.semanticError, width: 1),
                ),
                child: Row(
                  children: [
-                   Icon(_result!.success ? Icons.check_circle : Icons.error, color: _result!.success ? Colors.green : Colors.red),
+                   Icon(_result!.success ? Icons.check_circle : Icons.error, color: _result!.success ? AppTheme.semanticSuccess : AppTheme.semanticError),
                    const SizedBox(width: 12),
                    Expanded(
                      child: Text(

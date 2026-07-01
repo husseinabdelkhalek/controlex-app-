@@ -67,20 +67,20 @@ class _WidgetToolSelectorDialogState extends State<WidgetToolSelectorDialog> {
   Color _getToolColor(String type) {
     switch (type.toLowerCase()) {
       case 'toggle':
-        return AppTheme.primaryCyan;
+        return AppTheme.primaryBrand;
       case 'push':
-        return AppTheme.primaryViolet;
+        return AppTheme.primaryBrand;
       case 'sensor':
-        return Colors.greenAccent;
+        return AppTheme.semanticSuccess;
       case 'slider':
-        return Colors.orangeAccent;
+        return AppTheme.semanticWarning;
       case 'colorpicker':
       case 'color':
-        return Colors.purpleAccent;
+        return AppTheme.secondaryBrand;
       case 'terminal':
-        return Colors.yellowAccent;
+        return AppTheme.semanticInfo;
       default:
-        return Colors.white54;
+        return AppTheme.textSecondary;
     }
   }
 
@@ -93,7 +93,7 @@ class _WidgetToolSelectorDialogState extends State<WidgetToolSelectorDialog> {
       insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       child: GlassCard(
         baseColor: AppTheme.cardBaseColor.withValues(alpha: 0.8),
-        borderColor: AppTheme.primaryViolet.withValues(alpha: 0.5),
+        borderColor: AppTheme.primaryBrand.withValues(alpha: 0.5),
         borderRadius: 24,
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -140,7 +140,7 @@ class _WidgetToolSelectorDialogState extends State<WidgetToolSelectorDialog> {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 40),
         child: Center(
-          child: CircularProgressIndicator(color: AppTheme.primaryCyan),
+          child: CircularProgressIndicator(color: AppTheme.primaryBrand),
         ),
       );
     }
@@ -151,7 +151,7 @@ class _WidgetToolSelectorDialogState extends State<WidgetToolSelectorDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, color: Colors.redAccent, size: 48),
+            Icon(Icons.error_outline, color: AppTheme.semanticError, size: 48),
             const SizedBox(height: 12),
             Text(
               isArabic ? 'حدث خطأ أثناء تحميل الأدوات' : 'Error loading tools',

@@ -171,52 +171,57 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
       baseColor: AppTheme.cardBaseColor,
       child: Padding(
         padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final bool isCompact = constraints.maxHeight < 60;
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: isCompact ? MainAxisSize.min : MainAxisSize.max,
               children: [
-                Expanded(
-                  child: Text(
-                    widget.title,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
+                // Header
                 Row(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      currentVal.toStringAsFixed(1),
-                      style: TextStyle(
-                          color: widget.color,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    if (widget.unit != null && widget.unit!.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(left: 2),
-                        child: Text(
-                          widget.unit!,
-                          style: const TextStyle(
-                              color: Colors.white54, fontSize: 10),
-                        ),
+                    Expanded(
+                      child: Text(
+                        widget.title,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          currentVal.toStringAsFixed(1),
+                          style: TextStyle(
+                              color: widget.color,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        if (widget.unit != null && widget.unit!.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 2),
+                            child: Text(
+                              widget.unit!,
+                              style: const TextStyle(
+                                  color: Colors.white54, fontSize: 10),
+                            ),
+                          ),
+                      ],
+                    ),
                   ],
                 ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            
-            // Chart
-            Expanded(
-              child: IgnorePointer(
+                if (!isCompact) const SizedBox(height: 12),
+                
+                // Chart
+                if (!isCompact)
+                  Expanded(
+                    child: IgnorePointer(
                 ignoring: widget.isEditMode, // prevent interacting with chart if in edit mode
                 child: Directionality(
                   textDirection: TextDirection.ltr,
@@ -356,18 +361,21 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
             const SizedBox(height: 12),
             
             // Time range selector
-            Wrap(
-              alignment: WrapAlignment.spaceEvenly,
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                _buildFilterButton('1h', 'ساعة'),
-                _buildFilterButton('24h', '٢٤ ساعة'),
-                _buildFilterButton('7d', 'أسبوع'),
-                _buildFilterButton('30d', 'شهر'),
+                if (!isCompact)
+                  Wrap(
+                    alignment: WrapAlignment.spaceEvenly,
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _buildFilterButton('1h', 'ساعة'),
+                      _buildFilterButton('24h', '٢٤ ساعة'),
+                      _buildFilterButton('7d', 'أسبوع'),
+                      _buildFilterButton('30d', 'شهر'),
+                    ],
+                  ),
               ],
-            ),
-          ],
+            );
+          },
         ),
       ),
     );

@@ -139,7 +139,7 @@ class ErrorHandler {
           'error': error,
           'stackTrace': stackTrace.length > 2000 ? stackTrace.substring(0, 2000) : stackTrace,
           'deviceInfo': deviceInfo,
-          'appVersion': '2.6', // TODO: للايجينت القادم: قم بزيادة هذا الرقم بمقدار 1 للتغييرات الكبيرة، أو 0.1/0.2 للتغييرات العادية
+          'appVersion': '2.7', // TODO: للايجينت القادم: قم بزيادة هذا الرقم بمقدار 1 للتغييرات الكبيرة، أو 0.1/0.2 للتغييرات العادية
         }),
       );
     } catch (e) {

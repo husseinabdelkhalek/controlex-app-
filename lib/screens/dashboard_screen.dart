@@ -1527,7 +1527,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8.5),
                   decoration: BoxDecoration(
                     color: AppTheme.cardBaseColor.withValues(alpha: 0.7),
                     borderRadius: BorderRadius.circular(40),

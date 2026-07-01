@@ -8,6 +8,7 @@ import '../services/local_service.dart';
 import '../core/localization.dart';
 import '../services/biometric_service.dart';
 import 'package:home_widget/home_widget.dart';
+import '../theme/app_theme.dart';
 
 class TerminalWidget extends StatefulWidget {
   final String id;
@@ -163,10 +164,10 @@ class _TerminalWidgetState extends State<TerminalWidget> {
 
   Color _getLogColor(String type) {
      switch (type) {
-        case 'sent': return Colors.cyanAccent.shade400;
-        case 'received': return Colors.greenAccent.shade400;
-        case 'system': return Colors.amberAccent;
-        case 'error': return Colors.redAccent.shade400;
+        case 'sent': return AppTheme.primaryBrand;
+        case 'received': return AppTheme.semanticSuccess;
+        case 'system': return AppTheme.semanticWarning;
+        case 'error': return AppTheme.semanticError;
         default: return Colors.white70;
      }
   }
@@ -177,9 +178,9 @@ class _TerminalWidgetState extends State<TerminalWidget> {
       decoration: BoxDecoration(
         color: const Color(0xFF030507),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.3), width: 1.5),
+        border: Border.all(color: AppTheme.primaryBrand.withValues(alpha: 0.3), width: 1.5),
         boxShadow: [
-           BoxShadow(color: Colors.cyanAccent.withValues(alpha: 0.1), blurRadius: 10, spreadRadius: -2)
+           BoxShadow(color: AppTheme.primaryBrand.withValues(alpha: 0.1), blurRadius: 10, spreadRadius: -2)
         ]
       ),
       child: IgnorePointer(
@@ -200,17 +201,17 @@ class _TerminalWidgetState extends State<TerminalWidget> {
                 children: [
                   Row(
                      children: [
-                        _buildDot(Colors.redAccent),
+                        _buildDot(AppTheme.semanticError),
                         const SizedBox(width: 6),
-                        _buildDot(Colors.amber),
+                        _buildDot(AppTheme.semanticWarning),
                         const SizedBox(width: 6),
-                        _buildDot(Colors.greenAccent),
+                        _buildDot(AppTheme.semanticSuccess),
                      ],
                   ),
                   Text(widget.title.toUpperCase(), style: const TextStyle(color: Colors.white60, fontWeight: FontWeight.bold, fontSize: 11, fontFamily: 'Courier', letterSpacing: 1.2)),
                   GestureDetector(
                     onTap: _fetchLogs,
-                    child: const Icon(Icons.refresh, color: Colors.cyanAccent, size: 16),
+                    child: const Icon(Icons.refresh, color: AppTheme.primaryBrand, size: 16),
                   ),
                 ],
               ),
@@ -259,17 +260,17 @@ class _TerminalWidgetState extends State<TerminalWidget> {
               ),
               child: Row(
                 children: [
-                  const Text("root:~\$ ", style: TextStyle(color: Colors.amberAccent, fontFamily: 'Courier', fontSize: 13)),
+                  const Text("root:~\\\$ ", style: TextStyle(color: AppTheme.semanticWarning, fontFamily: 'Courier', fontSize: 13)),
                   Expanded(
                     child: TextField(
                       controller: _controller,
-                      style: const TextStyle(fontFamily: 'Courier', color: Colors.cyanAccent, fontSize: 13, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontFamily: 'Courier', color: AppTheme.primaryBrand, fontSize: 13, fontWeight: FontWeight.bold),
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         enabledBorder: InputBorder.none,
                         focusedBorder: InputBorder.none,
                         hintText: AppLocalization.get('terminal_hint'),
-                        hintStyle: const TextStyle(color: Colors.white24, fontSize: 12),
+                        hintStyle: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
                         contentPadding: EdgeInsets.zero,
                         isDense: true
                       ),
@@ -280,8 +281,8 @@ class _TerminalWidgetState extends State<TerminalWidget> {
                      onTap: _sendCommand,
                      child: Container(
                         padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(color: Colors.cyanAccent.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(4)),
-                        child: const Icon(Icons.send, size: 16, color: Colors.cyanAccent),
+                        decoration: BoxDecoration(color: AppTheme.primaryBrand.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(4)),
+                        child: const Icon(Icons.send, size: 16, color: AppTheme.primaryBrand),
                      ),
                   )
                 ],

@@ -286,7 +286,7 @@ class _AppInitializerState extends State<AppInitializer> {
       // [AI_AGENT_WARNING]: This is the current internal app version. 
       // If you are releasing a new feature or fix that requires an update, increment this number (e.g., 1.7)
       // AND also increment the 'latestVersion' on the server (server.js).
-      const double currentVersion = 2.6; 
+      const double currentVersion = 2.7; 
       if (latestVersion != null && (latestVersion is num) && latestVersion > currentVersion) {
         if (mounted) {
           setState(() {

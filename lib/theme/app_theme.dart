@@ -2,23 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Premium Dark-First Backgrounds
-  static const Color backgroundBase = Color(0xFF080614); 
-  static const Color darkBackground = Color(0xFF080614); 
+  // --- Semantic Colors (Psychological Meaning) ---
+  static const Color semanticSuccess = Color(0xFF10B981); // Emerald Green
+  static const Color semanticError = Color(0xFFEF4444);   // Soft Red
+  static const Color semanticWarning = Color(0xFFF59E0B); // Amber
+  static const Color semanticInfo = Color(0xFF3B82F6);    // Blue
+
+  // --- Premium Brand Colors (Website Match) ---
+  static const Color primaryBrand = Color(0xFF8A2BE2); // Primary Violet
+  static const Color secondaryBrand = Color(0xFF00E5FF); // Primary Cyan
+
+  // --- Backgrounds & Surfaces (Website Match) ---
+  static const Color backgroundBase = Color(0xFF0D0C1D); 
+  static const Color darkBackground = Color(0xFF0D0C1D); 
   
-  // Vibrant Neon Accents (Violet & Cyan)
-  static const Color primaryCyan = Color(0xFF00E5FF); 
+  // Vibrant Neon Accents (Aliases for backward compatibility)
+  static const Color primaryCyan = secondaryBrand; 
   static const Color darkCyan = Color(0xFF00ACC1); 
-  static const Color primaryViolet = Color(0xFF8A2BE2); 
+  static const Color primaryViolet = primaryBrand; 
   static const Color darkViolet = Color(0xFF6A1B9A); 
   
-  // Legacy Accents (retained for specific components like DrawerHeader)
-  static const Color accentNeon = Color(0xFFFF007F); // Neon Pink
-  static const Color neonBlue = Color(0xFF3A0CA3);   // Deep Electric Blue
+  // Legacy Accents
+  static const Color accentNeon = semanticError; 
+  static const Color neonBlue = primaryBrand;   
   
   // Glassmorphism enhancements
-  // rgba(21, 19, 44, 0.85) => hex A=D9, R=15, G=13, B=2C => 0xD915132C
-  static const Color cardBaseColor = Color(0xD915132C); 
+  static const Color cardBaseColor = Color(0xD915132C); // #15132c with 85% opacity
   static const Color cardLightColor = Color(0xFFE2E8F0); 
   
   // Glows and Borders
