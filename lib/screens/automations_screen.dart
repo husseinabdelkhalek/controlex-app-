@@ -404,6 +404,7 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
                       } else {
                         await ApiService.createAutomationRule(data);
                       }
+                      if (!ctx.mounted) return;
                       Navigator.pop(ctx);
                       _loadData(); // Refresh from server
                       if (mounted) AppSnackbar.showSuccess(context, editIndex != null ? AppLocalization.get('rule_updated') : AppLocalization.get('rule_created'));
@@ -769,7 +770,7 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
                               });
                               try {
                                 await ApiService.setPowerSaving(v);
-                                if (mounted) {
+                                if (context.mounted) {
                                   AppSnackbar.showSuccess(context, v 
                                       ? AppLocalization.get('power_saving_enabled')
                                       : AppLocalization.get('power_saving_disabled'));

@@ -68,8 +68,12 @@ class VoiceParser {
     final s1Len = s1.length;
     final s2Len = s2.length;
     List<List<int>> d = List.generate(s1Len + 1, (_) => List.filled(s2Len + 1, 0));
-    for (int i = 0; i <= s1Len; i++) d[i][0] = i;
-    for (int j = 0; j <= s2Len; j++) d[0][j] = j;
+    for (int i = 0; i <= s1Len; i++) {
+      d[i][0] = i;
+    }
+    for (int j = 0; j <= s2Len; j++) {
+      d[0][j] = j;
+    }
     for (int i = 1; i <= s1Len; i++) {
       for (int j = 1; j <= s2Len; j++) {
         int cost = (s1[i - 1] == s2[j - 1]) ? 0 : 1;

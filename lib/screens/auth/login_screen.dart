@@ -1,16 +1,16 @@
-import '../widgets/app_snackbar.dart';
+import '../../widgets/app_snackbar.dart';
 import 'package:flutter/material.dart';
-import 'register_screen.dart';
-import 'dashboard_screen.dart';
-import 'local_dashboard_screen.dart';
-import 'forgot_password_screen.dart';
-import '../services/api_service.dart';
-import 'complete_google_profile_screen.dart';
-import '../core/localization.dart';
-import '../theme/app_theme.dart';
+import '../auth/register_screen.dart';
+import '../dashboard_screen.dart';
+import '../local_dashboard_screen.dart';
+import '../auth/forgot_password_screen.dart';
+import '../../services/api_service.dart';
+import '../auth/complete_google_profile_screen.dart';
+import '../../core/localization.dart';
+import '../../theme/app_theme.dart';
 import 'dart:ui';
-import 'banned_screen.dart';
-import '../widgets/glowing_button.dart';
+import '../status/banned_screen.dart';
+import '../../widgets/glowing_button.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -404,7 +404,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(Icons.wifi, size: 18, color: Colors.orangeAccent),
-                                  const SizedBox(width: 6),
+                                  SizedBox(width: 6),
                                   FittedBox(
                                     fit: BoxFit.scaleDown,
                                     child: Text(
@@ -436,7 +436,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           text: TextSpan(
                             style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                             children: [
-                              TextSpan(text: AppLocalization.get('no_account') + " "),
+                              TextSpan(text: "${AppLocalization.get('no_account')} "),
                               const TextSpan(
                                 text: "Sign Up",
                                 style: TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold),
@@ -556,7 +556,7 @@ class CyberGridPainter extends CustomPainter {
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
       ..strokeWidth = 1.5;
 
-    canvas.drawLine(Offset(0, 0), Offset(size.width, size.height * 0.7), neonPaint);
+    canvas.drawLine(const Offset(0, 0), Offset(size.width, size.height * 0.7), neonPaint);
     canvas.drawLine(Offset(size.width, 0), Offset(0, size.height * 0.7), neonPaint);
   }
 

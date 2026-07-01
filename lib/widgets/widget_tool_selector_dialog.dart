@@ -8,7 +8,7 @@ import 'glowing_button.dart';
 class WidgetToolSelectorDialog extends StatefulWidget {
   final String widgetId;
 
-  const WidgetToolSelectorDialog({Key? key, required this.widgetId}) : super(key: key);
+  const WidgetToolSelectorDialog({super.key, required this.widgetId});
 
   @override
   State<WidgetToolSelectorDialog> createState() => _WidgetToolSelectorDialogState();

@@ -1,20 +1,19 @@
-import '../widgets/app_snackbar.dart';
+import '../../widgets/app_snackbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import '../theme/app_theme.dart';
-import 'login_screen.dart';
-import '../services/api_service.dart';
-import '../core/localization.dart';
+import '../../theme/app_theme.dart';
+import '../auth/login_screen.dart';
+import '../../services/api_service.dart';
+import '../../core/localization.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../widgets/app_tour_overlay.dart';
-import '../services/socket_service.dart';
-import 'admin_dashboard_screen.dart';
-import 'local_dashboard_screen.dart';
-import 'sub_admin_dashboard_screen.dart';
-import 'profile_settings_screen.dart';
-import 'integrations_settings_screen.dart';
-import 'security_settings_screen.dart';
+import '../../widgets/app_tour_overlay.dart';
+import '../../services/socket_service.dart';
+import '../admin_dashboard_screen.dart';
+import '../local_dashboard_screen.dart';
+import '../sub_admin_dashboard_screen.dart';
+import '../settings/profile_settings_screen.dart';
+import '../settings/integrations_settings_screen.dart';
+import '../settings/security_settings_screen.dart';
 
 class AccountScreen extends StatefulWidget {
   final bool startTour;
@@ -127,7 +126,8 @@ class _AccountScreenState extends State<AccountScreen> {
       final userRes = await ApiService.userMe();
       final sessionsRes = await ApiService.getSessions();
       
-      if (mounted) setState(() {
+      if (mounted) {
+        setState(() {
          _usernameCtrl.text = userRes['username'] ?? '';
          _emailCtrl.text = userRes['email'] ?? '';
          _aioUserCtrl.text = userRes['adafruitUsername'] ?? '';
@@ -151,6 +151,7 @@ class _AccountScreenState extends State<AccountScreen> {
          _sessions = sessionsRes;
          _isLoading = false;
       });
+      }
     } catch (e) {
       if (mounted) {
          _showToast('Failed to load data');
@@ -600,7 +601,7 @@ class _AccountScreenState extends State<AccountScreen> {
                label: Text(AppLocalization.get('logout'), style: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2)),
                onPressed: () async {
                  await ApiService.logout();
-                 if (mounted) Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const LoginScreen()), (route) => false);
+                 if (context.mounted) Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const LoginScreen()), (route) => false);
                },
             ),
             const SizedBox(height: 48),

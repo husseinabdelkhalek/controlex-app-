@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:ui';
 import 'dart:convert';
@@ -11,20 +10,18 @@ import '../widgets/glass_card.dart';
 import '../widgets/glowing_button.dart';
 import '../widgets/interactive_grid.dart';
 import '../theme/app_theme.dart';
-import 'local_settings_screen.dart';
-import 'login_screen.dart';
+import 'settings/local_settings_screen.dart';
+import 'auth/login_screen.dart';
 import '../services/local_service.dart';
 import '../widgets/terminal_widget.dart';
-import '../services/local_service.dart';
 import '../core/localization.dart';
 import '../services/biometric_service.dart';
 import '../widgets/voice_command_overlay.dart';
-import '../widgets/ai_floating_button.dart';
 import '../widgets/glass_popups.dart';
 import '../widgets/ai_chat_overlay.dart';
 import '../widgets/premium_app_bar.dart';
 import '../widgets/app_tour_overlay.dart';
-import 'account_screen.dart';
+import 'settings/account_screen.dart';
 import 'smart_scenes_screen.dart';
 import '../widgets/app_snackbar.dart';
 import '../core/haptic_helper.dart';
@@ -47,12 +44,12 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
   final GlobalKey _localGridKey = GlobalKey();
   final GlobalKey _settingsKey = GlobalKey();
   final GlobalKey _aiTourKey = GlobalKey();
-  bool _isScrollingLocked = false;
+  final bool _isScrollingLocked = false;
   List<GridItemData> _items = [];
   List<Map<String, dynamic>> _rawWidgets = [];
   final Map<String, double> _sliderValues = {};
   final Map<String, DateTime> _lastSliderUpdate = {};
-  Map<String, bool> _localToggleStates = {};
+  final Map<String, bool> _localToggleStates = {};
   
   Map<String, Map<String, int>> _localPositions = {};
   bool _isConnected = false;
@@ -99,6 +96,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
       onComplete: () {
         Navigator.pop(context);
         Future.delayed(const Duration(milliseconds: 300), () {
+          if (!mounted) return;
           Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const AccountScreen(startTour: true)),
@@ -154,6 +152,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
       for (var action in actions) {
         futures.add(LocalService.sendCommand(action['widgetId'], action['value']).catchError((e) {
           debugPrint("Local command failed: $e");
+          return <String, dynamic>{};
         }));
       }
       await Future.wait(futures);
@@ -239,8 +238,8 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                 width: 140,
                 margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                 child: GlassCard(
-                  borderColor: isExecuting ? color : color.withOpacity(0.2),
-                  baseColor: isExecuting ? color.withOpacity(0.08) : AppTheme.cardBaseColor,
+                  borderColor: isExecuting ? color : color.withValues(alpha: 0.2),
+                  baseColor: isExecuting ? color.withValues(alpha: 0.08) : AppTheme.cardBaseColor,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
                     onTap: isExecuting ? null : () => _triggerSceneFromDashboard(scene),
@@ -252,7 +251,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: color.withOpacity(0.12),
+                              color: color.withValues(alpha: 0.12),
                             ),
                             child: isExecuting
                                 ? SizedBox(
@@ -392,11 +391,13 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
        
        InteractiveGrid.pack(list, 4);
 
-       if (mounted) setState(() {
+       if (mounted) {
+         setState(() {
           _rawWidgets = widgets;
           _items = list;
           _isLoading = false;
        });
+       }
        _saveLocalPositions();
        
     } catch (e) {
@@ -517,7 +518,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                      child: IgnorePointer(
                         child: CupertinoSwitch(
                           value: value, 
-                          activeColor: color, 
+                          activeTrackColor: color, 
                           onChanged: (_) {},
                         ),
                      ),
@@ -767,7 +768,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                                   
                                   if (debounceTimer?.isActive ?? false) debounceTimer!.cancel();
                                   debounceTimer = Timer(const Duration(milliseconds: 150), () async {
-                                     String hexString = '#${color.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+                                     String hexString = '#${color.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}';
                                      setState(() {
                                         w['state'] ??= {};
                                         w['state']['lastValue'] = hexString;
@@ -789,31 +790,31 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                                 children: [
                                    _buildSwatch(Colors.white, (c) {
                                      setModalState(() => pickerColor = c);
-                                     String hexString = '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+                                     String hexString = '#${c.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}';
                                      setState(() { w['state'] ??= {}; w['state']['lastValue'] = hexString; });
                                      LocalService.sendCommand(id, hexString);
                                    }),
                                    _buildSwatch(const Color(0xFFFFD1A4), (c) { // Warm white
                                      setModalState(() => pickerColor = c);
-                                     String hexString = '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+                                     String hexString = '#${c.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}';
                                      setState(() { w['state'] ??= {}; w['state']['lastValue'] = hexString; });
                                      LocalService.sendCommand(id, hexString);
                                    }),
                                    _buildSwatch(Colors.red, (c) {
                                      setModalState(() => pickerColor = c);
-                                     String hexString = '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+                                     String hexString = '#${c.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}';
                                      setState(() { w['state'] ??= {}; w['state']['lastValue'] = hexString; });
                                      LocalService.sendCommand(id, hexString);
                                    }),
                                    _buildSwatch(Colors.green, (c) {
                                      setModalState(() => pickerColor = c);
-                                     String hexString = '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+                                     String hexString = '#${c.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}';
                                      setState(() { w['state'] ??= {}; w['state']['lastValue'] = hexString; });
                                      LocalService.sendCommand(id, hexString);
                                    }),
                                    _buildSwatch(Colors.blue, (c) {
                                      setModalState(() => pickerColor = c);
-                                     String hexString = '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+                                     String hexString = '#${c.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}';
                                      setState(() { w['state'] ??= {}; w['state']['lastValue'] = hexString; });
                                      LocalService.sendCommand(id, hexString);
                                    }),
@@ -865,8 +866,8 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: color.withOpacity(0.12),
-            border: Border.all(color: color.withOpacity(0.3), width: 1.2),
+            color: color.withValues(alpha: 0.12),
+            border: Border.all(color: color.withValues(alpha: 0.3), width: 1.2),
           ),
           child: Icon(icon, color: color, size: 18),
         ),
@@ -892,7 +893,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppTheme.primaryCyan.withOpacity(0.4),
+              color: AppTheme.primaryCyan.withValues(alpha: 0.4),
               blurRadius: 10,
               spreadRadius: 1,
             ),
@@ -1011,7 +1012,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                                 padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 48.0),
                                 child: Center(
                                   child: GlassCard(
-                                    borderColor: AppTheme.primaryCyan.withOpacity(0.3),
+                                    borderColor: AppTheme.primaryCyan.withValues(alpha: 0.3),
                                     baseColor: AppTheme.cardBaseColor,
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(vertical: 32.0, horizontal: 20.0),
@@ -1085,15 +1086,15 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: AppTheme.cardBaseColor.withOpacity(0.7),
+                    color: AppTheme.cardBaseColor.withValues(alpha: 0.7),
                     borderRadius: BorderRadius.circular(40),
                     border: Border.all(
-                      color: AppTheme.primaryCyan.withOpacity(0.3),
+                      color: AppTheme.primaryCyan.withValues(alpha: 0.3),
                       width: 1.5,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppTheme.primaryCyan.withOpacity(0.1),
+                        color: AppTheme.primaryCyan.withValues(alpha: 0.1),
                         blurRadius: 20,
                         spreadRadius: 2,
                       ),
@@ -1147,7 +1148,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                         onTap: () {
                           showGlassDialog(
                             context: context,
-                            barrierColor: Colors.black.withOpacity(0.5),
+                            barrierColor: Colors.black.withValues(alpha: 0.5),
                             builder: (context) => const AiChatOverlay(),
                           );
                         },

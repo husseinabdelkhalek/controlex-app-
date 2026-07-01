@@ -1,7 +1,6 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:io';
 import 'api_service.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
@@ -124,7 +123,7 @@ class NotificationService {
           duration: 60000,
           textAccept: 'حسناً',
           textDecline: 'إغلاق',
-          missedCallNotification: NotificationParams(
+          missedCallNotification: const NotificationParams(
             showNotification: true,
             isShowCallback: false,
             subtitle: 'فاتك اتصال طوارئ',
@@ -132,7 +131,7 @@ class NotificationService {
           ),
           extra: <String, dynamic>{},
           headers: <String, dynamic>{},
-          android: AndroidParams(
+          android: const AndroidParams(
             isCustomNotification: false,
             isShowLogo: true,
             ringtonePath: 'system_ringtone_default',
@@ -141,7 +140,7 @@ class NotificationService {
             textColor: '#ffffff',
             incomingCallNotificationChannelName: "Emergency Call",
           ),
-          ios: IOSParams(
+          ios: const IOSParams(
             iconName: 'CallKitLogo',
             handleType: '',
             supportsVideo: false,

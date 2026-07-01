@@ -149,10 +149,10 @@ class _InteractiveGridState extends State<InteractiveGrid> {
       child: Container(
         margin: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.04),
+          color: Colors.white.withValues(alpha: 0.04),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: const Color(0xFF00E5FF).withOpacity(0.25),
+            color: const Color(0xFF00E5FF).withValues(alpha: 0.25),
             width: 1.5,
           ),
         ),
@@ -172,10 +172,10 @@ class _InteractiveGridState extends State<InteractiveGrid> {
       child: Container(
         margin: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: const Color(0xFF00E5FF).withOpacity(0.08),
+          color: const Color(0xFF00E5FF).withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: const Color(0xFF00E5FF).withOpacity(0.6),
+            color: const Color(0xFF00E5FF).withValues(alpha: 0.6),
             width: 2,
           ),
         ),
@@ -228,7 +228,7 @@ class _InteractiveGridState extends State<InteractiveGrid> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: const Color(0xFF00E5FF).withOpacity(0.35),
+                      color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
                       width: 1.2,
                     ),
                   ),
@@ -450,7 +450,7 @@ class _DragHandle extends StatelessWidget {
               const BorderRadius.vertical(top: Radius.circular(20)),
           gradient: LinearGradient(
             colors: [
-              Colors.black.withOpacity(0.55),
+              Colors.black.withValues(alpha: 0.55),
               Colors.transparent,
             ],
             begin: Alignment.topCenter,
@@ -519,8 +519,8 @@ class _ResizeHandleState extends State<_ResizeHandle> {
           height: 34,
           decoration: BoxDecoration(
             color: _active
-                ? const Color(0xFF00E5FF).withOpacity(0.3)
-                : Colors.black.withOpacity(0.65),
+                ? const Color(0xFF00E5FF).withValues(alpha: 0.3)
+                : Colors.black.withValues(alpha: 0.65),
             shape: BoxShape.circle,
             border: Border.all(
               color: const Color(0xFF00E5FF),
@@ -528,7 +528,7 @@ class _ResizeHandleState extends State<_ResizeHandle> {
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF00E5FF).withOpacity(0.35),
+                color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
                 blurRadius: 6,
                 spreadRadius: 1,
               ),
@@ -584,13 +584,13 @@ class _EditButtonState extends State<_EditButton> {
           height: 32,
           decoration: BoxDecoration(
             color: _pressed
-                ? widget.color.withOpacity(0.25)
-                : Colors.black.withOpacity(0.6),
+                ? widget.color.withValues(alpha: 0.25)
+                : Colors.black.withValues(alpha: 0.6),
             shape: BoxShape.circle,
             border: Border.all(color: widget.color, width: 1.5),
             boxShadow: [
               BoxShadow(
-                color: widget.color.withOpacity(0.4),
+                color: widget.color.withValues(alpha: 0.4),
                 blurRadius: 8,
                 spreadRadius: 0,
               ),

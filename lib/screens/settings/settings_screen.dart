@@ -1,13 +1,13 @@
-import '../widgets/app_snackbar.dart';
+import '../../widgets/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../theme/app_theme.dart';
-import '../services/api_service.dart';
-import '../core/localization.dart';
-import '../widgets/app_tour_overlay.dart';
-import 'local_dashboard_screen.dart';
-import '../widgets/nfc_bottom_sheet.dart';
+import '../../theme/app_theme.dart';
+import '../../services/api_service.dart';
+import '../../core/localization.dart';
+import '../../widgets/app_tour_overlay.dart';
+import '../local_dashboard_screen.dart';
+import '../../widgets/nfc_bottom_sheet.dart';
 import 'package:home_widget/home_widget.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -49,7 +49,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
   String _selectedProvider = 'adafruit';
   String _selectedType = 'Toggle';
   Color _selectedPrimary = AppTheme.primaryCyan;
-  Color _selectedActive = AppTheme.primaryCyan;
+  final Color _selectedActive = AppTheme.primaryCyan;
   
   List<dynamic> _pages = [];
   String? _selectedPageId;
@@ -115,6 +115,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
       onComplete: () {
         Navigator.pop(context);
         Future.delayed(const Duration(milliseconds: 300), () {
+          if (!mounted) return;
           Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const LocalDashboardScreen(startTour: true)),
@@ -154,7 +155,8 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
        bool hasAd = (profile['adafruitUsername']?.toString().isNotEmpty ?? false);
        bool hasFb = (profile['firebaseUrl']?.toString().isNotEmpty ?? false);
 
-       if (mounted) setState(() { 
+       if (mounted) {
+         setState(() { 
          _existingWidgets = list; 
          _pages = profile['preferences']?['pages'] ?? [];
          _hasAdafruit = hasAd;
@@ -169,6 +171,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
 
          _isLoadingList = false; 
        });
+       }
      } catch(e) {
        if (mounted) setState(() => _isLoadingList = false);
      }
@@ -248,8 +251,8 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
          'feedName': _feedCtrl.text.trim(),
          'provider': _selectedProvider,
          'type': _selectedType.toLowerCase(),
-         'primaryColor': '#${_selectedPrimary.value.toRadixString(16).padLeft(8, '0').substring(2)}',
-         'activeColor': '#${_selectedActive.value.toRadixString(16).padLeft(8, '0').substring(2)}',
+         'primaryColor': '#${_selectedPrimary.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}',
+         'activeColor': '#${_selectedActive.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}',
          'onCommand': _onCmdCtrl.text,
          'offCommand': _offCmdCtrl.text,
          'unit': _unitCtrl.text,
@@ -602,7 +605,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                   margin: const EdgeInsets.only(bottom: 12),
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.05),
+                    color: Colors.white.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.white12),
                   ),
@@ -631,7 +634,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                   margin: const EdgeInsets.only(bottom: 12),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.05),
+                    color: Colors.white.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.white12),
                   ),
@@ -911,7 +914,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   colors: [AppTheme.primaryCyan, AppTheme.primaryViolet],
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,

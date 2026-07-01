@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:ui';
-import '../theme/app_theme.dart';
+import '../../theme/app_theme.dart';
 
 class ServerLoadingScreen extends StatefulWidget {
   final VoidCallback? onComplete;
@@ -28,6 +28,8 @@ class _ServerLoadingScreenState extends State<ServerLoadingScreen>
   int _currentMessageIndex = 0;
   Timer? _messageTimer;
   Timer? _completionTimer;
+  Timer? _troubleshootTimer;
+  bool _showTroubleshoot = false;
 
   // Background gradient animation
   late AnimationController _bgController;
@@ -51,6 +53,14 @@ class _ServerLoadingScreenState extends State<ServerLoadingScreen>
       }
     });
 
+    _troubleshootTimer = Timer(const Duration(seconds: 5), () {
+      if (mounted) {
+        setState(() {
+          _showTroubleshoot = true;
+        });
+      }
+    });
+
     _bgController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 4),
@@ -65,6 +75,7 @@ class _ServerLoadingScreenState extends State<ServerLoadingScreen>
   void dispose() {
     _messageTimer?.cancel();
     _completionTimer?.cancel();
+    _troubleshootTimer?.cancel();
     _bgController.dispose();
     super.dispose();
   }
@@ -91,7 +102,7 @@ class _ServerLoadingScreenState extends State<ServerLoadingScreen>
                         height: 300,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppTheme.primaryViolet.withOpacity(0.15),
+                          color: AppTheme.primaryViolet.withValues(alpha: 0.15),
                         ),
                       ),
                     ),
@@ -106,7 +117,7 @@ class _ServerLoadingScreenState extends State<ServerLoadingScreen>
                         height: 400,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppTheme.primaryCyan.withOpacity(0.15),
+                          color: AppTheme.primaryCyan.withValues(alpha: 0.15),
                         ),
                       ),
                     ),
@@ -121,7 +132,7 @@ class _ServerLoadingScreenState extends State<ServerLoadingScreen>
                         height: 250,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppTheme.primaryCyan.withOpacity(0.1),
+                          color: AppTheme.primaryCyan.withValues(alpha: 0.1),
                         ),
                       ),
                     ),
@@ -154,11 +165,11 @@ class _ServerLoadingScreenState extends State<ServerLoadingScreen>
                       width: 100,
                       height: 100,
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryViolet.withOpacity(0.6)),
+                        valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryViolet.withValues(alpha: 0.6)),
                         strokeWidth: 2,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 70,
                       height: 70,
                       child: CircularProgressIndicator(
@@ -166,7 +177,7 @@ class _ServerLoadingScreenState extends State<ServerLoadingScreen>
                         strokeWidth: 4,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 40,
                       height: 40,
                       child: CircularProgressIndicator(
@@ -205,7 +216,7 @@ class _ServerLoadingScreenState extends State<ServerLoadingScreen>
                         fontWeight: FontWeight.w700,
                         shadows: [
                           Shadow(
-                            color: AppTheme.primaryCyan.withOpacity(0.5),
+                            color: AppTheme.primaryCyan.withValues(alpha: 0.5),
                             blurRadius: 15,
                           ),
                         ],
@@ -214,6 +225,21 @@ class _ServerLoadingScreenState extends State<ServerLoadingScreen>
                     ),
                   ),
                 ),
+                if (_showTroubleshoot) ...[
+                  const SizedBox(height: 30),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Text(
+                      'لو التطبيق مفاتحش، خش على اعدادات التطبيق من الاعدادات وامسح كل بيانات التطبيق والكاش (Clear Data & Cache)',
+                      style: GoogleFonts.cairo(
+                        color: Colors.redAccent.withValues(alpha: 0.9),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

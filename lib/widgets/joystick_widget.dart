@@ -64,7 +64,7 @@ class _JoystickWidgetState extends State<JoystickWidget> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryCyan.withOpacity(0.15),
+                    color: AppTheme.primaryCyan.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(_currentDirection, 
@@ -90,10 +90,10 @@ class _JoystickWidgetState extends State<JoystickWidget> {
                         height: 140,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.03),
-                          border: Border.all(color: Colors.white.withOpacity(0.1), width: 2),
+                          color: Colors.white.withValues(alpha: 0.03),
+                          border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 2),
                           boxShadow: [
-                            BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 15, spreadRadius: 2),
+                            BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 15, spreadRadius: 2),
                           ],
                         ),
                         child: Stack(
@@ -105,7 +105,7 @@ class _JoystickWidgetState extends State<JoystickWidget> {
                               height: 80,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                border: Border.all(color: Colors.white.withOpacity(0.05), width: 1),
+                                border: Border.all(color: Colors.white.withValues(alpha: 0.05), width: 1),
                               ),
                             ),
                           ],
@@ -122,18 +122,23 @@ class _JoystickWidgetState extends State<JoystickWidget> {
                             end: Alignment.bottomRight,
                           ),
                           boxShadow: [
-                            BoxShadow(color: AppTheme.primaryCyan.withOpacity(0.6), blurRadius: 12, spreadRadius: 2),
-                            BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 6, offset: const Offset(0, 4)),
+                            BoxShadow(color: AppTheme.primaryCyan.withValues(alpha: 0.6), blurRadius: 12, spreadRadius: 2),
+                            BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 6, offset: const Offset(0, 4)),
                           ],
                         ),
                       ),
                       listener: (details) {
                         // Calculate direction based on x and y thresholds
                         String dir = 'Center';
-                        if (details.x > 0.5) dir = 'Right';
-                        else if (details.x < -0.5) dir = 'Left';
-                        else if (details.y > 0.5) dir = 'Down';
-                        else if (details.y < -0.5) dir = 'Up';
+                        if (details.x > 0.5) {
+                          dir = 'Right';
+                        } else if (details.x < -0.5) {
+                          dir = 'Left';
+                        } else if (details.y > 0.5) {
+                          dir = 'Down';
+                        } else if (details.y < -0.5) {
+                          dir = 'Up';
+                        }
                         
                         if (_currentDirection != dir) {
                           setState(() => _currentDirection = dir);

@@ -1,6 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'package:flutter/cupertino.dart';
 import 'dart:convert';
 import 'package:home_widget/home_widget.dart';
 import '../widgets/glass_popups.dart';
@@ -12,11 +12,10 @@ import 'home_widget_setup_screen.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/glass_card.dart';
-import '../widgets/ai_floating_button.dart';
 import '../widgets/interactive_grid.dart';
 import '../theme/app_theme.dart';
-import 'settings_screen.dart';
-import 'account_screen.dart';
+import 'settings/settings_screen.dart';
+import 'settings/account_screen.dart';
 import 'local_dashboard_screen.dart';
 import '../services/api_service.dart';
 import '../services/socket_service.dart';
@@ -29,15 +28,15 @@ import '../widgets/voice_command_overlay.dart';
 import '../services/notification_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../widgets/app_tour_overlay.dart';
-import '../services/voice_parser.dart';
 import 'automations_screen.dart';
 import 'smart_scenes_screen.dart';
 import '../widgets/app_snackbar.dart';
-import 'manage_pages_dialog.dart';
+import 'dialogs/manage_pages_dialog.dart';
 import 'dart:async';
 import '../core/haptic_helper.dart';
 import '../core/localization.dart';
 import '../widgets/ai_chat_overlay.dart';
+import '../widgets/dashboard/toggle_widget.dart';
 
 
 class DashboardScreen extends StatefulWidget {
@@ -61,7 +60,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _unreadCount = 0;
   final Map<String, double> _sliderValues = {};
   final Map<String, DateTime> _lastSliderUpdate = {};
-  Map<String, bool> _localToggleStates = {};
+  final Map<String, bool> _localToggleStates = {};
   
   // Local position cache - preserves user's layout even on restarts/slow server
   Map<String, Map<String, int>> _localPositions = {};
@@ -139,10 +138,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<void> _fetchNotifications() async {
      try {
         final notifs = await ApiService.getNotifications();
-        if (mounted) setState(() {
+        if (mounted) {
+          setState(() {
             _notifications = notifs;
             _unreadCount = 0;
         });
+        }
      } catch(_) {}
   }
 
@@ -260,8 +261,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 width: 140,
                 margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                 child: GlassCard(
-                  borderColor: isExecuting ? color : color.withOpacity(0.2),
-                  baseColor: isExecuting ? color.withOpacity(0.08) : AppTheme.cardBaseColor,
+                  borderColor: isExecuting ? color : color.withValues(alpha: 0.2),
+                  baseColor: isExecuting ? color.withValues(alpha: 0.08) : AppTheme.cardBaseColor,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
                     onTap: isExecuting ? null : () => _triggerSceneFromDashboard(scene),
@@ -273,7 +274,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: color.withOpacity(0.12),
+                              color: color.withValues(alpha: 0.12),
                             ),
                             child: isExecuting
                                 ? SizedBox(
@@ -405,9 +406,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             builder: (ctx) => Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: AppTheme.darkBackground.withOpacity(0.8),
+                color: AppTheme.darkBackground.withValues(alpha: 0.8),
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-                border: Border.all(color: AppTheme.primaryCyan.withOpacity(0.3)),
+                border: Border.all(color: AppTheme.primaryCyan.withValues(alpha: 0.3)),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -434,7 +435,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       onPressed: () async {
                         await prefs.setBool('has_seen_promo_permanently', true);
                         if (ctx.mounted) Navigator.pop(ctx);
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => const HomeWidgetSetupScreen()));
+                        if (context.mounted) {
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => const HomeWidgetSetupScreen()));
+                        }
                       },
                     ),
                   ),
@@ -597,16 +600,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<void> _setupSocket() async {
     try {
       final user = await ApiService.userMe();
-      print('👤 User ID for socket: ${user['id']}');
+      debugPrint('👤 User ID for socket: ${user['id']}');
       
       if (user['id'] != null) {
         // ✅ الآن نستخدم await لأن الاتصال أصبح async
         await SocketService.connect(user['id']);
-        print('🔗 Setting up socket listeners...');
+        debugPrint('🔗 Setting up socket listeners...');
         
         // Listen for widget status updates (toggles, sliders, joysticks)
         SocketService.socket?.on('widget-status-update', (data) {
-          print('📡 Received widget-status-update: $data');
+          debugPrint('📡 Received widget-status-update: $data');
           if (mounted && !_isEditMode) {
             _updateWidgetFromSocket(data);
           }
@@ -614,7 +617,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         
         // Listen for sensor-specific data
         SocketService.socket?.on('sensor-data', (data) {
-          print('📡 Received sensor-data event: $data');
+          debugPrint('📡 Received sensor-data event: $data');
           if (mounted && !_isEditMode) {
             _updateWidgetFromSocket(data);
           }
@@ -622,7 +625,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         
         // Alternative sensor event name
         SocketService.socket?.on('new-sensor-reading', (data) {
-          print('📡 Received new-sensor-reading event: $data');
+          debugPrint('📡 Received new-sensor-reading event: $data');
           if (mounted && !_isEditMode) {
             _updateWidgetFromSocket(data);
           }
@@ -630,7 +633,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         
         // Listen for notifications
         SocketService.socket?.on('new-notification', (data) {
-          print('📡 Received new-notification: $data');
+          debugPrint('📡 Received new-notification: $data');
           if (mounted) {
             setState(() {
               _notifications.insert(0, data);
@@ -649,28 +652,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
           }
         });
         
-        print('✅ Socket listeners set up successfully');
+        debugPrint('✅ Socket listeners set up successfully');
       } else {
-        print('❌ User ID not found - socket not connected');
+        debugPrint('❌ User ID not found - socket not connected');
       }
     } catch (e) {
-      print('❌ Error setting up socket: $e');
+      debugPrint('❌ Error setting up socket: $e');
     }
   }
 
   void _updateWidgetFromSocket(dynamic data) {
     if (data == null) {
-      print('⚠️  Received null socket data');
+      debugPrint('⚠️  Received null socket data');
       return;
     }
     
     String? widgetId = data['widgetId'];
     if (widgetId == null) {
-      print('⚠️  Socket data missing widgetId: $data');
+      debugPrint('⚠️  Socket data missing widgetId: $data');
       return;
     }
     
-    print('🔄 Updating widget $widgetId with socket data: $data');
+    debugPrint('🔄 Updating widget $widgetId with socket data: $data');
     
     setState(() {
       for (var i = 0; i < _rawWidgets.length; i++) {
@@ -679,13 +682,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
           
           // Update lastValue if provided (for sensors)
           if (data['lastValue'] != null) {
-            print('   📊 Setting lastValue: ${data['lastValue']}');
+            debugPrint('   📊 Setting lastValue: ${data['lastValue']}');
             _rawWidgets[i]['state']['lastValue'] = data['lastValue'].toString();
           }
           
           // Also support 'value' key from sensor-data events
           if (data['value'] != null) {
-            print('   📊 Setting value: ${data['value']}');
+            debugPrint('   📊 Setting value: ${data['value']}');
             _rawWidgets[i]['state']['lastValue'] = data['value'].toString();
           }
 
@@ -703,7 +706,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           
           // Update other state properties
           if (data['isActive'] != null) {
-            print('   🔌 Setting isActive: ${data['isActive']}');
+            debugPrint('   🔌 Setting isActive: ${data['isActive']}');
             _rawWidgets[i]['state']['isActive'] = data['isActive'];
           }
           
@@ -723,19 +726,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
             }
           }
           
-          print('✅ Widget $widgetId updated successfully');
+          debugPrint('✅ Widget $widgetId updated successfully');
           break;
         }
       }
       
       if (!_rawWidgets.any((w) => w['id'] == widgetId)) {
-        print('⚠️  Widget with ID $widgetId not found in _rawWidgets');
+        debugPrint('⚠️  Widget with ID $widgetId not found in _rawWidgets');
       }
     });
   }
 
   Future<void> _refreshWidgetStates() async {
-    print('🔄 Manually refreshing widget states from API...');
+    debugPrint('🔄 Manually refreshing widget states from API...');
     try {
       final widgets = await ApiService.getWidgets();
       if (mounted) {
@@ -747,39 +750,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
           for (var w in widgets) {
             if (w['type'] == 'sensor') {
               final value = w['state']?['lastValue'];
-              print('📊 Updated sensor ${w['id']}: $value');
+              debugPrint('📊 Updated sensor ${w['id']}: $value');
             }
           }
         });
-        print('✅ Widget states refreshed');
+        debugPrint('✅ Widget states refreshed');
       }
     } catch (e) {
-      print('❌ Error refreshing widget states: $e');
+      debugPrint('❌ Error refreshing widget states: $e');
     }
   }
 
   Future<void> _loadWidgets({bool isRetry = false}) async {
     if (!isRetry) {
       _retryCount = 0;
-      if (mounted) setState(() {
+      if (mounted) {
+        setState(() {
         _isLoading = true;
         _serverStatusMessage = null;
       });
+      }
     }
     try {
-       print('📥 Loading widgets from API...');
+       debugPrint('📥 Loading widgets from API...');
        final widgets = await ApiService.getWidgets();
        
        // ✅ Success: process and show whatever the server returned
        // (empty list is valid - user might just have no widgets)
-       print('📦 Received ${widgets.length} widgets from API');
+       debugPrint('📦 Received ${widgets.length} widgets from API');
        
        // Log sensor widgets specifically
        for (var w in widgets) {
          if (w['type'] == 'sensor') {
-           print('📊 Sensor Widget: ${w['id']} - ${w['name']}');
-           print('   State: ${w['state']}');
-           print('   Value: ${w['state']?['lastValue'] ?? 'null'}');
+           debugPrint('📊 Sensor Widget: ${w['id']} - ${w['name']}');
+           debugPrint('   State: ${w['state']}');
+           debugPrint('   Value: ${w['state']?['lastValue'] ?? 'null'}');
          }
        }
        
@@ -799,7 +804,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
        // لأن السيرفر قد يحتاج وقت لجمع بيانات السينسور من الأجهزة
        Future.delayed(const Duration(seconds: 2), () {
          if (mounted) {
-           print('⏱️  Retrying widget fetch after 2s to get sensor data...');
+           debugPrint('⏱️  Retrying widget fetch after 2s to get sensor data...');
            _refreshWidgetStates();
          }
        });
@@ -816,23 +821,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
         }
        
     } catch (e) {
-       print('❌ Error loading widgets: $e');
+       debugPrint('❌ Error loading widgets: $e');
        if (_retryCount < _maxRetries) {
          _retryCount++;
          final waitSec = _retryCount <= 2 ? 6 : 10;
          final wakingUp = AppLocalization.get('server_waking_up').replaceAll('%s', '$_retryCount').replaceFirst('%s', '$_maxRetries');
          final waitText = AppLocalization.get('wait_sec').replaceAll('%s', '$waitSec');
-         if (mounted) setState(() {
+         if (mounted) {
+           setState(() {
            _serverStatusMessage = '$wakingUp\n$waitText';
          });
+         }
          await Future.delayed(Duration(seconds: waitSec));
          if (mounted) return _loadWidgets(isRetry: true);
          return;
        }
-       if (mounted) setState(() {
+       if (mounted) {
+         setState(() {
          _isLoading = false;
          _serverStatusMessage = AppLocalization.get('server_error_retry');
        });
+       }
     }
   }
 
@@ -917,7 +926,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         margin: const EdgeInsets.only(right: 8),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? AppTheme.primaryCyan.withOpacity(0.2) : Colors.white.withOpacity(0.05),
+          color: isActive ? AppTheme.primaryCyan.withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.05),
           border: Border.all(color: isActive ? AppTheme.primaryCyan : Colors.white12),
           borderRadius: BorderRadius.circular(20),
         ),
@@ -990,7 +999,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppTheme.primaryCyan.withOpacity(0.15),
+                    color: AppTheme.primaryCyan.withValues(alpha: 0.15),
                   ),
                   child: const Icon(Icons.dashboard, color: AppTheme.primaryCyan, size: 20),
                 ),
@@ -1021,7 +1030,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: const Color(0xFFBB86FC).withOpacity(0.15),
+                      color: const Color(0xFFBB86FC).withValues(alpha: 0.15),
                     ),
                     child: const Icon(Icons.layers, color: Color(0xFFBB86FC), size: 20),
                   ),
@@ -1194,7 +1203,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             color: const Color(0xDC080614), // Deep dark semi-translucent base
             border: Border(
               right: BorderSide(
-                color: AppTheme.primaryCyan.withOpacity(0.2),
+                color: AppTheme.primaryCyan.withValues(alpha: 0.2),
                 width: 1.5,
               ),
             ),
@@ -1207,12 +1216,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 DrawerHeader(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [AppTheme.primaryViolet.withOpacity(0.15), Colors.transparent],
+                      colors: [AppTheme.primaryViolet.withValues(alpha: 0.15), Colors.transparent],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
                     border: Border(
-                      bottom: BorderSide(color: Colors.white.withOpacity(0.06), width: 1),
+                      bottom: BorderSide(color: Colors.white.withValues(alpha: 0.06), width: 1),
                     ),
                   ),
                   child: Column(
@@ -1223,7 +1232,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                          Container(
                            decoration: BoxDecoration(
                              shape: BoxShape.circle,
-                             border: Border.all(color: AppTheme.primaryCyan.withOpacity(0.5), width: 1.5),
+                             border: Border.all(color: AppTheme.primaryCyan.withValues(alpha: 0.5), width: 1.5),
                            ),
                            child: CircleAvatar(
                              radius: 30,
@@ -1236,7 +1245,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                            padding: const EdgeInsets.all(8),
                            decoration: BoxDecoration(
                              shape: BoxShape.circle,
-                             color: AppTheme.primaryCyan.withOpacity(0.1),
+                             color: AppTheme.primaryCyan.withValues(alpha: 0.1),
                            ),
                            child: const Icon(Icons.account_circle, size: 48, color: AppTheme.primaryCyan),
                          ),
@@ -1354,7 +1363,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               height: 400,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppTheme.primaryViolet.withOpacity(0.18),
+                color: AppTheme.primaryViolet.withValues(alpha: 0.18),
               ),
               child: BackdropFilter(filter: ImageFilter.blur(sigmaX: 120, sigmaY: 120), child: Container()),
             ),
@@ -1367,7 +1376,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               height: 350,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppTheme.neonBlue.withOpacity(0.15),
+                color: AppTheme.neonBlue.withValues(alpha: 0.15),
               ),
               child: BackdropFilter(filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100), child: Container()),
             ),
@@ -1380,7 +1389,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               height: 250,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppTheme.accentNeon.withOpacity(0.12),
+                color: AppTheme.accentNeon.withValues(alpha: 0.12),
               ),
               child: BackdropFilter(filter: ImageFilter.blur(sigmaX: 90, sigmaY: 90), child: Container()),
             ),
@@ -1465,7 +1474,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     ]
                                   else ...
                                     [
-                                      Icon(Icons.widgets_outlined, size: 64, color: AppTheme.primaryCyan.withOpacity(0.3)),
+                                      Icon(Icons.widgets_outlined, size: 64, color: AppTheme.primaryCyan.withValues(alpha: 0.3)),
                                       const SizedBox(height: 16),
                                       Text(
                                         AppLocalization.get('no_widgets'),
@@ -1520,15 +1529,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: AppTheme.cardBaseColor.withOpacity(0.7),
+                    color: AppTheme.cardBaseColor.withValues(alpha: 0.7),
                     borderRadius: BorderRadius.circular(40),
                     border: Border.all(
-                      color: AppTheme.primaryCyan.withOpacity(0.3),
+                      color: AppTheme.primaryCyan.withValues(alpha: 0.3),
                       width: 1.5,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppTheme.primaryCyan.withOpacity(0.1),
+                        color: AppTheme.primaryCyan.withValues(alpha: 0.1),
                         blurRadius: 20,
                         spreadRadius: 2,
                       ),
@@ -1545,7 +1554,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         onTap: () {
                           showGlassDialog(
                             context: context,
-                            barrierColor: Colors.black.withOpacity(0.5),
+                            barrierColor: Colors.black.withValues(alpha: 0.5),
                             builder: (context) => const AiChatOverlay(),
                           );
                         },
@@ -1594,8 +1603,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: color.withOpacity(0.12),
-            border: Border.all(color: color.withOpacity(0.3), width: 1.2),
+            color: color.withValues(alpha: 0.12),
+            border: Border.all(color: color.withValues(alpha: 0.3), width: 1.2),
           ),
           child: Icon(icon, color: color, size: 18),
         ),
@@ -1641,7 +1650,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppTheme.primaryCyan.withOpacity(0.4),
+              color: AppTheme.primaryCyan.withValues(alpha: 0.4),
               blurRadius: 10,
               spreadRadius: 1,
             ),
@@ -1689,10 +1698,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 _notifications = [];
                               });
                               if (ctx.mounted) Navigator.pop(ctx);
-                              if (ctx.mounted) ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
+                              if (ctx.mounted) {
+                                ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
                                 content: Text(AppLocalization.isArabicNotifier.value ? 'تم مسح جميع الإشعارات' : 'All notifications cleared'),
                                 backgroundColor: Colors.redAccent,
                               ));
+                              }
                               
                               try {
                                 await ApiService.clearNotifications();
@@ -1753,70 +1764,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildToggleWidget(dynamic w, String title, IconData icon, bool value, Color color) {
-    return LayoutBuilder(builder: (builderContext, constraints) {
-      final size = constraints.biggest.shortestSide;
-      final config = w['configuration'] ?? {};
-      final String onCmd = config['onCommand'] ?? 'ON';
-      final String offCmd = config['offCommand'] ?? 'OFF';
-      final String id = w['id'];
+    final config = w['configuration'] ?? {};
+    final String onCmd = config['onCommand'] ?? 'ON';
+    final String offCmd = config['offCommand'] ?? 'OFF';
+    final String id = w['id'];
 
-      return GestureDetector(
-        onTap: _isEditMode ? null : () async {
-            if (config['biometricEnabled'] == true) {
-              bool auth = await BiometricService.authenticate(context);
-              if (!auth) return;
-            }
-            bool newState = !value;
-            setState(() => _localToggleStates[id] = newState);
-            try {
-               await ApiService.sendCommand(id, newState ? onCmd : offCmd);
-               _updateHomeWidgetData(id, newState ? 'ON' : 'OFF');
-            } catch(e) {
-               debugPrint('Toggle Error: $e');
-               setState(() => _localToggleStates[id] = value);
-               if (context.mounted) {
-                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                   content: Text(e.toString().replaceAll('Exception: ', '')),
-                   backgroundColor: Colors.redAccent,
-                   duration: const Duration(seconds: 3),
-                 ));
-               }
-            }
-        },
-        child: GlassCard(
-          borderColor: color,
-          baseColor: value ? color.withValues(alpha: 0.1) : AppTheme.cardBaseColor,
-          child: Padding(
-            padding: EdgeInsets.all(size * 0.1),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(icon, size: size * 0.35, color: value ? color : Colors.white24),
-                SizedBox(height: size * 0.05),
-                Text(title, 
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: size * 0.14), 
-                  textAlign: TextAlign.center,
-                  maxLines: 1, overflow: TextOverflow.ellipsis,
-                ),
-                SizedBox(height: size * 0.05),
-                Expanded(
-                  child: FittedBox(
-                     fit: BoxFit.scaleDown,
-                     child: IgnorePointer(
-                        child: CupertinoSwitch(
-                          value: value, 
-                          activeColor: color, 
-                          onChanged: (_) {},
-                        ),
-                     ),
-                  ),
-                ),
-              ],
-            ),
-          )
-        ),
-      );
-    });
+    return DashboardToggleWidget(
+      config: config,
+      id: id,
+      title: title,
+      icon: icon,
+      value: value,
+      color: color,
+      isEditMode: _isEditMode,
+      onToggle: () async {
+        if (config['biometricEnabled'] == true) {
+          bool auth = await BiometricService.authenticate(context);
+          if (!auth) return;
+        }
+        bool newState = !value;
+        setState(() => _localToggleStates[id] = newState);
+        try {
+           await ApiService.sendCommand(id, newState ? onCmd : offCmd);
+           _updateHomeWidgetData(id, newState ? 'ON' : 'OFF');
+        } catch(e) {
+           debugPrint('Toggle Error: $e');
+           setState(() => _localToggleStates[id] = value);
+           if (mounted) {
+             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+               content: Text(e.toString().replaceAll('Exception: ', '')),
+               backgroundColor: Colors.redAccent,
+               duration: const Duration(seconds: 3),
+             ));
+           }
+        }
+      },
+    );
   }
 
   Widget _buildPushWidget(dynamic w, String title, IconData icon, Color color) {
@@ -1834,7 +1817,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildSensorWidget(String title, IconData icon, String value, Color color, [String? unit]) {
-    print('🎨 Building sensor widget: $title = $value $unit');
+    debugPrint('🎨 Building sensor widget: $title = $value $unit');
     
     return LayoutBuilder(builder: (builderContext, constraints) {
       final size = constraints.biggest.shortestSide;
@@ -2005,7 +1988,7 @@ onChangeEnd: (v) async {
           shape: BoxShape.circle,
           border: Border.all(color: Colors.white54, width: 2),
           boxShadow: [
-             BoxShadow(color: color.withOpacity(0.5), blurRadius: 8, spreadRadius: 1)
+             BoxShadow(color: color.withValues(alpha: 0.5), blurRadius: 8, spreadRadius: 1)
           ]
         ),
       ),
@@ -2064,7 +2047,7 @@ onChangeEnd: (v) async {
               height: 80,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: currentColor.withOpacity(0.3),
+                color: currentColor.withValues(alpha: 0.3),
               ),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
@@ -2089,9 +2072,9 @@ onChangeEnd: (v) async {
                         child: Container(
                           padding: const EdgeInsets.all(24),
                           decoration: BoxDecoration(
-                            color: AppTheme.darkBackground.withOpacity(0.8),
+                            color: AppTheme.darkBackground.withValues(alpha: 0.8),
                             borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-                            border: Border.all(color: Colors.white.withOpacity(0.1)),
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
                           ),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
@@ -2112,7 +2095,7 @@ onChangeEnd: (v) async {
                                   
                                   if (debounceTimer?.isActive ?? false) debounceTimer!.cancel();
                                   debounceTimer = Timer(const Duration(milliseconds: 150), () async {
-                                     String hexString = '#${color.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+                                     String hexString = '#${color.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}';
                                      setState(() {
                                          w['state'] ??= {};
                                          w['state']['lastValue'] = hexString;
@@ -2135,35 +2118,35 @@ onChangeEnd: (v) async {
                                 children: [
                                     _buildSwatch(Colors.white, (c) async {
                                      setModalState(() => pickerColor = c);
-                                     String hexString = '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+                                     String hexString = '#${c.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}';
                                      setState(() { w['state'] ??= {}; w['state']['lastValue'] = hexString; });
                                      await ApiService.sendCommand(id, hexString);
                                      _updateHomeWidgetData(id, hexString);
                                    }),
                                    _buildSwatch(const Color(0xFFFFD1A4), (c) async { // Warm white
                                      setModalState(() => pickerColor = c);
-                                     String hexString = '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+                                     String hexString = '#${c.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}';
                                      setState(() { w['state'] ??= {}; w['state']['lastValue'] = hexString; });
                                      await ApiService.sendCommand(id, hexString);
                                      _updateHomeWidgetData(id, hexString);
                                    }),
                                    _buildSwatch(Colors.red, (c) async {
                                      setModalState(() => pickerColor = c);
-                                     String hexString = '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+                                     String hexString = '#${c.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}';
                                      setState(() { w['state'] ??= {}; w['state']['lastValue'] = hexString; });
                                      await ApiService.sendCommand(id, hexString);
                                      _updateHomeWidgetData(id, hexString);
                                    }),
                                    _buildSwatch(Colors.green, (c) async {
                                      setModalState(() => pickerColor = c);
-                                     String hexString = '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+                                     String hexString = '#${c.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}';
                                      setState(() { w['state'] ??= {}; w['state']['lastValue'] = hexString; });
                                      await ApiService.sendCommand(id, hexString);
                                      _updateHomeWidgetData(id, hexString);
                                    }),
                                    _buildSwatch(Colors.blue, (c) async {
                                      setModalState(() => pickerColor = c);
-                                     String hexString = '#${c.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+                                     String hexString = '#${c.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}';
                                      setState(() { w['state'] ??= {}; w['state']['lastValue'] = hexString; });
                                      await ApiService.sendCommand(id, hexString);
                                      _updateHomeWidgetData(id, hexString);

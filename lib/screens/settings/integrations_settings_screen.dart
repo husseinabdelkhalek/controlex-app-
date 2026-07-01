@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
-import '../services/api_service.dart';
-import '../core/localization.dart';
-import '../widgets/app_snackbar.dart';
+import '../../theme/app_theme.dart';
+import '../../services/api_service.dart';
+import '../../core/localization.dart';
+import '../../widgets/app_snackbar.dart';
 
 class IntegrationsSettingsScreen extends StatefulWidget {
   final Map<String, dynamic>? initialData;
@@ -168,7 +168,7 @@ class _IntegrationsSettingsScreenState extends State<IntegrationsSettingsScreen>
                           ),
                           const SizedBox(width: 16),
                           const Expanded(
-                            child: const Text(
+                            child: Text(
                               'Adafruit IO',
                               style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                             ),
@@ -216,7 +216,7 @@ class _IntegrationsSettingsScreenState extends State<IntegrationsSettingsScreen>
                           ),
                           const SizedBox(width: 16),
                           const Expanded(
-                            child: const Text(
+                            child: Text(
                               'Firebase RTDB',
                               style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                             ),

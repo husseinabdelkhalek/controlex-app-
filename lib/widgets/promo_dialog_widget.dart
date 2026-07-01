@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../theme/app_theme.dart';
@@ -9,7 +8,7 @@ import 'glass_card.dart';
 import 'glass_popups.dart';
 
 class PromoDialogWidget extends StatelessWidget {
-  const PromoDialogWidget({Key? key}) : super(key: key);
+  const PromoDialogWidget({super.key});
 
   static void show(BuildContext context) {
     showGlassModalBottomSheet(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'dart:ui';
-import 'package:lottie/lottie.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import '../theme/app_theme.dart';
 import '../services/nfc_service.dart';
@@ -20,12 +19,12 @@ class NfcBottomSheet extends StatefulWidget {
   final Duration timeout;
 
   const NfcBottomSheet({
-    Key? key,
+    super.key,
     required this.payload,
     required this.title,
     required this.description,
     this.timeout = const Duration(seconds: 15),
-  }) : super(key: key);
+  });
 
   static Future<String?> show({
     required BuildContext context,
@@ -173,7 +172,7 @@ class _NfcBottomSheetState extends State<NfcBottomSheet> {
                 width: 48,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2.5),
                 ),
               ),

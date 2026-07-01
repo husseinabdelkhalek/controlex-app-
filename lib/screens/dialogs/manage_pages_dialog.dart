@@ -1,11 +1,10 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
-import '../services/api_service.dart';
-import '../core/localization.dart';
-import '../widgets/app_snackbar.dart';
-import '../widgets/glass_card.dart';
-import '../widgets/glass_popups.dart';
+import '../../theme/app_theme.dart';
+import '../../services/api_service.dart';
+import '../../core/localization.dart';
+import '../../widgets/app_snackbar.dart';
+import '../../widgets/glass_card.dart';
+import '../../widgets/glass_popups.dart';
 
 class ManagePagesDialog extends StatefulWidget {
   final List<dynamic> currentPages;
@@ -70,14 +69,14 @@ class _ManagePagesDialogState extends State<ManagePagesDialog> {
                     hintStyle: const TextStyle(color: Colors.white54),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+                      borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(color: AppTheme.primaryCyan),
                     ),
                     filled: true,
-                    fillColor: Colors.black.withOpacity(0.2),
+                    fillColor: Colors.black.withValues(alpha: 0.2),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -144,14 +143,14 @@ class _ManagePagesDialogState extends State<ManagePagesDialog> {
                     hintStyle: const TextStyle(color: Colors.white54),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+                      borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(color: AppTheme.primaryCyan),
                     ),
                     filled: true,
-                    fillColor: Colors.black.withOpacity(0.2),
+                    fillColor: Colors.black.withValues(alpha: 0.2),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -215,7 +214,7 @@ class _ManagePagesDialogState extends State<ManagePagesDialog> {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -234,9 +233,9 @@ class _ManagePagesDialogState extends State<ManagePagesDialog> {
                           return Container(
                             margin: const EdgeInsets.only(bottom: 12),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.05),
+                              color: Colors.white.withValues(alpha: 0.05),
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: Colors.white.withOpacity(0.1)),
+                              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
                             ),
                             child: ListTile(
                               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -259,7 +258,7 @@ class _ManagePagesDialogState extends State<ManagePagesDialog> {
                 children: [
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white.withOpacity(0.1),
+                      backgroundColor: Colors.white.withValues(alpha: 0.1),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                       elevation: 0,

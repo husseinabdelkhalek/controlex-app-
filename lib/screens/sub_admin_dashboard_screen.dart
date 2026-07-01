@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -436,7 +435,7 @@ class _SubAdminDashboardScreenState extends State<SubAdminDashboardScreen> with 
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  '${client['widgetCount'] ?? 0} ' + (ar ? 'أداة ذكية' : 'Widgets'),
+                  '${client['widgetCount'] ?? 0} ${ar ? 'أداة ذكية' : 'Widgets'}',
                   style: const TextStyle(color: Colors.white38, fontSize: 11),
                 ),
               ],

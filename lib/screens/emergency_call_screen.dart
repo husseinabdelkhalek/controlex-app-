@@ -97,7 +97,7 @@ class _EmergencyCallScreenState extends State<EmergencyCallScreen> with SingleTi
                 decoration: BoxDecoration(
                   gradient: RadialGradient(
                     colors: [
-                      Colors.red.withOpacity(0.5 * _animationController.value),
+                      Colors.red.withValues(alpha: 0.5 * _animationController.value),
                       Colors.black,
                     ],
                     radius: 1.0 + (_animationController.value * 0.5),
@@ -120,7 +120,7 @@ class _EmergencyCallScreenState extends State<EmergencyCallScreen> with SingleTi
                     padding: const EdgeInsets.all(32),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.red.withOpacity(0.2),
+                      color: Colors.red.withValues(alpha: 0.2),
                       border: Border.all(color: Colors.red, width: 4),
                     ),
                     child: const Icon(
@@ -208,7 +208,7 @@ class _EmergencyCallScreenState extends State<EmergencyCallScreen> with SingleTi
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: color.withOpacity(0.2),
+              color: color.withValues(alpha: 0.2),
               border: Border.all(color: color, width: 2),
             ),
             child: Icon(icon, color: color, size: 40),

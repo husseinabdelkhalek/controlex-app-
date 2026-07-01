@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'theme/app_theme.dart';
-import 'screens/login_screen.dart';
+import 'screens/auth/login_screen.dart';
 import 'core/localization.dart';
 import 'core/error_handler.dart';
 import 'services/api_service.dart';
 import 'screens/dashboard_screen.dart';
-import 'screens/loading_screen.dart';
+import 'screens/status/loading_screen.dart';
 import 'services/notification_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
@@ -45,7 +45,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       duration: 60000, // Ring for 60 seconds
       textAccept: 'حسناً',
       textDecline: 'إغلاق',
-      missedCallNotification: NotificationParams(
+      missedCallNotification: const NotificationParams(
         showNotification: true,
         isShowCallback: false,
         subtitle: 'فاتك اتصال طوارئ',
@@ -53,7 +53,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       ),
       extra: <String, dynamic>{},
       headers: <String, dynamic>{},
-      android: AndroidParams(
+      android: const AndroidParams(
         isCustomNotification: false,
         isShowLogo: true,
         ringtonePath: 'system_ringtone_default',
@@ -62,7 +62,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         textColor: '#ffffff',
         incomingCallNotificationChannelName: "Emergency Call",
       ),
-      ios: IOSParams(
+      ios: const IOSParams(
         iconName: 'CallKitLogo',
         handleType: '',
         supportsVideo: false,
@@ -191,8 +191,11 @@ Future<void> backgroundCallbackHandler(Uri? uri) async {
         } else {
           await ApiService.sendCommand(toolId, cmd);
           var reply = 'OK';
-          if (cmd == 'ping') reply = 'PONG';
-          else if (cmd == 'status') reply = 'All systems nominal';
+          if (cmd == 'ping') {
+            reply = 'PONG';
+          } else if (cmd == 'status') {
+            reply = 'All systems nominal';
+          }
           await HomeWidget.saveWidgetData('widget_data_$toolId', '$cmd\n> $reply');
         }
         await HomeWidget.updateWidget(name: 'ControlExWidgetProvider', androidName: 'ControlExWidgetProvider');
@@ -320,9 +323,9 @@ class _AppInitializerState extends State<AppInitializer> {
             decoration: BoxDecoration(
               color: const Color(0xFF1E1E1E),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.cyan.withOpacity(0.5), width: 1),
+              border: Border.all(color: Colors.cyan.withValues(alpha: 0.5), width: 1),
               boxShadow: [
-                BoxShadow(color: Colors.cyan.withOpacity(0.2), blurRadius: 20, spreadRadius: 5),
+                BoxShadow(color: Colors.cyan.withValues(alpha: 0.2), blurRadius: 20, spreadRadius: 5),
               ],
             ),
             child: Column(

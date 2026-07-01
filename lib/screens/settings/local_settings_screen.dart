@@ -1,8 +1,8 @@
-import '../widgets/app_snackbar.dart';
+import '../../widgets/app_snackbar.dart';
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
-import '../services/local_service.dart';
-import '../core/localization.dart';
+import '../../theme/app_theme.dart';
+import '../../services/local_service.dart';
+import '../../core/localization.dart';
 
 class LocalSettingsScreen extends StatefulWidget {
   const LocalSettingsScreen({super.key});
@@ -108,7 +108,7 @@ class _LocalSettingsScreenState extends State<LocalSettingsScreen> {
          'name': _nameCtrl.text.trim(),
          'feedName': _commandPathCtrl.text.trim(), // Command path in local mode
          'type': _selectedType.toLowerCase(),
-         'primaryColor': '#${_selectedPrimary.value.toRadixString(16).padLeft(8, '0').substring(2)}',
+         'primaryColor': '#${_selectedPrimary.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}',
          'onCommand': _onCmdCtrl.text,
          'offCommand': _offCmdCtrl.text,
          'configuration': {

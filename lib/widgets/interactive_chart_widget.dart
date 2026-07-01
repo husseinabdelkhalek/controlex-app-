@@ -255,13 +255,13 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
                                 verticalInterval: _getBottomTitleInterval(_selectedFilter),
                                 getDrawingHorizontalLine: (value) {
                                   return FlLine(
-                                    color: Colors.white.withOpacity(0.04),
+                                    color: Colors.white.withValues(alpha: 0.04),
                                     strokeWidth: 0.8,
                                   );
                                 },
                                 getDrawingVerticalLine: (value) {
                                   return FlLine(
-                                    color: Colors.white.withOpacity(0.04),
+                                    color: Colors.white.withValues(alpha: 0.04),
                                     strokeWidth: 0.8,
                                   );
                                 },
@@ -335,8 +335,8 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
                             show: true,
                             gradient: LinearGradient(
                               colors: [
-                                widget.color.withOpacity(0.25),
-                                widget.color.withOpacity(0.0),
+                                widget.color.withValues(alpha: 0.25),
+                                widget.color.withValues(alpha: 0.0),
                               ],
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
@@ -356,8 +356,10 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
             const SizedBox(height: 12),
             
             // Time range selector
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            Wrap(
+              alignment: WrapAlignment.spaceEvenly,
+              spacing: 8,
+              runSpacing: 8,
               children: [
                 _buildFilterButton('1h', 'ساعة'),
                 _buildFilterButton('24h', '٢٤ ساعة'),
@@ -386,9 +388,9 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: isSelected ? widget.color.withOpacity(0.15) : Colors.transparent,
+          color: isSelected ? widget.color.withValues(alpha: 0.15) : Colors.transparent,
           border: Border.all(
-            color: isSelected ? widget.color.withOpacity(0.3) : Colors.transparent,
+            color: isSelected ? widget.color.withValues(alpha: 0.3) : Colors.transparent,
             width: 1,
           ),
         ),

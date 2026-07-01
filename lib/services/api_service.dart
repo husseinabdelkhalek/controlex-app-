@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../core/api_constants.dart';
@@ -97,7 +96,7 @@ class ApiService {
       if (response.body.isNotEmpty && response.body.startsWith('{')) {
          return json.decode(response.body);
       } else {
-        throw Exception(AppLocalization.get('login_failed') + ': ${response.statusCode}');
+        throw Exception('${AppLocalization.get('login_failed')}: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception(AppLocalization.get('network_error'));
@@ -871,6 +870,7 @@ class ApiService {
     for (var action in actions) {
       futures.add(sendCommand(action['widgetId'], action['value']).catchError((e) {
         // Log or silently ignore
+        return <String, dynamic>{};
       }));
     }
     

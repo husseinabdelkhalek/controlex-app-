@@ -31,10 +31,10 @@ class _TutorialSandboxScreenState extends State<TutorialSandboxScreen> {
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.primaryViolet.withOpacity(0.15),
+        color: AppTheme.primaryViolet.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.primaryViolet.withOpacity(0.5)),
-        boxShadow: [BoxShadow(color: AppTheme.primaryViolet.withOpacity(0.2), blurRadius: 10)],
+        border: Border.all(color: AppTheme.primaryViolet.withValues(alpha: 0.5)),
+        boxShadow: [BoxShadow(color: AppTheme.primaryViolet.withValues(alpha: 0.2), blurRadius: 10)],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -148,7 +148,7 @@ class _TutorialSandboxScreenState extends State<TutorialSandboxScreen> {
           Expanded(
             child: _items.isEmpty
                 ? Center(
-                    child: Icon(Icons.dashboard_customize, size: 80, color: Colors.white.withOpacity(0.1)),
+                    child: Icon(Icons.dashboard_customize, size: 80, color: Colors.white.withValues(alpha: 0.1)),
                   )
                 : InteractiveGrid(
                     isEditMode: _isEditMode,

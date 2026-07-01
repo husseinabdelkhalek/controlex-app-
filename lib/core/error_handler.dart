@@ -109,18 +109,18 @@ class ErrorHandler {
 
   static Future<void> _logError(String error, String stackTrace) async {
     if (kDebugMode) {
-      print('Crash logged locally: $error');
+      debugPrint('Crash logged locally: $error');
     }
 
     // 1. Check if this error should be ignored entirely
     if (_shouldIgnore(error)) {
-      if (kDebugMode) print('⏭️ Error ignored (known harmless): ${error.substring(0, error.length.clamp(0, 60))}');
+      if (kDebugMode) debugPrint('⏭️ Error ignored (known harmless): ${error.substring(0, error.length.clamp(0, 60))}');
       return;
     }
 
     // 2. Check rate limiting
     if (_isRateLimited(error)) {
-      if (kDebugMode) print('⏳ Error rate-limited (sent recently): ${error.substring(0, error.length.clamp(0, 60))}');
+      if (kDebugMode) debugPrint('⏳ Error rate-limited (sent recently): ${error.substring(0, error.length.clamp(0, 60))}');
       return;
     }
     

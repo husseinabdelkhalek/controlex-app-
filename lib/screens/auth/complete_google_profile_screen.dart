@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../services/api_service.dart';
-import 'dashboard_screen.dart';
+import '../../services/api_service.dart';
+import '../dashboard_screen.dart';
 
 /// Shown after first Google Sign-In to collect missing profile data
 class CompleteGoogleProfileScreen extends StatefulWidget {

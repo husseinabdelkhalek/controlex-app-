@@ -58,7 +58,7 @@ class _GlassCardState extends State<GlassCard> {
           ),
           // Neon Glow Effect on Press/Hover
           if (_isPressed)
-            BoxShadow(
+            const BoxShadow(
               color: AppTheme.violetGlow,
               blurRadius: 20,
               spreadRadius: 2,

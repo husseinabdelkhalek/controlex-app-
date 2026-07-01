@@ -48,11 +48,11 @@ class _GlowingButtonState extends State<GlowingButton> {
         ),
         boxShadow: [
           if (!isDisabled && (_isHovered || _isPressed))
-            BoxShadow(
+            const BoxShadow(
               color: AppTheme.glowColor,
               blurRadius: 15,
               spreadRadius: 2,
-              offset: const Offset(0, 0),
+              offset: Offset(0, 0),
             ),
         ],
       ),

@@ -79,12 +79,12 @@ class _SmartHintState extends State<SmartHint> with SingleTickerProviderStateMix
                 borderRadius: widget.isCircular ? null : BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF00F1FF).withOpacity(_glowAnimation.value * 0.6),
+                    color: const Color(0xFF00F1FF).withValues(alpha: _glowAnimation.value * 0.6),
                     blurRadius: 20 * _glowAnimation.value,
                     spreadRadius: 5 * _glowAnimation.value,
                   ),
                   BoxShadow(
-                    color: const Color(0xFFB026FF).withOpacity(_glowAnimation.value * 0.4),
+                    color: const Color(0xFFB026FF).withValues(alpha: _glowAnimation.value * 0.4),
                     blurRadius: 30 * _glowAnimation.value,
                     spreadRadius: -5,
                   ),
@@ -104,7 +104,7 @@ class _SmartHintState extends State<SmartHint> with SingleTickerProviderStateMix
                     decoration: BoxDecoration(
                       color: Colors.black87,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xFF00F1FF).withOpacity(0.5)),
+                      border: Border.all(color: const Color(0xFF00F1FF).withValues(alpha: 0.5)),
                     ),
                     child: Text(
                       widget.message!,

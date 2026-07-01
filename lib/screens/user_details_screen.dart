@@ -95,7 +95,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       _showToast(AppLocalization.isArabicNotifier.value ? 'تم حذف الحساب بنجاح' : 'Account deleted successfully');
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
-      _showToast('${AppLocalization.get('error') ?? 'Error'}: $e');
+      _showToast('${AppLocalization.get('error')}: $e');
       setState(() => _isDeleting = false);
     }
   }
@@ -103,6 +103,30 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final user = widget.user;
+    
+    final deviceInfoRaw = user['deviceInfo'] ?? user['security']?['deviceInfo'];
+    String? devicePlatform;
+    if (deviceInfoRaw is Map) {
+       devicePlatform = deviceInfoRaw['platform'];
+    }
+    
+    if (devicePlatform == null || devicePlatform.isEmpty) {
+        if (user['sessions'] is List && (user['sessions'] as List).isNotEmpty) {
+           final firstSession = (user['sessions'] as List).first;
+           if (firstSession is Map && firstSession['deviceInfo'] is Map) {
+               devicePlatform = firstSession['deviceInfo']['platform'];
+           }
+        }
+    }
+
+    final platformStr = user['clientType'] ?? user['platform'] ?? user['source'] ?? devicePlatform ?? (AppLocalization.isArabicNotifier.value ? 'غير محدد' : 'Unknown');
+
+    String backendStr = 'Node.js (Socket.io)';
+    if (user['firebaseUrl'] != null && user['firebaseUrl'].toString().isNotEmpty) {
+      backendStr = 'Firebase Realtime DB';
+    } else if (user['adafruitUsername'] != null && user['adafruitUsername'].toString().isNotEmpty) {
+      backendStr = 'Adafruit IO';
+    }
 
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
@@ -133,8 +157,13 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
             const SizedBox(height: 30),
             _buildDetailItem(
               AppLocalization.isArabicNotifier.value ? 'المنصة (موقع/تطبيق)' : 'Platform',
-              user['platform'] ?? user['source'] ?? (AppLocalization.isArabicNotifier.value ? 'غير محدد' : 'Unknown'),
+              platformStr,
               Icons.devices,
+            ),
+            _buildDetailItem(
+              AppLocalization.isArabicNotifier.value ? 'قاعدة البيانات (Database)' : 'Database',
+              backendStr,
+              Icons.storage,
             ),
             _buildDetailItem(
               AppLocalization.isArabicNotifier.value ? 'تاريخ إنشاء الحساب' : 'Created At',

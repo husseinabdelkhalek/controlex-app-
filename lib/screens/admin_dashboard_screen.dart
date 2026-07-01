@@ -1,7 +1,6 @@
 import '../widgets/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../theme/app_theme.dart';
@@ -332,12 +331,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
             ],
           ),
           const SizedBox(height: 12),
-          _buildFullWidthStatCard(
-            AppLocalization.isArabicNotifier.value ? 'إرسالات قاعدة البيانات اليوم' : 'Database Transmissions Today',
-            _todayDatabaseWrites.toString(),
-            Icons.dns,
-            AppTheme.primaryCyan,
-          ),
+          _buildFirebaseQuotaCard(),
           const SizedBox(height: 28),
 
 
@@ -575,6 +569,29 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
           final role = user['role'] ?? 'user';
           final isActive = status == 'active';
           
+          final deviceInfoRaw = user['deviceInfo'] ?? user['security']?['deviceInfo'];
+          String? devicePlatform;
+          if (deviceInfoRaw is Map) {
+             devicePlatform = deviceInfoRaw['platform'];
+          }
+          if (devicePlatform == null || devicePlatform.isEmpty) {
+              if (user['sessions'] is List && (user['sessions'] as List).isNotEmpty) {
+                 final firstSession = (user['sessions'] as List).first;
+                 if (firstSession is Map && firstSession['deviceInfo'] is Map) {
+                     devicePlatform = firstSession['deviceInfo']['platform'];
+                 }
+              }
+          }
+
+          final platformStr = user['clientType'] ?? user['platform'] ?? user['source'] ?? devicePlatform ?? 'غير محدد';
+
+          String backendStr = 'Node.js (Socket.io)';
+          if (user['firebaseUrl'] != null && user['firebaseUrl'].toString().isNotEmpty) {
+            backendStr = 'Firebase Realtime DB';
+          } else if (user['adafruitUsername'] != null && user['adafruitUsername'].toString().isNotEmpty) {
+            backendStr = 'Adafruit IO';
+          }
+          
           return Container(
             margin: const EdgeInsets.only(bottom: 12),
             decoration: BoxDecoration(
@@ -681,7 +698,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                       const SizedBox(height: 8),
                       Text('📅 تاريخ الانضمام: ${_formatDate(user['createdAt'])}', style: const TextStyle(color: Colors.white54, fontSize: 11)),
                       Text('⏱️ آخر ظهور: ${_formatDate(user['lastActive'] ?? user['lastLogin'])}', style: const TextStyle(color: Colors.white54, fontSize: 11)),
-                      Text('🌐 المنصة (موقع/تطبيق): ${user['platform'] ?? user['source'] ?? 'غير محدد'}', style: const TextStyle(color: Colors.white54, fontSize: 11)),
+                      Text('🌐 المنصة: $platformStr', style: const TextStyle(color: Colors.white54, fontSize: 11)),
+                      Text('🗄️ قاعدة البيانات: $backendStr', style: const TextStyle(color: Colors.white54, fontSize: 11)),
+                      Text('🔗 مربوط بـ: ${user['parentAdminName'] ?? user['parentAdminEmail'] ?? user['parentAdminId'] ?? 'المدير العام'}', style: const TextStyle(color: Colors.white54, fontSize: 11)),
                       const SizedBox(height: 12),
                       Row(
                         children: [
@@ -1168,8 +1187,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
             ),
             child: Row(
               children: [
-                Icon(Icons.campaign, color: AppTheme.primaryCyan, size: 32),
-                SizedBox(width: 12),
+                const Icon(Icons.campaign, color: AppTheme.primaryCyan, size: 32),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1545,7 +1564,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              (ar ? 'المتبقي: ' : 'Remaining: ') + '$remaining',
+              '${ar ? 'المتبقي: ' : 'Remaining: '}$remaining',
               style: TextStyle(color: remaining < (limit * 0.1) ? Colors.redAccent : Colors.white38, fontSize: 11),
             ),
             Text(
@@ -1947,7 +1966,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                           children: [
                             Text(code, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
                             Text(
-                              (ar ? 'استُخدم ' : 'Used ') + '$uses ' + (ar ? 'مرة' : 'time(s)'),
+                              '${ar ? 'استُخدم ' : 'Used '}$uses ${ar ? 'مرة' : 'time(s)'}',
                               style: const TextStyle(color: Colors.white38, fontSize: 11),
                             ),
                           ],
@@ -2241,6 +2260,87 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(text, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold)),
+    );
+  }
+
+  Widget _buildFirebaseQuotaCard() {
+    double readPercentage = _todayDatabaseReads / 50000;
+    double writePercentage = _todayDatabaseWrites / 20000;
+    
+    // Clamp to 1.0 to avoid overflow UI
+    if (readPercentage > 1.0) readPercentage = 1.0;
+    if (writePercentage > 1.0) writePercentage = 1.0;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.cardBaseColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.orangeAccent.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.cloud_done, color: Colors.orangeAccent, size: 24),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                AppLocalization.isArabicNotifier.value ? 'استهلاك حصة Firebase المجانية (اليوم)' : 'Firebase Quota Usage (Today)',
+                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          _buildQuotaProgressRow(
+            AppLocalization.isArabicNotifier.value ? 'قراءة (Reads)' : 'Reads', 
+            _todayDatabaseReads, 
+            50000, 
+            readPercentage, 
+            Colors.blueAccent
+          ),
+          const SizedBox(height: 16),
+          _buildQuotaProgressRow(
+            AppLocalization.isArabicNotifier.value ? 'كتابة (Writes)' : 'Writes', 
+            _todayDatabaseWrites, 
+            20000, 
+            writePercentage, 
+            Colors.greenAccent
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuotaProgressRow(String label, int current, int max, double percentage, Color color) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label, style: const TextStyle(color: Colors.white70, fontSize: 14)),
+            Text('$current / $max (${(percentage * 100).toStringAsFixed(1)}%)', style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        const SizedBox(height: 8),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: percentage.isNaN || percentage.isInfinite ? 0 : percentage,
+            backgroundColor: color.withOpacity(0.1),
+            valueColor: AlwaysStoppedAnimation<Color>(color),
+            minHeight: 8,
+          ),
+        ),
+      ],
     );
   }
 

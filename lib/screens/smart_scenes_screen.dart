@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'dart:ui';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -188,6 +187,7 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
         for (var action in actions) {
           futures.add(LocalService.sendCommand(action['widgetId'], action['value']).catchError((e) {
             debugPrint("Local command failed: $e");
+            return <String, dynamic>{};
           }));
         }
         await Future.wait(futures);
@@ -217,7 +217,7 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF1A1A2E),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(AppLocalization.get('delete_scene') ?? 'Delete Scene', style: const TextStyle(color: Colors.white)),
+        title: Text(AppLocalization.get('delete_scene'), style: const TextStyle(color: Colors.white)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -239,7 +239,7 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                   await _loadData();
                 }
                 if (mounted) {
-                  AppSnackbar.showSuccess(context, AppLocalization.get('scene_deleted') ?? 'Scene Deleted');
+                  AppSnackbar.showSuccess(context, AppLocalization.get('scene_deleted'));
                 }
               } catch (e) {
                 if (mounted) {
@@ -568,7 +568,7 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                               }
 
                               if (mounted) {
-                                AppSnackbar.showSuccess(context, editIndex != null ? (AppLocalization.get('scene_updated') ?? 'Scene Updated') : (AppLocalization.get('scene_created') ?? 'Scene Created'));
+                                AppSnackbar.showSuccess(context, editIndex != null ? (AppLocalization.get('scene_updated')) : (AppLocalization.get('scene_created')));
                               }
                             } catch (e) {
                               if (mounted) {

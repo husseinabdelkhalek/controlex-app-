@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:url_launcher/url_launcher.dart';
-import '../core/localization.dart';
-import '../theme/app_theme.dart';
+import '../../core/localization.dart';
+import '../../theme/app_theme.dart';
 
 class BannedScreen extends StatelessWidget {
   final String? message;
@@ -32,12 +32,12 @@ class BannedScreen extends StatelessWidget {
           Positioned(
             top: -100,
             right: -100,
-            child: _buildBlob(AppTheme.primaryViolet.withOpacity(0.3), 300),
+            child: _buildBlob(AppTheme.primaryViolet.withValues(alpha: 0.3), 300),
           ),
           Positioned(
             bottom: -50,
             left: -50,
-            child: _buildBlob(Colors.redAccent.withOpacity(0.2), 250),
+            child: _buildBlob(Colors.redAccent.withValues(alpha: 0.2), 250),
           ),
           
           Center(
@@ -49,9 +49,9 @@ class BannedScreen extends StatelessWidget {
                   width: MediaQuery.of(context).size.width * 0.85,
                   padding: const EdgeInsets.all(32),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.05),
+                    color: Colors.white.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(30),
-                    border: Border.all(color: Colors.redAccent.withOpacity(0.3), width: 1.5),
+                    border: Border.all(color: Colors.redAccent.withValues(alpha: 0.3), width: 1.5),
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -63,7 +63,7 @@ class BannedScreen extends StatelessWidget {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.redAccent.withOpacity(0.4),
+                              color: Colors.redAccent.withValues(alpha: 0.4),
                               blurRadius: 30,
                               spreadRadius: 5,
                             )
@@ -155,9 +155,9 @@ class BannedScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Row(
           children: [
@@ -173,7 +173,7 @@ class BannedScreen extends StatelessWidget {
                 ),
               ),
             ),
-            Icon(Icons.arrow_forward_ios, color: color.withOpacity(0.5), size: 14),
+            Icon(Icons.arrow_forward_ios, color: color.withValues(alpha: 0.5), size: 14),
           ],
         ),
       ),

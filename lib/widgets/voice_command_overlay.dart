@@ -92,10 +92,12 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay> {
         pauseFor: const Duration(seconds: 4),
       );
     } else {
-      if (mounted) setState(() {
+      if (mounted) {
+        setState(() {
         _isListening = false;
         _result = VoiceParsingResult(false, AppLocalization.isArabicNotifier.value ? 'تم رفض صلاحية الميكروفون أو غير متوفر.' : 'Microphone permission denied or unavailable.');
       });
+      }
     }
   }
 
@@ -109,9 +111,11 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay> {
 
   void _processCommand() async {
     if (_text.trim().isEmpty) {
-      if (mounted) setState(() {
+      if (mounted) {
+        setState(() {
          _result = VoiceParsingResult(false, AppLocalization.isArabicNotifier.value ? 'لم أسمع أي شيء.' : 'I did not hear anything.');
       });
+      }
       return;
     }
     

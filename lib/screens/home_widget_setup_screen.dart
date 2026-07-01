@@ -7,7 +7,7 @@ import '../core/localization.dart';
 import '../widgets/glowing_button.dart';
 
 class HomeWidgetSetupScreen extends StatefulWidget {
-  const HomeWidgetSetupScreen({Key? key}) : super(key: key);
+  const HomeWidgetSetupScreen({super.key});
 
   @override
   State<HomeWidgetSetupScreen> createState() => _HomeWidgetSetupScreenState();

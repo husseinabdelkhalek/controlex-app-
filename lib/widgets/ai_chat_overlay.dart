@@ -17,7 +17,7 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
   final TextEditingController _inputController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   
-  List<Map<String, dynamic>> _chatHistory = [];
+  final List<Map<String, dynamic>> _chatHistory = [];
   bool _isTyping = false;
   late AnimationController _glowController;
   late AnimationController _typingController;
@@ -363,15 +363,15 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
               borderRadius: BorderRadius.circular(28),
               border: Border.all(
                 color: Color.lerp(
-                  const Color(0xFF8A2BE2).withOpacity(0.3), 
-                  const Color(0xFF00E5FF).withOpacity(0.6), 
+                  const Color(0xFF8A2BE2).withValues(alpha: 0.3), 
+                  const Color(0xFF00E5FF).withValues(alpha: 0.6), 
                   _glowController.value
                 )!,
                 width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF8A2BE2).withOpacity(0.15),
+                  color: const Color(0xFF8A2BE2).withValues(alpha: 0.15),
                   blurRadius: 40,
                   spreadRadius: 5,
                 )
@@ -401,11 +401,11 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.06))),
+        border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.06))),
         gradient: LinearGradient(
           colors: [
-            const Color(0xFF8A2BE2).withOpacity(0.18),
-            const Color(0xFF00E5FF).withOpacity(0.06),
+            const Color(0xFF8A2BE2).withValues(alpha: 0.18),
+            const Color(0xFF00E5FF).withValues(alpha: 0.06),
           ]
         ),
       ),
@@ -420,14 +420,14 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      const Color(0xFF8A2BE2).withOpacity(0.3),
-                      const Color(0xFF00E5FF).withOpacity(0.2),
+                      const Color(0xFF8A2BE2).withValues(alpha: 0.3),
+                      const Color(0xFF00E5FF).withValues(alpha: 0.2),
                     ]
                   ),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFF00E5FF).withOpacity(0.3)),
+                  border: Border.all(color: const Color(0xFF00E5FF).withValues(alpha: 0.3)),
                   boxShadow: [
-                    BoxShadow(color: const Color(0xFF00E5FF).withOpacity(0.2), blurRadius: 15)
+                    BoxShadow(color: const Color(0xFF00E5FF).withValues(alpha: 0.2), blurRadius: 15)
                   ]
                 ),
                 child: const Icon(Icons.auto_awesome, color: Color(0xFF00E5FF), size: 20),
@@ -461,7 +461,7 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
                     'مدعوم بـ Gemini AI',
                     style: GoogleFonts.tajawal(
                       fontSize: 12,
-                      color: const Color(0xFF00E5FF).withOpacity(0.7),
+                      color: const Color(0xFF00E5FF).withValues(alpha: 0.7),
                     ),
                   ),
                 ],
@@ -483,9 +483,9 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.06),
+                    color: Colors.white.withValues(alpha: 0.06),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.white.withOpacity(0.1)),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
                   ),
                   child: Row(
                     children: [
@@ -502,9 +502,9 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
                 child: Container(
                   width: 32, height: 32,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.06),
+                    color: Colors.white.withValues(alpha: 0.06),
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.white.withOpacity(0.08)),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
                   ),
                   child: const Icon(Icons.close, color: Colors.white54, size: 18),
                 ),
@@ -539,10 +539,10 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
                   margin: const EdgeInsets.only(left: 8),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [const Color(0xFF8A2BE2).withOpacity(0.4), const Color(0xFF00E5FF).withOpacity(0.2)]
+                      colors: [const Color(0xFF8A2BE2).withValues(alpha: 0.4), const Color(0xFF00E5FF).withValues(alpha: 0.2)]
                     ),
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: const Color(0xFF00E5FF).withOpacity(0.25)),
+                    border: Border.all(color: const Color(0xFF00E5FF).withValues(alpha: 0.25)),
                   ),
                   child: const Icon(Icons.auto_awesome, color: Color(0xFF00E5FF), size: 16),
                 ),
@@ -554,17 +554,17 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
                     gradient: isUser 
                       ? const LinearGradient(colors: [Color(0xFF6e22c7), Color(0xFF4a1ab5)])
                       : (isError ? const LinearGradient(colors: [Color(0xFFb51a1a), Color(0xFFc72222)]) : null),
-                    color: (!isUser && !isError) ? Colors.white.withOpacity(0.06) : null,
+                    color: (!isUser && !isError) ? Colors.white.withValues(alpha: 0.06) : null,
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(20),
                       topRight: const Radius.circular(20),
                       bottomLeft: Radius.circular(isUser ? 5 : 20),
                       bottomRight: Radius.circular(isUser ? 20 : 5),
                     ),
-                    border: (!isUser && !isError) ? Border.all(color: Colors.white.withOpacity(0.09)) : null,
+                    border: (!isUser && !isError) ? Border.all(color: Colors.white.withValues(alpha: 0.09)) : null,
                     boxShadow: [
                       if (isUser)
-                        BoxShadow(color: const Color(0xFF6e22c7).withOpacity(0.35), blurRadius: 15, offset: const Offset(0, 4)),
+                        BoxShadow(color: const Color(0xFF6e22c7).withValues(alpha: 0.35), blurRadius: 15, offset: const Offset(0, 4)),
                     ],
                   ),
                   child: Text(
@@ -597,24 +597,24 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
             margin: const EdgeInsets.only(left: 8),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [const Color(0xFF8A2BE2).withOpacity(0.4), const Color(0xFF00E5FF).withOpacity(0.2)]
+                colors: [const Color(0xFF8A2BE2).withValues(alpha: 0.4), const Color(0xFF00E5FF).withValues(alpha: 0.2)]
               ),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: const Color(0xFF00E5FF).withOpacity(0.25)),
+              border: Border.all(color: const Color(0xFF00E5FF).withValues(alpha: 0.25)),
             ),
             child: const Icon(Icons.auto_awesome, color: Color(0xFF00E5FF), size: 16),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.06),
+              color: Colors.white.withValues(alpha: 0.06),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(20),
                 topRight: Radius.circular(20),
                 bottomLeft: Radius.circular(20),
                 bottomRight: Radius.circular(5),
               ),
-              border: Border.all(color: Colors.white.withOpacity(0.09)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.09)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -667,8 +667,8 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.25),
-        border: Border(top: BorderSide(color: Colors.white.withOpacity(0.05))),
+        color: Colors.black.withValues(alpha: 0.25),
+        border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.05))),
       ),
       child: Row(
         children: [
@@ -685,7 +685,7 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
                 ),
                 shape: BoxShape.circle,
                 boxShadow: [
-                  BoxShadow(color: const Color(0xFF8A2BE2).withOpacity(0.45), blurRadius: 18, offset: const Offset(0, 4))
+                  BoxShadow(color: const Color(0xFF8A2BE2).withValues(alpha: 0.45), blurRadius: 18, offset: const Offset(0, 4))
                 ]
               ),
               child: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
@@ -694,9 +694,9 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
+                color: Colors.white.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.white.withOpacity(0.1)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
               ),
               child: TextField(
                 controller: _inputController,
@@ -705,7 +705,7 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
                 decoration: InputDecoration(
                   hintText: 'اكتب رسالتك...',
                   hintTextDirection: TextDirection.rtl,
-                  hintStyle: GoogleFonts.tajawal(color: Colors.white.withOpacity(0.3)),
+                  hintStyle: GoogleFonts.tajawal(color: Colors.white.withValues(alpha: 0.3)),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                 ),

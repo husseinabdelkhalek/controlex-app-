@@ -3,13 +3,13 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '../services/api_service.dart';
-import '../core/localization.dart';
-import '../widgets/app_snackbar.dart';
-import '../widgets/glass_popups.dart';
-import '../theme/app_theme.dart';
-import '../widgets/premium_app_bar.dart';
-import '../widgets/glowing_button.dart';
+import '../../services/api_service.dart';
+import '../../core/localization.dart';
+import '../../widgets/app_snackbar.dart';
+import '../../widgets/glass_popups.dart';
+import '../../theme/app_theme.dart';
+import '../../widgets/premium_app_bar.dart';
+import '../../widgets/glowing_button.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -202,7 +202,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
   bool _passVisible = false;
 
-  InputDecoration _inputDec(String label, String hint, IconData icon, {bool isPassword = false, Widget? suffix}) {
+  InputDecoration _inputDec(String label, String hint, IconData icon, {Widget? suffix}) {
     return InputDecoration(
       labelText: label,
       labelStyle: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
@@ -617,7 +617,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 // Distributor linkage panel
                 if (!_isSubAdmin) _buildMerchantLinkStatusCard(),
   
-                _sectionHeader('ADAFRUIT IO — ' + (AppLocalization.isArabicNotifier.value ? 'اختياري' : 'Optional')),
+                _sectionHeader('ADAFRUIT IO — ${AppLocalization.isArabicNotifier.value ? 'اختياري' : 'Optional'}'),
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -656,12 +656,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      _sectionHeader('FIREBASE RTDB - ' + (AppLocalization.isArabicNotifier.value ? 'اختياري' : 'Optional')),
+                      _sectionHeader('FIREBASE RTDB - ${AppLocalization.isArabicNotifier.value ? 'اختياري' : 'Optional'}'),
                       Container(
                         margin: const EdgeInsets.only(top: 8, bottom: 16),
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.05),
+                          color: Colors.white.withValues(alpha: 0.05),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Column(
@@ -751,7 +751,7 @@ class _JoinSubAdminChoiceSheet extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            Icon(Icons.supervised_user_circle, size: 50, color: const Color(0xFF00FFCC)),
+            const Icon(Icons.supervised_user_circle, size: 50, color: Color(0xFF00FFCC)),
             const SizedBox(height: 16),
             Text(
               ar ? 'الانضمام لموزع معتمد' : 'Join a Distributor',
@@ -908,6 +908,7 @@ class _JoinSubAdminSheetState extends State<_JoinSubAdminSheet> with SingleTicke
     try {
       final res = await ApiService.verifyMerchantClientCode(code.trim());
       setState(() => _isChecking = false);
+      if (!mounted) return;
       if (res['valid'] == true) {
         widget.onCodeVerified(code.trim(), res['merchantName'] ?? 'الموزع المعتمد');
         Navigator.pop(context);
@@ -1240,7 +1241,7 @@ class CyberGridPainter extends CustomPainter {
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
       ..strokeWidth = 1.5;
 
-    canvas.drawLine(Offset(0, 0), Offset(size.width, size.height * 0.7), neonPaint);
+    canvas.drawLine(const Offset(0, 0), Offset(size.width, size.height * 0.7), neonPaint);
     canvas.drawLine(Offset(size.width, 0), Offset(0, size.height * 0.7), neonPaint);
   }
 

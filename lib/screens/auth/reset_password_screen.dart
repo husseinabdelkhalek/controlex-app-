@@ -1,9 +1,9 @@
-import '../widgets/app_snackbar.dart';
+import '../../widgets/app_snackbar.dart';
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
-import '../widgets/glass_card.dart';
-import '../services/api_service.dart';
-import 'login_screen.dart';
+import '../../theme/app_theme.dart';
+import '../../widgets/glass_card.dart';
+import '../../services/api_service.dart';
+import '../auth/login_screen.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   final String email;
@@ -42,6 +42,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
          widget.email, code, password
       );
       setState(() => _isLoading = false);
+      if (!mounted) return;
       
       if (res['msg'] != null && res['msg'].contains('نجاح')) {
          AppSnackbar.showInfo(context, res['msg']);
@@ -51,6 +52,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       }
     } catch (e) {
       setState(() => _isLoading = false);
+      if (!mounted) return;
       AppSnackbar.showError(context, 'Failed to reset.');
     }
   }

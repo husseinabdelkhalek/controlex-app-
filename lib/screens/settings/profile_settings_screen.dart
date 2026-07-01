@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
-import '../services/api_service.dart';
-import '../core/localization.dart';
-import '../widgets/app_snackbar.dart';
+import '../../theme/app_theme.dart';
+import '../../services/api_service.dart';
+import '../../core/localization.dart';
+import '../../widgets/app_snackbar.dart';
 
 class ProfileSettingsScreen extends StatefulWidget {
   final Map<String, dynamic>? initialData;
