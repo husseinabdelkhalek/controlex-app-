@@ -6,16 +6,15 @@ import 'login_screen.dart';
 import '../services/api_service.dart';
 import '../core/localization.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'local_dashboard_screen.dart';
-import 'admin_dashboard_screen.dart';
-import '../core/api_constants.dart';
-import '../widgets/app_tour_overlay.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'package:url_launcher/url_launcher.dart';
+import '../widgets/app_tour_overlay.dart';
 import '../services/socket_service.dart';
-
+import 'admin_dashboard_screen.dart';
+import 'local_dashboard_screen.dart';
 import 'sub_admin_dashboard_screen.dart';
+import 'profile_settings_screen.dart';
+import 'integrations_settings_screen.dart';
+import 'security_settings_screen.dart';
 
 class AccountScreen extends StatefulWidget {
   final bool startTour;
@@ -41,16 +40,16 @@ class _AccountScreenState extends State<AccountScreen> {
   
   bool _twoFactorEnabled = false;
   bool _isLoading = true;
-  bool _is2FALoading = false;
-  bool _showAdafruit = true;
-  bool _showFirebase = true;
+  
+  
+  
   String _joinedDate = '';
   List<dynamic> _sessions = [];
   String? _googleProfilePicture;
   String _role = 'user';
   String _subAdminCode = '';
   bool _isLocalControlPinned = false;
-  bool _showSessions = false;
+  
 
   void _onLangChange() => setState(() {});
 
@@ -147,19 +146,7 @@ class _AccountScreenState extends State<AccountScreen> {
          _role = userRes['role'] ?? 'user';
          _subAdminCode = userRes['subAdminCode'] ?? '';
 
-         bool hasAdafruit = _aioUserCtrl.text.isNotEmpty;
-         bool hasFirebase = _firebaseUrlCtrl.text.isNotEmpty;
          
-         if (hasAdafruit && !hasFirebase) {
-           _showAdafruit = true;
-           _showFirebase = false;
-         } else if (hasFirebase && !hasAdafruit) {
-           _showFirebase = true;
-           _showAdafruit = false;
-         } else {
-           _showAdafruit = true;
-           _showFirebase = true;
-         }
 
          _sessions = sessionsRes;
          _isLoading = false;
@@ -172,101 +159,7 @@ class _AccountScreenState extends State<AccountScreen> {
     }
   }
 
-  void _updateProfile() async {
-    final email = _emailCtrl.text.trim();
-    final password = _passCtrl.text.trim();
-    
-    // Email regex validation
-    if (email.isNotEmpty && !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
-      _showToast('يرجى إدخال بريد إلكتروني صحيح');
-      return;
-    }
-
-    if (password.isNotEmpty && password.length < 6) {
-      _showToast('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
-      return;
-    }
-
-    try {
-      final data = <String, dynamic>{
-         'username': _usernameCtrl.text.trim(),
-      };
-      if (email.isNotEmpty) data['email'] = email;
-      if (password.isNotEmpty) data['password'] = password;
-      
-      final res = await ApiService.userUpdate(data);
-      _showToast(res['msg'] ?? AppLocalization.get('profile_updated'));
-    } catch (e) {
-      _showToast('Update failed: $e');
-    }
-  }
-
-  void _updateAdafruit() async {
-    try {
-      final data = <String, dynamic>{
-         'adafruitUsername': _aioUserCtrl.text.trim(),
-         'adafruitApiKey': _aioKeyCtrl.text.trim(),
-      };
-      final res = await ApiService.userUpdate(data);
-      _showToast(res['msg'] ?? AppLocalization.get('api_keys_saved'));
-    } catch (e) {
-      _showToast('Failed to save API keys: $e');
-    }
-  }
-
-  void _updateFirebase() async {
-    try {
-      final data = <String, dynamic>{
-         'firebaseUrl': _firebaseUrlCtrl.text.trim(),
-         'firebaseSecret': _firebaseSecretCtrl.text.trim(),
-      };
-      final res = await ApiService.userUpdate(data);
-      _showToast(res['msg'] ?? AppLocalization.get('api_keys_saved'));
-    } catch (e) {
-      _showToast('Failed to save Firebase keys: $e');
-    }
-  }
-  
-  void _updatePreferences() async {
-     try {
-        final data = {
-           'preferences': {
-             'theme': 'dark',
-             'privacy': {
-                'allowDataCollection': false
-             }
-           }
-        };
-        await ApiService.updatePreferences(data);
-     } catch(e) {}
-  }
-
-  void _terminateSession(String id) async {
-    try {
-       await ApiService.terminateSession(id);
-       _fetchData();
-    } catch (e) {}
-  }
-  
-  void _toggle2FA() async {
-    if (_is2FALoading) return;
-    setState(() => _is2FALoading = true);
-    try {
-      if (_twoFactorEnabled) {
-         final res = await ApiService.disable2FA();
-         _showToast(res['msg'] ?? AppLocalization.get('disabled'));
-         setState(() => _twoFactorEnabled = false);
-      } else {
-         final res = await ApiService.enable2FA();
-         _showToast(res['msg'] ?? AppLocalization.get('enabled'));
-         setState(() => _twoFactorEnabled = true);
-      }
-    } catch(e) {
-       _showToast('خطأ: $e (تأكد من تحديث السيرفر على Koyeb)');
-    } finally {
-       if (mounted) setState(() => _is2FALoading = false);
-    }
-  }
+  // Methods moved to separate settings screens
   
   void _clearData() async {
      final confirm = await _showConfirmDialog(
@@ -459,58 +352,39 @@ class _AccountScreenState extends State<AccountScreen> {
               );
             }(),
             
-            _buildSectionCard(
-              AppLocalization.get('personal_info'), Icons.badge,
-              Column(
-                children: [
-                  _buildTextField(AppLocalization.get('username'), _usernameCtrl, Icons.person_outline),
-                  const Divider(color: Colors.white12),
-                  _buildTextField(AppLocalization.get('email'), _emailCtrl, Icons.email_outlined),
-                  const Divider(color: Colors.white12),
-                  _buildTextField(AppLocalization.get('new_password_optional'), _passCtrl, Icons.lock_outline, isPassword: true),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryCyan, foregroundColor: Colors.black, minimumSize: const Size(double.infinity, 50), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                    onPressed: _updateProfile,
-                    child: Text(AppLocalization.get('update_profile'), style: const TextStyle(fontWeight: FontWeight.bold)),
-                  )
-                ],
-              ),
+            _buildGlassButton(
+              icon: Icons.badge,
+              title: AppLocalization.get('personal_info'),
+              subtitle: AppLocalization.isArabicNotifier.value ? 'تعديل بيانات الحساب' : 'Edit profile details',
+              color: AppTheme.primaryCyan,
+              onTap: () async {
+                final result = await Navigator.push(context, MaterialPageRoute(builder: (_) => ProfileSettingsScreen(initialData: {'username': _usernameCtrl.text, 'email': _emailCtrl.text, 'googleProfilePicture': _googleProfilePicture})));
+                if (result == true) _fetchData();
+              },
             ),
-            
-            if (_showAdafruit) _buildSectionCard(
-              'Adafruit IO Integration', Icons.cloud_sync,
-              Column(
-                children: [
-                  _buildTextField('Adafruit Username', _aioUserCtrl, Icons.cloud_circle_outlined),
-                  const Divider(color: Colors.white12),
-                  _buildTextField('Adafruit API Key', _aioKeyCtrl, Icons.vpn_key_outlined, isPassword: true),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryViolet, foregroundColor: Colors.white, minimumSize: const Size(double.infinity, 50), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                    onPressed: _updateAdafruit,
-                    child: const Text('Save API Keys', style: TextStyle(fontWeight: FontWeight.bold)),
-                  )
-                ],
-              ),
+            const SizedBox(height: 12),
+            _buildGlassButton(
+              icon: Icons.cloud_sync,
+              title: AppLocalization.isArabicNotifier.value ? 'الربط والبيانات' : 'Integrations',
+              subtitle: AppLocalization.isArabicNotifier.value ? 'إعدادات Adafruit و Firebase' : 'Adafruit & Firebase settings',
+              color: AppTheme.primaryViolet,
+              onTap: () async {
+                final result = await Navigator.push(context, MaterialPageRoute(builder: (_) => IntegrationsSettingsScreen(initialData: {'adafruitUsername': _aioUserCtrl.text, 'adafruitApiKey': _aioKeyCtrl.text, 'firebaseUrl': _firebaseUrlCtrl.text, 'firebaseSecret': _firebaseSecretCtrl.text})));
+                if (result == true) _fetchData();
+              },
             ),
-            
-            if (_showFirebase) _buildSectionCard(
-              'Firebase RTDB Integration', Icons.storage,
-              Column(
-                children: [
-                  _buildTextField('Firebase Database URL', _firebaseUrlCtrl, Icons.link),
-                  const Divider(color: Colors.white12),
-                  _buildTextField('Firebase Database Secret', _firebaseSecretCtrl, Icons.security, isPassword: true),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryCyan, foregroundColor: Colors.black, minimumSize: const Size(double.infinity, 50), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                    onPressed: _updateFirebase,
-                    child: const Text('Save Firebase Config', style: TextStyle(fontWeight: FontWeight.bold)),
-                  )
-                ],
-              ),
+            const SizedBox(height: 12),
+            _buildGlassButton(
+              icon: Icons.security,
+              title: AppLocalization.get('security_settings'),
+              subtitle: AppLocalization.isArabicNotifier.value ? 'التحقق بخطوتين والجلسات' : '2FA & Active Sessions',
+              color: Colors.greenAccent,
+              onTap: () async {
+                await Navigator.push(context, MaterialPageRoute(builder: (_) => SecuritySettingsScreen(initialData: {'security': {'twoFactorEnabled': _twoFactorEnabled}}, initialSessions: _sessions)));
+                _fetchData();
+              },
             ),
+            const SizedBox(height: 16),
 
             _buildSectionCard(
               AppLocalization.get('app_preferences'), Icons.tune,
@@ -659,65 +533,7 @@ class _AccountScreenState extends State<AccountScreen> {
               )
             ),
             
-            _buildSectionCard(
-              AppLocalization.get('security_settings'), Icons.security,
-              Column(
-                children: [
-                   ListTile(
-                     contentPadding: EdgeInsets.zero,
-                     title: Text(AppLocalization.get('two_factor_auth'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                     subtitle: Text(_twoFactorEnabled ? AppLocalization.get('enabled') : AppLocalization.get('disabled'), style: TextStyle(color: _twoFactorEnabled ? AppTheme.primaryCyan : Colors.white54)),
-                      trailing: _is2FALoading
-                        ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primaryCyan))
-                        : ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: _twoFactorEnabled ? Colors.redAccent.withValues(alpha: 0.2) : AppTheme.primaryViolet.withValues(alpha: 0.3),
-                                foregroundColor: _twoFactorEnabled ? Colors.redAccent : Colors.white, elevation: 0,
-                            ),
-                            onPressed: _toggle2FA,
-                            child: Text(_twoFactorEnabled ? AppLocalization.get('disabled') : AppLocalization.get('enabled')),
-                         )
-                   ),
-                   const Divider(color: Colors.white12),
-                   ListTile(
-                     contentPadding: EdgeInsets.zero,
-                     title: Text(AppLocalization.get('active_sessions'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
-                     trailing: Icon(
-                       _showSessions ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                       color: Colors.white54,
-                     ),
-                     onTap: () {
-                       setState(() {
-                         _showSessions = !_showSessions;
-                       });
-                     },
-                   ),
-                   if (_showSessions) ...[
-                     ..._sessions.map((s) {
-                        final deviceInfo = s['deviceInfo'] ?? {};
-                        final deviceName = deviceInfo['deviceName'] ?? deviceInfo['userAgent'] ?? 'PC / Browser';
-                        final platform = (deviceInfo['platform'] ?? '').toString().toLowerCase();
-                        
-                        IconData deviceIcon = Icons.laptop;
-                        if (platform.contains('android') || deviceName.toLowerCase().contains('android')) {
-                          deviceIcon = Icons.phone_android;
-                        } else if (platform.contains('ios') || deviceName.toLowerCase().contains('iphone') || deviceName.toLowerCase().contains('ipad') || deviceName.toLowerCase().contains('apple')) {
-                          deviceIcon = Icons.phone_iphone;
-                        }
 
-                        return ListTile(
-                           contentPadding: EdgeInsets.zero,
-                           leading: Icon(deviceIcon, color: Colors.white54, size: 20),
-                           title: Text(deviceName, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
-                           subtitle: Text(deviceInfo['ip'] ?? s['ip'] ?? '', style: const TextStyle(color: Colors.white54, fontSize: 11)),
-                           trailing: IconButton(icon: const Icon(Icons.power_settings_new, color: Colors.redAccent, size: 20), onPressed: () => _terminateSession(s['id'])),
-                        );
-                     }),
-                   ],
-                ],
-              ),
-            ),
-            
             _buildSectionCard(
               AppLocalization.get('data_management'), Icons.storage,
               Column(
@@ -775,25 +591,7 @@ class _AccountScreenState extends State<AccountScreen> {
                ),
              ),
 
-             if (!_showAdafruit) ...[
-               const SizedBox(height: 16),
-               OutlinedButton.icon(
-                 style: OutlinedButton.styleFrom(foregroundColor: AppTheme.primaryViolet, side: BorderSide(color: AppTheme.primaryViolet.withValues(alpha: 0.5)), minimumSize: const Size(double.infinity, 50), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                 icon: const Icon(Icons.add_circle_outline),
-                 label: const Text('إضافة قاعدة بيانات Adafruit IO', style: TextStyle(fontWeight: FontWeight.bold)),
-                 onPressed: () => setState(() => _showAdafruit = true),
-               ),
-             ],
-             
-             if (!_showFirebase) ...[
-               const SizedBox(height: 16),
-               OutlinedButton.icon(
-                 style: OutlinedButton.styleFrom(foregroundColor: Colors.orangeAccent, side: BorderSide(color: Colors.orangeAccent.withValues(alpha: 0.5)), minimumSize: const Size(double.infinity, 50), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                 icon: const Icon(Icons.add_circle_outline),
-                 label: const Text('إضافة قاعدة بيانات Firebase RTDB', style: TextStyle(fontWeight: FontWeight.bold)),
-                 onPressed: () => setState(() => _showFirebase = true),
-               ),
-             ],
+
             
             const SizedBox(height: 16),
             ElevatedButton.icon(
@@ -843,25 +641,52 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  Widget _buildTextField(String hint, TextEditingController ctrl, IconData icon, {bool isPassword = false}) {
-    bool obscure = isPassword;
-    return StatefulBuilder(
-      builder: (context, setStateLocal) {
-         return TextField(
-            controller: ctrl,
-            obscureText: obscure,
-            style: const TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-               hintText: hint,
-               hintStyle: const TextStyle(color: Colors.white24, fontSize: 14),
-               icon: Icon(icon, color: Colors.white54, size: 20),
-               suffixIcon: isPassword 
-                  ? IconButton(icon: Icon(obscure ? Icons.visibility_off : Icons.visibility, color: Colors.white54), onPressed: () => setStateLocal(() => obscure = !obscure)) 
-                  : null,
-               border: InputBorder.none,
+
+  Widget _buildGlassButton({required IconData icon, required String title, required String subtitle, required Color color, required VoidCallback onTap}) {
+    return Container(
+      decoration: AppTheme.glassDecoration(
+        borderRadius: BorderRadius.circular(20),
+        borderColor: color.withValues(alpha: 0.3),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: onTap,
+          splashColor: color.withValues(alpha: 0.1),
+          highlightColor: color.withValues(alpha: 0.05),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(color: color.withValues(alpha: 0.2), blurRadius: 8, spreadRadius: 1)
+                    ],
+                  ),
+                  child: Icon(icon, color: color, size: 24),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                      const SizedBox(height: 4),
+                      Text(subtitle, style: const TextStyle(color: Colors.white54, fontSize: 13)),
+                    ],
+                  ),
+                ),
+                Icon(Icons.arrow_forward_ios, color: color.withValues(alpha: 0.5), size: 16),
+              ],
             ),
-         );
-      }
+          ),
+        ),
+      ),
     );
   }
 
