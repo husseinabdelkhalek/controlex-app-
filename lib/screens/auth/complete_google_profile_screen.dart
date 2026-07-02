@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
 import '../dashboard_screen.dart';
+import '../../core/localization.dart';
 
 /// Shown after first Google Sign-In to collect missing profile data
 class CompleteGoogleProfileScreen extends StatefulWidget {
@@ -17,9 +18,18 @@ class _CompleteGoogleProfileScreenState extends State<CompleteGoogleProfileScree
   final _firebaseUrlCtrl = TextEditingController();
   final _firebaseSecretCtrl = TextEditingController();
   bool _isLoading = false;
+  
+  void _onLangChange() => setState(() {});
+
+  @override
+  void initState() {
+    super.initState();
+    AppLocalization.isArabicNotifier.addListener(_onLangChange);
+  }
 
   @override
   void dispose() {
+    AppLocalization.isArabicNotifier.removeListener(_onLangChange);
     _aioUserCtrl.dispose();
     _aioKeyCtrl.dispose();
     _firebaseUrlCtrl.dispose();
@@ -57,6 +67,8 @@ class _CompleteGoogleProfileScreenState extends State<CompleteGoogleProfileScree
 
   @override
   Widget build(BuildContext context) {
+    final isAr = AppLocalization.isArabicNotifier.value;
+    
     return Scaffold(
       backgroundColor: const Color(0xFF0B0C10),
       body: Container(
@@ -87,13 +99,15 @@ class _CompleteGoogleProfileScreenState extends State<CompleteGoogleProfileScree
                 ),
                 SizedBox(height: 24),
                 Text(
-                  'أهلاً ${widget.username}! 👋',
+                  isAr ? 'أهلاً ${widget.username}! 👋' : 'Welcome ${widget.username}! 👋',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'تم إنشاء حسابك بنجاح عبر جوجل.\nأضف بيانات Adafruit للتحكم في أجهزتك.',
+                  isAr 
+                    ? 'تم إنشاء حسابك بنجاح عبر جوجل.\nأضف بيانات Adafruit أو Firebase للتحكم في أجهزتك.'
+                    : 'Account created successfully via Google.\nAdd Adafruit or Firebase credentials to control your devices.',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.white54, fontSize: 14, height: 1.6),
                 ),
@@ -119,20 +133,20 @@ class _CompleteGoogleProfileScreenState extends State<CompleteGoogleProfileScree
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(color: Colors.white12, borderRadius: BorderRadius.circular(20)),
-                            child: Text('اختياري', style: TextStyle(color: Colors.white38, fontSize: 10)),
+                            child: Text(isAr ? 'اختياري' : 'Optional', style: TextStyle(color: Colors.white38, fontSize: 10)),
                           ),
                         ],
                       ),
                       SizedBox(height: 4),
-                      Text('للتحكم في لوحات Arduino/ESP عبر الإنترنت', style: TextStyle(color: Colors.white38, fontSize: 11)),
+                      Text(isAr ? 'للتحكم في لوحات Arduino/ESP عبر الإنترنت' : 'To control Arduino/ESP boards online', style: TextStyle(color: Colors.white38, fontSize: 11)),
                       SizedBox(height: 16),
                       TextField(
                         controller: _aioUserCtrl,
                         style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
-                          labelText: 'اسم مستخدم Adafruit',
+                          labelText: isAr ? 'اسم مستخدم Adafruit' : 'Adafruit Username',
                           labelStyle: TextStyle(color: Colors.white54),
-                          hintText: 'اسم المستخدم في Adafruit IO',
+                          hintText: isAr ? 'اسم المستخدم في Adafruit IO' : 'Your Adafruit IO username',
                           hintStyle: TextStyle(color: Colors.white24, fontSize: 13),
                           prefixIcon: Icon(Icons.cloud_circle_outlined, color: Colors.white54),
                           enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white24)),
@@ -145,13 +159,74 @@ class _CompleteGoogleProfileScreenState extends State<CompleteGoogleProfileScree
                         obscureText: true,
                         style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
-                          labelText: 'مفتاح Adafruit API',
+                          labelText: isAr ? 'مفتاح Adafruit API' : 'Adafruit API Key',
                           labelStyle: TextStyle(color: Colors.white54),
-                          hintText: 'مفتاح API من لوحة تحكم Adafruit',
+                          hintText: isAr ? 'مفتاح API من لوحة تحكم Adafruit' : 'API Key from Adafruit dashboard',
                           hintStyle: TextStyle(color: Colors.white24, fontSize: 13),
                           prefixIcon: Icon(Icons.vpn_key_outlined, color: Colors.white54),
                           enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white24)),
                           focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Color(0xFF00FFCC))),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                
+                SizedBox(height: 24),
+                
+                // Firebase section
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.04),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.orangeAccent.withValues(alpha: 0.2)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.local_fire_department, color: Colors.orangeAccent, size: 20),
+                          SizedBox(width: 8),
+                          Text('Firebase RTDB', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                          const Spacer(),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(color: Colors.white12, borderRadius: BorderRadius.circular(20)),
+                            child: Text(isAr ? 'اختياري' : 'Optional', style: TextStyle(color: Colors.white38, fontSize: 10)),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 4),
+                      Text(isAr ? 'للتحكم في الأجهزة الذكية الاحترافية' : 'To control advanced smart devices', style: TextStyle(color: Colors.white38, fontSize: 11)),
+                      SizedBox(height: 16),
+                      TextField(
+                        controller: _firebaseUrlCtrl,
+                        style: TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          labelText: AppLocalization.get('firebase_db_url'),
+                          labelStyle: TextStyle(color: Colors.white54),
+                          hintText: 'https://your-project.firebaseio.com/',
+                          hintStyle: TextStyle(color: Colors.white24, fontSize: 13),
+                          prefixIcon: Icon(Icons.link, color: Colors.white54),
+                          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white24)),
+                          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.orangeAccent)),
+                        ),
+                      ),
+                      SizedBox(height: 12),
+                      TextField(
+                        controller: _firebaseSecretCtrl,
+                        obscureText: true,
+                        style: TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          labelText: AppLocalization.get('firebase_secret'),
+                          labelStyle: TextStyle(color: Colors.white54),
+                          hintText: 'Firebase Secret Key',
+                          hintStyle: TextStyle(color: Colors.white24, fontSize: 13),
+                          prefixIcon: Icon(Icons.vpn_key_outlined, color: Colors.white54),
+                          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white24)),
+                          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.orangeAccent)),
                         ),
                       ),
                     ],
@@ -172,13 +247,13 @@ class _CompleteGoogleProfileScreenState extends State<CompleteGoogleProfileScree
                     onPressed: _isLoading ? null : _save,
                     child: _isLoading
                         ? CircularProgressIndicator(color: Colors.black)
-                        : Text('حفظ والمتابعة', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        : Text(isAr ? 'حفظ والمتابعة' : 'Save & Continue', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
                 ),
                 SizedBox(height: 12),
                 TextButton(
                   onPressed: _skip,
-                  child: Text('تخطي الآن، سأضيفها لاحقاً', style: TextStyle(color: Colors.white38, fontSize: 13)),
+                  child: Text(isAr ? 'تخطي الآن، سأضيفها لاحقاً' : 'Skip for now, add later', style: TextStyle(color: Colors.white38, fontSize: 13)),
                 ),
                 SizedBox(height: 40),
               ],

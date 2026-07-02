@@ -87,30 +87,50 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 @pragma('vm:entry-point')
 Future<void> backgroundCallbackHandler(Uri? uri) async {
   WidgetsFlutterBinding.ensureInitialized();
+  debugPrint('📞 backgroundCallbackHandler received URI: $uri');
   if (uri == null) return;
   
   final String path = uri.path;
+  final String host = uri.host;
   final String? toolId = uri.queryParameters['toolId'];
+  debugPrint('   Path: $path, Host: $host, toolId: $toolId');
   if (toolId == null) return;
 
-  if (path == '/toggle') {
+  final bool isToggle = path == '/toggle' || path == 'toggle' || host == 'toggle';
+  final bool isPush = path == '/push' || path == 'push' || host == 'push';
+  final bool isRefresh = path == '/refresh' || path == 'refresh' || host == 'refresh';
+  final bool isSliderAdjust = path == '/slider_adjust' || path == 'slider_adjust' || host == 'slider_adjust';
+  final bool isColorPick = path == '/color_pick' || path == 'color_pick' || host == 'color_pick';
+  final bool isJoystickMove = path == '/joystick_move' || path == 'joystick_move' || host == 'joystick_move';
+  final bool isSceneTrigger = path == '/scene_trigger' || path == 'scene_trigger' || host == 'scene_trigger';
+  final bool isTerminalSend = path == '/terminal_send' || path == 'terminal_send' || host == 'terminal_send';
+
+  if (isToggle) {
     final String? toolData = await HomeWidget.getWidgetData<String>('widget_data_$toolId');
     final bool currentVal = toolData == 'ON';
     final bool newVal = !currentVal;
     final String cmd = newVal ? 'ON' : 'OFF';
+    debugPrint('   Toggling tool $toolId: $currentVal -> $newVal');
     
     try {
       await ApiService.sendCommand(toolId, cmd);
+      debugPrint('   Command sent successfully');
       await HomeWidget.saveWidgetData('widget_data_$toolId', newVal ? 'ON' : 'OFF');
       await HomeWidget.updateWidget(name: 'ControlExWidgetProvider', androidName: 'ControlExWidgetProvider');
       await HomeWidget.updateWidget(name: 'ControlExLargeWidgetProvider', androidName: 'ControlExLargeWidgetProvider');
-    } catch (_) {}
-  } else if (path == '/push') {
+    } catch (e) {
+      debugPrint('   ❌ Error sending toggle command: $e');
+    }
+  } else if (isPush) {
     try {
       await ApiService.sendCommand(toolId, 'ON');
-    } catch (_) {}
-  } else if (path == '/refresh') {
+      debugPrint('   Push command sent successfully');
+    } catch (e) {
+      debugPrint('   ❌ Error sending push command: $e');
+    }
+  } else if (isRefresh) {
     try {
+      debugPrint('   Refreshing tool $toolId');
       final widgets = await ApiService.getWidgets();
       final tool = widgets.firstWhere((w) => w['id'] == toolId, orElse: () => null);
       if (tool != null) {
@@ -128,9 +148,12 @@ Future<void> backgroundCallbackHandler(Uri? uri) async {
         await HomeWidget.saveWidgetData('widget_data_$toolId', value);
         await HomeWidget.updateWidget(name: 'ControlExWidgetProvider', androidName: 'ControlExWidgetProvider');
         await HomeWidget.updateWidget(name: 'ControlExLargeWidgetProvider', androidName: 'ControlExLargeWidgetProvider');
+        debugPrint('   Tool refreshed successfully with value: $value');
       }
-    } catch (_) {}
-  } else if (path == '/slider_adjust') {
+    } catch (e) {
+      debugPrint('   ❌ Error refreshing tool: $e');
+    }
+  } else if (isSliderAdjust) {
     final String? adjust = uri.queryParameters['adjust'];
     if (adjust != null) {
       final String? currentStr = await HomeWidget.getWidgetData<String>('widget_data_$toolId');
@@ -142,9 +165,12 @@ Future<void> backgroundCallbackHandler(Uri? uri) async {
         await HomeWidget.saveWidgetData('widget_data_$toolId', newVal.toStringAsFixed(0));
         await HomeWidget.updateWidget(name: 'ControlExWidgetProvider', androidName: 'ControlExWidgetProvider');
         await HomeWidget.updateWidget(name: 'ControlExLargeWidgetProvider', androidName: 'ControlExLargeWidgetProvider');
-      } catch (_) {}
+        debugPrint('   Adjusted slider successfully');
+      } catch (e) {
+        debugPrint('   ❌ Error adjusting slider: $e');
+      }
     }
-  } else if (path == '/color_pick') {
+  } else if (isColorPick) {
     final String? colorHex = uri.queryParameters['color'];
     if (colorHex != null) {
       try {
@@ -152,16 +178,22 @@ Future<void> backgroundCallbackHandler(Uri? uri) async {
         await HomeWidget.saveWidgetData('widget_data_$toolId', colorHex);
         await HomeWidget.updateWidget(name: 'ControlExWidgetProvider', androidName: 'ControlExWidgetProvider');
         await HomeWidget.updateWidget(name: 'ControlExLargeWidgetProvider', androidName: 'ControlExLargeWidgetProvider');
-      } catch (_) {}
+        debugPrint('   Picked color successfully');
+      } catch (e) {
+        debugPrint('   ❌ Error picking color: $e');
+      }
     }
-  } else if (path == '/joystick_move') {
+  } else if (isJoystickMove) {
     final String? dir = uri.queryParameters['dir'];
     if (dir != null) {
       try {
         await ApiService.sendCommand(toolId, dir);
-      } catch (_) {}
+        debugPrint('   Moved joystick successfully');
+      } catch (e) {
+        debugPrint('   ❌ Error moving joystick: $e');
+      }
     }
-  } else if (path == '/scene_trigger') {
+  } else if (isSceneTrigger) {
     try {
       if (toolId.startsWith('local_scene_')) {
         final prefs = await SharedPreferences.getInstance();
@@ -181,8 +213,11 @@ Future<void> backgroundCallbackHandler(Uri? uri) async {
         final cleanId = toolId.replaceFirst('scene_', '');
         await ApiService.executeScene(cleanId, []);
       }
-    } catch (_) {}
-  } else if (path == '/terminal_send') {
+      debugPrint('   Scene triggered successfully');
+    } catch (e) {
+      debugPrint('   ❌ Error triggering scene: $e');
+    }
+  } else if (isTerminalSend) {
     final String? cmd = uri.queryParameters['cmd'];
     if (cmd != null) {
       try {
@@ -200,7 +235,10 @@ Future<void> backgroundCallbackHandler(Uri? uri) async {
         }
         await HomeWidget.updateWidget(name: 'ControlExWidgetProvider', androidName: 'ControlExWidgetProvider');
         await HomeWidget.updateWidget(name: 'ControlExLargeWidgetProvider', androidName: 'ControlExLargeWidgetProvider');
-      } catch (_) {}
+        debugPrint('   Terminal command processed successfully');
+      } catch (e) {
+        debugPrint('   ❌ Error processing terminal command: $e');
+      }
     }
   }
 }
@@ -213,7 +251,7 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   
   // Register Widget Background Handler
-  HomeWidget.registerBackgroundCallback(backgroundCallbackHandler);
+  await HomeWidget.registerInteractivityCallback(backgroundCallbackHandler);
   // Load Theme
   final prefs = await SharedPreferences.getInstance();
   final savedTheme = prefs.getString('app_theme') ?? 'dark';
@@ -284,6 +322,11 @@ class _AppInitializerState extends State<AppInitializer> {
     final results = await Future.wait([versionFuture, tokenFuture, initialUriFuture]);
     final versionData = results[0] as Map<String, dynamic>;
     _token = results[1] as String?;
+    if (_token != null) {
+      try {
+        await HomeWidget.saveWidgetData('widget_auth_token', _token);
+      } catch (_) {}
+    }
     final Uri? initialUri = results[2] as Uri?;
 
     if (initialUri != null && initialUri.path == '/setup') {

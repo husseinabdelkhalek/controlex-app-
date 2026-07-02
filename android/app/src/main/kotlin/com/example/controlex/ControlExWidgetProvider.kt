@@ -10,7 +10,19 @@ import es.antonborri.home_widget.HomeWidgetProvider
 import es.antonborri.home_widget.HomeWidgetLaunchIntent
 import es.antonborri.home_widget.HomeWidgetBackgroundIntent
 
+import android.util.Log
+import android.content.Intent
+import android.app.PendingIntent
+
 class ControlExWidgetProvider : HomeWidgetProvider() {
+
+    override fun onReceive(context: Context, intent: Intent) {
+        if (intent.action == "com.example.controlex.ACTION_WIDGET_CLICK") {
+            WidgetClickHandler.handleIntent(context, intent)
+        } else {
+            super.onReceive(context, intent)
+        }
+    }
 
     override fun onUpdate(
         context: Context,
@@ -19,7 +31,9 @@ class ControlExWidgetProvider : HomeWidgetProvider() {
         widgetData: SharedPreferences
     ) {
         val data = HomeWidgetPlugin.getData(context)
+        Log.d("ControlExWidget", "onUpdate called with ${appWidgetIds.size} widget IDs")
         appWidgetIds.forEach { widgetId ->
+            Log.d("ControlExWidget", "Updating widget ID: $widgetId")
             updateWidgetLayout(context, appWidgetManager, widgetId, data)
         }
     }
@@ -31,6 +45,7 @@ class ControlExWidgetProvider : HomeWidgetProvider() {
         newOptions: android.os.Bundle
     ) {
         val data = HomeWidgetPlugin.getData(context)
+        Log.d("ControlExWidget", "onAppWidgetOptionsChanged for widget ID: $appWidgetId")
         updateWidgetLayout(context, appWidgetManager, appWidgetId, data)
         super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
     }
@@ -88,10 +103,57 @@ class ControlExWidgetProvider : HomeWidgetProvider() {
         }
 
         // Check if this specific widget is linked to a tool
-        val toolId = widgetData.getString("widget_tool_id_$widgetId", null)
+        var toolId = widgetData.getString("widget_tool_id_$widgetId", null)
+        Log.d("ControlExWidget", "widgetId: $widgetId -> toolId from prefs: $toolId")
         
         if (toolId == null) {
-            // Widget is not configured yet - set off background
+            val pendingToolId = widgetData.getString("widget_pending_tool_id", null)
+            Log.d("ControlExWidget", "Checking pending tool for widgetId $widgetId: $pendingToolId")
+            if (pendingToolId != null) {
+                val pendingToolName = widgetData.getString("widget_pending_tool_name", "Device") ?: "Device"
+                val pendingToolType = widgetData.getString("widget_pending_tool_type", "toggle") ?: "toggle"
+                Log.d("ControlExWidget", "Auto-binding pending tool: $pendingToolId ($pendingToolName, $pendingToolType) to widgetId: $widgetId")
+                
+                widgetData.edit().apply {
+                    putString("widget_tool_id_$widgetId", pendingToolId)
+                    putString("widget_name_$widgetId", pendingToolName)
+                    putString("widget_type_$widgetId", pendingToolType)
+                    
+                    val pendingUserEmail = widgetData.getString("widget_pending_user_email", null)
+                    if (pendingUserEmail != null) {
+                        putString("widget_owner_email_$widgetId", pendingUserEmail)
+                    }
+                    
+                    val initialData = when (pendingToolType.lowercase()) {
+                        "sensor" -> "24°C"
+                        "slider" -> "50%"
+                        "colorpicker", "color" -> "#FF5F56"
+                        else -> "OFF"
+                    }
+                    putString("widget_data_$pendingToolId", initialData)
+                    
+                    remove("widget_pending_tool_id")
+                    remove("widget_pending_tool_name")
+                    remove("widget_pending_tool_type")
+                    remove("widget_pending_user_email")
+                    apply()
+                }
+                toolId = pendingToolId
+            }
+        }
+        
+        var widgetOwnerEmail = widgetData.getString("widget_owner_email_$widgetId", null)
+        val currentUserEmail = widgetData.getString("widget_current_user_email", null)
+        
+        if (widgetOwnerEmail == null && currentUserEmail != null && toolId != null) {
+            widgetOwnerEmail = currentUserEmail
+            widgetData.edit().putString("widget_owner_email_$widgetId", currentUserEmail).apply()
+        }
+        
+        val isAuthInvalid = toolId != null && (currentUserEmail == null || (widgetOwnerEmail != null && widgetOwnerEmail != currentUserEmail))
+
+        if (toolId == null || isAuthInvalid) {
+            // Widget is not configured yet or authentication has changed - set off background
             views.setInt(R.id.widget_root, "setBackgroundResource", R.drawable.widget_background_off)
             
             views.setViewVisibility(R.id.layout_setup, android.view.View.VISIBLE)
@@ -101,10 +163,36 @@ class ControlExWidgetProvider : HomeWidgetProvider() {
             views.setViewVisibility(R.id.layout_terminal, android.view.View.GONE)
             views.setViewVisibility(R.id.layout_slider, android.view.View.GONE)
             views.setViewVisibility(R.id.layout_colorpicker, android.view.View.GONE)
+            views.setViewVisibility(R.id.layout_chart, android.view.View.GONE)
             
             views.setTextViewText(R.id.widget_title, "ControlEx")
-            views.setTextViewText(R.id.widget_status, "Setup Required")
             views.setImageViewResource(R.id.widget_icon, R.drawable.ic_widget_setup)
+            
+            if (isAuthInvalid) {
+                val flutterPrefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+                val lang = flutterPrefs.getString("flutter.language", "en") ?: "en"
+                val isArabic = lang.equals("ar", ignoreCase = true)
+                
+                views.setTextViewText(R.id.widget_status, if (isArabic) "مطلوب تسجيل الدخول" else "Authentication Required")
+                
+                val message = if (widgetOwnerEmail != null) {
+                    if (isArabic) {
+                        "سجل الدخول بحساب\n$widgetOwnerEmail\nلتفعيل الأداة"
+                    } else {
+                        "Please login as\n$widgetOwnerEmail\nto activate"
+                    }
+                } else {
+                    if (isArabic) {
+                        "يرجى تسجيل الدخول لتفعيل الأداة"
+                    } else {
+                        "Please login to activate"
+                    }
+                }
+                views.setTextViewText(R.id.widget_setup_text, message)
+            } else {
+                views.setTextViewText(R.id.widget_status, "Setup Required")
+                views.setTextViewText(R.id.widget_setup_text, "Tap to setup")
+            }
             
             val pendingIntent = HomeWidgetLaunchIntent.getActivity(
                 context,
@@ -119,6 +207,7 @@ class ControlExWidgetProvider : HomeWidgetProvider() {
             val toolType = widgetData.getString("widget_type_$widgetId", "toggle")?.lowercase() ?: "toggle"
             val toolName = widgetData.getString("widget_name_$widgetId", "Unknown Device")
             val toolData = widgetData.getString("widget_data_$toolId", "OFF") ?: "OFF"
+            Log.d("ControlExWidget", "Widget ID $widgetId configured: toolId=$toolId, type=$toolType, name=$toolName, data=$toolData")
             
             views.setTextViewText(R.id.widget_title, toolName)
             
@@ -130,6 +219,7 @@ class ControlExWidgetProvider : HomeWidgetProvider() {
             views.setViewVisibility(R.id.layout_terminal, if (toolType == "terminal") android.view.View.VISIBLE else android.view.View.GONE)
             views.setViewVisibility(R.id.layout_slider, if (toolType == "slider") android.view.View.VISIBLE else android.view.View.GONE)
             views.setViewVisibility(R.id.layout_colorpicker, if (toolType == "colorpicker" || toolType == "color") android.view.View.VISIBLE else android.view.View.GONE)
+            views.setViewVisibility(R.id.layout_chart, if (toolType == "chart") android.view.View.VISIBLE else android.view.View.GONE)
             
             // Toggle sub-layout visibility based on size
             views.setViewVisibility(R.id.layout_toggle_normal, if (isCompact) android.view.View.GONE else android.view.View.VISIBLE)
@@ -147,6 +237,9 @@ class ControlExWidgetProvider : HomeWidgetProvider() {
             views.setViewVisibility(R.id.layout_terminal_normal, if (isCompact) android.view.View.GONE else android.view.View.VISIBLE)
             views.setViewVisibility(R.id.layout_terminal_compact, if (isCompact) android.view.View.VISIBLE else android.view.View.GONE)
 
+            views.setViewVisibility(R.id.layout_chart_normal, if (isCompact) android.view.View.GONE else android.view.View.VISIBLE)
+            views.setViewVisibility(R.id.layout_chart_compact, if (isCompact) android.view.View.VISIBLE else android.view.View.GONE)
+
             // Dynamic background setup based on state and tool type
             var bgResource = R.drawable.widget_background_active
             
@@ -163,14 +256,20 @@ class ControlExWidgetProvider : HomeWidgetProvider() {
                     
                     bgResource = if (isON) R.drawable.widget_background_green else R.drawable.widget_background_off
                     
-                    val toggleIntent = HomeWidgetBackgroundIntent.getBroadcast(
+                    val toggleIntent = Intent(context, ControlExWidgetProvider::class.java).apply {
+                        action = "com.example.controlex.ACTION_WIDGET_CLICK"
+                        data = Uri.parse("controlex://widget/toggle?toolId=$toolId")
+                    }
+                    val pendingIntent = PendingIntent.getBroadcast(
                         context,
-                        Uri.parse("controlex://widget/toggle?toolId=$toolId")
+                        widgetId,
+                        toggleIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
-                    views.setOnClickPendingIntent(R.id.layout_toggle, toggleIntent)
-                    views.setOnClickPendingIntent(R.id.layout_toggle_compact, toggleIntent)
-                    views.setOnClickPendingIntent(R.id.widget_toggle_switch_img, toggleIntent)
-                    views.setOnClickPendingIntent(R.id.widget_toggle_switch_img_compact, toggleIntent)
+                    views.setOnClickPendingIntent(R.id.layout_toggle, pendingIntent)
+                    views.setOnClickPendingIntent(R.id.layout_toggle_compact, pendingIntent)
+                    views.setOnClickPendingIntent(R.id.widget_toggle_switch_img, pendingIntent)
+                    views.setOnClickPendingIntent(R.id.widget_toggle_switch_img_compact, pendingIntent)
                 }
                 "push" -> {
                     val pushIcon = R.drawable.ic_widget_push
@@ -182,12 +281,18 @@ class ControlExWidgetProvider : HomeWidgetProvider() {
                     
                     bgResource = R.drawable.widget_background_active
                     
-                    val pushIntent = HomeWidgetBackgroundIntent.getBroadcast(
+                    val pushIntent = Intent(context, ControlExWidgetProvider::class.java).apply {
+                        action = "com.example.controlex.ACTION_WIDGET_CLICK"
+                        data = Uri.parse("controlex://widget/push?toolId=$toolId")
+                    }
+                    val pendingIntent = PendingIntent.getBroadcast(
                         context,
-                        Uri.parse("controlex://widget/push?toolId=$toolId")
+                        widgetId,
+                        pushIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
-                    views.setOnClickPendingIntent(R.id.layout_push, pushIntent)
-                    views.setOnClickPendingIntent(R.id.layout_push_compact, pushIntent)
+                    views.setOnClickPendingIntent(R.id.layout_push, pendingIntent)
+                    views.setOnClickPendingIntent(R.id.layout_push_compact, pendingIntent)
                 }
                 "scene" -> {
                     val sceneIcon = R.drawable.ic_widget_scene
@@ -199,12 +304,18 @@ class ControlExWidgetProvider : HomeWidgetProvider() {
                     
                     bgResource = R.drawable.widget_background_purple
                     
-                    val sceneIntent = HomeWidgetBackgroundIntent.getBroadcast(
+                    val sceneIntent = Intent(context, ControlExWidgetProvider::class.java).apply {
+                        action = "com.example.controlex.ACTION_WIDGET_CLICK"
+                        data = Uri.parse("controlex://widget/scene_trigger?toolId=$toolId")
+                    }
+                    val pendingIntent = PendingIntent.getBroadcast(
                         context,
-                        Uri.parse("controlex://widget/scene_trigger?toolId=$toolId")
+                        widgetId,
+                        sceneIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
-                    views.setOnClickPendingIntent(R.id.layout_push, sceneIntent)
-                    views.setOnClickPendingIntent(R.id.layout_push_compact, sceneIntent)
+                    views.setOnClickPendingIntent(R.id.layout_push, pendingIntent)
+                    views.setOnClickPendingIntent(R.id.layout_push_compact, pendingIntent)
                 }
                 "sensor" -> {
                     views.setImageViewResource(R.id.widget_icon, R.drawable.ic_widget_sensor)
@@ -236,18 +347,30 @@ class ControlExWidgetProvider : HomeWidgetProvider() {
                     views.setTextViewText(R.id.widget_slider_value_text_compact, valStr)
                     views.setProgressBar(R.id.widget_slider_progress, 100, currentVal.toInt(), false)
                     
-                    val minusIntent = HomeWidgetBackgroundIntent.getBroadcast(
+                    val minusIntent = Intent(context, ControlExWidgetProvider::class.java).apply {
+                        action = "com.example.controlex.ACTION_WIDGET_CLICK"
+                        data = Uri.parse("controlex://widget/slider_adjust?toolId=$toolId&adjust=-10")
+                    }
+                    val pendingMinus = PendingIntent.getBroadcast(
                         context,
-                        Uri.parse("controlex://widget/slider_adjust?toolId=$toolId&adjust=-10")
+                        widgetId * 10 + 1,
+                        minusIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
-                    val plusIntent = HomeWidgetBackgroundIntent.getBroadcast(
+                    val plusIntent = Intent(context, ControlExWidgetProvider::class.java).apply {
+                        action = "com.example.controlex.ACTION_WIDGET_CLICK"
+                        data = Uri.parse("controlex://widget/slider_adjust?toolId=$toolId&adjust=10")
+                    }
+                    val pendingPlus = PendingIntent.getBroadcast(
                         context,
-                        Uri.parse("controlex://widget/slider_adjust?toolId=$toolId&adjust=10")
+                        widgetId * 10 + 2,
+                        plusIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
-                    views.setOnClickPendingIntent(R.id.btn_slider_minus, minusIntent)
-                    views.setOnClickPendingIntent(R.id.btn_slider_plus, plusIntent)
-                    views.setOnClickPendingIntent(R.id.btn_slider_minus_compact, minusIntent)
-                    views.setOnClickPendingIntent(R.id.btn_slider_plus_compact, plusIntent)
+                    views.setOnClickPendingIntent(R.id.btn_slider_minus, pendingMinus)
+                    views.setOnClickPendingIntent(R.id.btn_slider_plus, pendingPlus)
+                    views.setOnClickPendingIntent(R.id.btn_slider_minus_compact, pendingMinus)
+                    views.setOnClickPendingIntent(R.id.btn_slider_plus_compact, pendingPlus)
                 }
                 "colorpicker", "color" -> {
                     views.setImageViewResource(R.id.widget_icon, R.drawable.ic_widget_colorpicker)
@@ -262,31 +385,55 @@ class ControlExWidgetProvider : HomeWidgetProvider() {
                         else -> R.drawable.widget_background_active
                     }
                     
-                    val redIntent = HomeWidgetBackgroundIntent.getBroadcast(
+                    val redIntent = Intent(context, ControlExWidgetProvider::class.java).apply {
+                        action = "com.example.controlex.ACTION_WIDGET_CLICK"
+                        data = Uri.parse("controlex://widget/color_pick?toolId=$toolId&color=%23FF5F56")
+                    }
+                    val pendingRed = PendingIntent.getBroadcast(
                         context,
-                        Uri.parse("controlex://widget/color_pick?toolId=$toolId&color=%23FF5F56")
+                        widgetId * 10 + 3,
+                        redIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
-                    val greenIntent = HomeWidgetBackgroundIntent.getBroadcast(
+                    val greenIntent = Intent(context, ControlExWidgetProvider::class.java).apply {
+                        action = "com.example.controlex.ACTION_WIDGET_CLICK"
+                        data = Uri.parse("controlex://widget/color_pick?toolId=$toolId&color=%2327C93F")
+                    }
+                    val pendingGreen = PendingIntent.getBroadcast(
                         context,
-                        Uri.parse("controlex://widget/color_pick?toolId=$toolId&color=%2327C93F")
+                        widgetId * 10 + 4,
+                        greenIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
-                    val blueIntent = HomeWidgetBackgroundIntent.getBroadcast(
+                    val blueIntent = Intent(context, ControlExWidgetProvider::class.java).apply {
+                        action = "com.example.controlex.ACTION_WIDGET_CLICK"
+                        data = Uri.parse("controlex://widget/color_pick?toolId=$toolId&color=%232979FF")
+                    }
+                    val pendingBlue = PendingIntent.getBroadcast(
                         context,
-                        Uri.parse("controlex://widget/color_pick?toolId=$toolId&color=%232979FF")
+                        widgetId * 10 + 5,
+                        blueIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
-                    val purpleIntent = HomeWidgetBackgroundIntent.getBroadcast(
+                    val purpleIntent = Intent(context, ControlExWidgetProvider::class.java).apply {
+                        action = "com.example.controlex.ACTION_WIDGET_CLICK"
+                        data = Uri.parse("controlex://widget/color_pick?toolId=$toolId&color=%23AA00FF")
+                    }
+                    val pendingPurple = PendingIntent.getBroadcast(
                         context,
-                        Uri.parse("controlex://widget/color_pick?toolId=$toolId&color=%23AA00FF")
+                        widgetId * 10 + 6,
+                        purpleIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
-                    views.setOnClickPendingIntent(R.id.btn_color_red, redIntent)
-                    views.setOnClickPendingIntent(R.id.btn_color_green, greenIntent)
-                    views.setOnClickPendingIntent(R.id.btn_color_blue, blueIntent)
-                    views.setOnClickPendingIntent(R.id.btn_color_purple, purpleIntent)
+                    views.setOnClickPendingIntent(R.id.btn_color_red, pendingRed)
+                    views.setOnClickPendingIntent(R.id.btn_color_green, pendingGreen)
+                    views.setOnClickPendingIntent(R.id.btn_color_blue, pendingBlue)
+                    views.setOnClickPendingIntent(R.id.btn_color_purple, pendingPurple)
                     
-                    views.setOnClickPendingIntent(R.id.btn_color_red_compact, redIntent)
-                    views.setOnClickPendingIntent(R.id.btn_color_green_compact, greenIntent)
-                    views.setOnClickPendingIntent(R.id.btn_color_blue_compact, blueIntent)
-                    views.setOnClickPendingIntent(R.id.btn_color_purple_compact, purpleIntent)
+                    views.setOnClickPendingIntent(R.id.btn_color_red_compact, pendingRed)
+                    views.setOnClickPendingIntent(R.id.btn_color_green_compact, pendingGreen)
+                    views.setOnClickPendingIntent(R.id.btn_color_blue_compact, pendingBlue)
+                    views.setOnClickPendingIntent(R.id.btn_color_purple_compact, pendingPurple)
                 }
                 "terminal" -> {
                     views.setImageViewResource(R.id.widget_icon, R.drawable.ic_widget_terminal)
@@ -303,6 +450,15 @@ class ControlExWidgetProvider : HomeWidgetProvider() {
                     views.setOnClickPendingIntent(R.id.layout_terminal, keyboardIntent)
                     views.setOnClickPendingIntent(R.id.layout_terminal_compact, keyboardIntent)
                     views.setOnClickPendingIntent(R.id.widget_terminal_logs, keyboardIntent)
+                }
+                "chart" -> {
+                    views.setImageViewResource(R.id.widget_icon, R.drawable.ic_widget_chart)
+                    views.setTextViewText(R.id.widget_status, "• Chart Node")
+                    
+                    bgResource = R.drawable.widget_background_active
+                    
+                    views.setTextViewText(R.id.widget_chart_value_text, toolData)
+                    views.setTextViewText(R.id.widget_chart_value_text_compact, toolData)
                 }
                 else -> {
                     views.setImageViewResource(R.id.widget_icon, R.drawable.ic_widget_setup)
@@ -323,11 +479,17 @@ class ControlExWidgetProvider : HomeWidgetProvider() {
             views.setOnClickPendingIntent(R.id.header_container, openIntent)
             
             // Refresh button triggers background refresh
-            val refreshIntent = HomeWidgetBackgroundIntent.getBroadcast(
+            val refreshIntent = Intent(context, ControlExWidgetProvider::class.java).apply {
+                action = "com.example.controlex.ACTION_WIDGET_CLICK"
+                data = Uri.parse("controlex://widget/refresh?toolId=$toolId")
+            }
+            val pendingRefresh = PendingIntent.getBroadcast(
                 context,
-                Uri.parse("controlex://widget/refresh?toolId=$toolId")
+                widgetId * 10 + 7,
+                refreshIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
-            views.setOnClickPendingIntent(R.id.widget_refresh_button, refreshIntent)
+            views.setOnClickPendingIntent(R.id.widget_refresh_button, pendingRefresh)
         }
         
         appWidgetManager.updateAppWidget(widgetId, views)

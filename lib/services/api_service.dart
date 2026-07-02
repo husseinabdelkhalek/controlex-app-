@@ -13,16 +13,23 @@ class ApiService {
 
   static Future<String?> getToken() async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('background_auth_token');
+      if (token != null && token.isNotEmpty) return token;
+    } catch (_) {}
+
+    try {
+      final token = await HomeWidget.getWidgetData<String>('widget_auth_token');
+      if (token != null && token.isNotEmpty) return token;
+    } catch (_) {}
+
+    try {
       final token = await _storage.read(key: 'x-auth-token');
       if (token != null) return token;
     } catch (_) {
       // Catch platform exceptions in background isolates
     }
-    try {
-      return await HomeWidget.getWidgetData<String>('widget_auth_token');
-    } catch (_) {
-      return null;
-    }
+    return null;
   }
 
   static Future<void> saveToken(String token) async {
@@ -38,8 +45,10 @@ class ApiService {
     await _storage.delete(key: 'x-auth-token');
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('background_auth_token');
+    await prefs.remove('current_user_email');
     try {
       await HomeWidget.saveWidgetData('widget_auth_token', null);
+      await HomeWidget.saveWidgetData('widget_current_user_email', null);
     } catch (_) {}
   }
 
@@ -239,6 +248,13 @@ class ApiService {
       headers: await _getHeaders(),
     ).timeout(const Duration(seconds: 10));
     final data = json.decode(response.body);
+    if (response.statusCode == 200 && data['email'] != null) {
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('current_user_email', data['email'].toString());
+        await HomeWidget.saveWidgetData('widget_current_user_email', data['email'].toString());
+      } catch (_) {}
+    }
     return data;
   }
 

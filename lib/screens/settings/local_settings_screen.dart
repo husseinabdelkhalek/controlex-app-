@@ -104,6 +104,14 @@ class _LocalSettingsScreenState extends State<LocalSettingsScreen> {
     await LocalService.saveIp(_ipCtrl.text.trim());
     
     try {
+       Map<String, dynamic> existingConfig = {};
+       if (_editingWidgetId != null) {
+          final w = _existingWidgets.firstWhere((e) => e['id'] == _editingWidgetId, orElse: () => null);
+          if (w != null && w['configuration'] != null) {
+             existingConfig = Map<String, dynamic>.from(w['configuration']);
+          }
+       }
+
        Map<String, dynamic> data = {
          'name': _nameCtrl.text.trim(),
          'feedName': _commandPathCtrl.text.trim(), // Command path in local mode
@@ -112,6 +120,7 @@ class _LocalSettingsScreenState extends State<LocalSettingsScreen> {
          'onCommand': _onCmdCtrl.text,
          'offCommand': _offCmdCtrl.text,
          'configuration': {
+            ...existingConfig,
             'min': double.tryParse(_minCtrl.text) ?? 0,
             'max': double.tryParse(_maxCtrl.text) ?? 100,
             'step': 1.0,

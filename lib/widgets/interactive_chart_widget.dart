@@ -96,8 +96,8 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
         startTime = now.subtract(const Duration(hours: 24));
     }
 
-    final double minX = startTime.millisecondsSinceEpoch.toDouble();
-    final double maxX = now.millisecondsSinceEpoch.toDouble();
+    double minX = startTime.millisecondsSinceEpoch.toDouble();
+    double maxX = now.millisecondsSinceEpoch.toDouble();
 
     // Filter points in range
     List<Map<String, dynamic>> filteredHistory = [];
@@ -109,7 +109,7 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
         final value = point['value'];
         if (value == null) continue;
 
-        if (time.isAfter(startTime) && time.isBefore(now)) {
+        if (time.isAfter(startTime)) {
           filteredHistory.add({
             'time': time,
             'value': (value as num).toDouble(),
@@ -148,6 +148,15 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
         dynamicMinY = val - 10;
         dynamicMaxY = val + 10;
       } else {
+        // Adjust minX and maxX dynamically to the range of actual data points
+        final firstTime = (filteredHistory.first['time'] as DateTime).millisecondsSinceEpoch.toDouble();
+        final lastTime = (filteredHistory.last['time'] as DateTime).millisecondsSinceEpoch.toDouble();
+        
+        if (lastTime - firstTime > 1000) {
+          minX = firstTime;
+          maxX = lastTime;
+        }
+
         for (var point in filteredHistory) {
           final x = (point['time'] as DateTime).millisecondsSinceEpoch.toDouble();
           final y = point['value'] as double;
@@ -165,6 +174,9 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
         }
       }
     }
+
+    final double span = maxX - minX;
+    final double verticalIntervalVal = _getDynamicBottomTitleInterval(span);
 
     return GlassCard(
       borderColor: widget.color,
@@ -257,7 +269,7 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
                                 show: true,
                                 drawVerticalLine: true,
                                 horizontalInterval: ((dynamicMaxY - dynamicMinY) / 4) > 0 ? ((dynamicMaxY - dynamicMinY) / 4) : 1,
-                                verticalInterval: _getBottomTitleInterval(_selectedFilter),
+                                verticalInterval: verticalIntervalVal,
                                 getDrawingHorizontalLine: (value) {
                                   return FlLine(
                                     color: Colors.white.withValues(alpha: 0.04),
@@ -278,7 +290,7 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
                                 bottomTitles: AxisTitles(
                                   sideTitles: SideTitles(
                                     showTitles: true,
-                                    interval: _getBottomTitleInterval(_selectedFilter),
+                                    interval: verticalIntervalVal,
                                     reservedSize: 22,
                                     getTitlesWidget: (value, meta) {
                                       // Avoid drawing edge labels that fl_chart forces, to prevent overlaps and weird ordering.
@@ -289,7 +301,7 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
                                       if (value < minX || value > maxX) {
                                         return SizedBox.shrink();
                                       }
-                                      final label = _formatBottomTitle(_selectedFilter, value);
+                                      final label = _formatBottomTitleDynamic(value, verticalIntervalVal);
                                       return Padding(
                                         padding: const EdgeInsets.only(top: 6.0),
                                         child: Text(
@@ -412,5 +424,41 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
         ),
       ),
     );
+  }
+
+  double _getDynamicBottomTitleInterval(double spanMs) {
+    if (spanMs <= 0) return 1000.0;
+    if (spanMs < 15 * 1000) {
+      return 2 * 1000.0; // 2 seconds
+    } else if (spanMs < 60 * 1000) {
+      return 10 * 1000.0; // 10 seconds
+    } else if (spanMs < 5 * 60 * 1000) {
+      return 1 * 60 * 1000.0; // 1 minute
+    } else if (spanMs < 30 * 60 * 1000) {
+      return 5 * 60 * 1000.0; // 5 minutes
+    } else if (spanMs < 3 * 60 * 60 * 1000) {
+      return 30 * 60 * 1000.0; // 30 minutes
+    } else if (spanMs < 24 * 60 * 60 * 1000) {
+      return 2 * 60 * 60 * 1000.0; // 2 hours
+    } else {
+      return 24 * 60 * 60 * 1000.0; // 1 day
+    }
+  }
+
+  String _formatBottomTitleDynamic(double value, double interval) {
+    final dt = DateTime.fromMillisecondsSinceEpoch(value.toInt());
+    if (interval < 60 * 1000) {
+      return "${dt.minute.toString().padLeft(2, '0')}:${dt.second.toString().padLeft(2, '0')}";
+    } else if (interval < 24 * 60 * 60 * 1000) {
+      return "${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}";
+    } else if (interval < 7 * 24 * 60 * 60 * 1000) {
+      const weekdays = ['الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت', 'الأحد'];
+      if (dt.weekday >= 1 && dt.weekday <= 7) {
+        return weekdays[dt.weekday - 1];
+      }
+      return "";
+    } else {
+      return "${dt.day}/${dt.month}";
+    }
   }
 }

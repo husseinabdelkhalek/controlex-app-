@@ -126,6 +126,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     // Register FCM token now that we have an active session
     NotificationService.registerAfterLogin();
+
+    // Check if app was launched from a widget setup intent on cold start
+    if (widget.widgetSetupId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _triggerWidgetSetup(widget.widgetSetupId!);
+        }
+      });
+    }
   }
 
   @override
@@ -728,6 +737,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
             }
           }
           
+          // Update Home Widget data on socket updates
+          String? widgetValue;
+          final String type = (_rawWidgets[i]['type'] ?? '').toString().toLowerCase();
+          final state = _rawWidgets[i]['state'] ?? {};
+          if (type == 'sensor') {
+            final val = state['lastValue'] ?? 'N/A';
+            final unit = _rawWidgets[i]['configuration']?['unit'] ?? '';
+            widgetValue = '$val$unit';
+          } else if (type == 'toggle') {
+            final bool isActive = state['isActive'] == true;
+            widgetValue = isActive ? 'ON' : 'OFF';
+          } else if (type == 'slider') {
+            final val = state['lastValue'] ?? '0';
+            widgetValue = '$val%';
+          } else if (type == 'terminal') {
+            widgetValue = state['lastValue'] ?? 'Console Ready';
+          } else if (type == 'colorpicker' || type == 'color') {
+            widgetValue = state['lastValue'] ?? '#FF5F56';
+          }
+          if (widgetValue != null) {
+            _updateHomeWidgetData(widgetId, widgetValue);
+          }
+          
           debugPrint('✅ Widget $widgetId updated successfully');
           break;
         }
@@ -757,6 +789,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
           }
         });
         debugPrint('✅ Widget states refreshed');
+        
+        // Update all widget data in SharedPreferences
+        for (var w in widgets) {
+          final id = w['id'].toString();
+          final type = w['type']?.toString().toLowerCase() ?? 'toggle';
+          final state = w['state'] ?? {};
+          String? value;
+          if (type == 'sensor') {
+            value = '${state['lastValue'] ?? 'N/A'}${w['configuration']?['unit'] ?? ''}';
+          } else if (type == 'toggle') {
+            value = (state['isActive'] == true || state['lastValue'] == (w['configuration']?['onCommand'] ?? 'ON')) ? 'ON' : 'OFF';
+          } else if (type == 'slider') {
+            value = '${state['lastValue'] ?? '0'}%';
+          } else if (type == 'terminal') {
+            value = state['lastValue'] ?? 'Console Ready';
+          } else if (type == 'colorpicker' || type == 'color') {
+            value = state['lastValue'] ?? '#FF5F56';
+          }
+          if (value != null) {
+            await HomeWidget.saveWidgetData('widget_data_$id', value);
+          }
+        }
+        await HomeWidget.updateWidget(name: 'ControlExWidgetProvider', androidName: 'ControlExWidgetProvider');
+        await HomeWidget.updateWidget(name: 'ControlExLargeWidgetProvider', androidName: 'ControlExLargeWidgetProvider');
       }
     } catch (e) {
       debugPrint('❌ Error refreshing widget states: $e');
@@ -781,13 +837,50 @@ class _DashboardScreenState extends State<DashboardScreen> {
        // (empty list is valid - user might just have no widgets)
        debugPrint('📦 Received ${widgets.length} widgets from API');
        
-       // Log sensor widgets specifically
+        // Log sensor widgets specifically
        for (var w in widgets) {
          if (w['type'] == 'sensor') {
            debugPrint('📊 Sensor Widget: ${w['id']} - ${w['name']}');
            debugPrint('   State: ${w['state']}');
            debugPrint('   Value: ${w['state']?['lastValue'] ?? 'null'}');
          }
+       }
+       
+       bool historyUpdated = false;
+       for (var w in widgets) {
+         if (w['type'] == 'chart') {
+           final String widgetId = w['id'];
+           w['state'] ??= {};
+           final state = w['state'];
+           if (state['lastValue'] != null) {
+             double? val = double.tryParse(state['lastValue'].toString());
+             if (val != null) {
+               _chartHistory.putIfAbsent(widgetId, () => []);
+               final list = _chartHistory[widgetId]!;
+               
+               bool isNew = true;
+               if (list.isNotEmpty) {
+                 final lastPoint = list.last;
+                 final lastVal = lastPoint['value'];
+                 if (lastVal == val) {
+                   isNew = false;
+                 }
+               }
+               
+               if (isNew) {
+                 final String timeStr = state['lastUpdate'] ?? DateTime.now().toIso8601String();
+                 list.add({'time': timeStr, 'value': val});
+                 if (list.length > 1000) {
+                   list.removeAt(0);
+                 }
+                 historyUpdated = true;
+               }
+             }
+           }
+         }
+       }
+       if (historyUpdated) {
+         _saveChartHistory();
        }
        
        if (mounted) {
@@ -852,14 +945,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _localPositions[item.id] = {'x': item.x, 'y': item.y, 'w': item.w, 'h': item.h};
     _saveLocalPositions();
     
-    // 2. Persist to server using the specialized endpoint
-    try {
-      await ApiService.updateWidgetPosition(item.id, item.x, item.y, item.w, item.h);
-      if (showToast && mounted) {
-         AppSnackbar.showSuccess(context, AppLocalization.get('layout_saved') ?? 'Layout Saved');
-      }
-    } catch (e) {
-      if (mounted) AppSnackbar.showError(context, e);
+    // 2. Do not persist size/position modifications to the server/website.
+    // Keep them local to the application as requested.
+    if (showToast && mounted) {
+       AppSnackbar.showSuccess(context, AppLocalization.get('layout_saved') ?? 'Layout Saved');
     }
   }
 

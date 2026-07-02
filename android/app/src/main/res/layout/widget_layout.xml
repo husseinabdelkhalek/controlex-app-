@@ -101,11 +101,13 @@
             android:visibility="visible">
 
             <TextView
+                android:id="@+id/widget_setup_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tap to setup"
                 android:textColor="#B3FFFFFF"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:gravity="center" />
         </LinearLayout>
 
         <!-- 2. Toggle Layout -->
@@ -483,6 +485,72 @@
                     android:background="@drawable/widget_icon_bg"
                     android:backgroundTint="#AA00FF" />
             </GridLayout>
+        </RelativeLayout>
+
+        <!-- 8. Chart Layout -->
+        <RelativeLayout
+            android:id="@+id/layout_chart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <!-- Normal Horizontal Chart Layout -->
+            <LinearLayout
+                android:id="@+id/layout_chart_normal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/widget_chart_trend_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_widget_chart"
+                    android:tint="#00E5FF"
+                    android:layout_marginEnd="8dp"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    
+                    <TextView
+                        android:id="@+id/widget_chart_value_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="N/A"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chart node data"
+                        android:textColor="#80FFFFFF"
+                        android:textSize="9sp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Compact (1x1) Chart Layout -->
+            <FrameLayout
+                android:id="@+id/layout_chart_compact"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone">
+                <TextView
+                    android:id="@+id/widget_chart_value_text_compact"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="N/A"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold"/>
+            </FrameLayout>
         </RelativeLayout>
 
     </FrameLayout>
