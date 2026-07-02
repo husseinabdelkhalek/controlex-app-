@@ -178,7 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
   InputDecoration _buildInputDecoration(String label, IconData prefixIcon, {Widget? suffixIcon}) {
     return InputDecoration(
       labelText: label,
-      labelStyle: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+      labelStyle: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
       prefixIcon: Icon(prefixIcon, color: AppTheme.primaryCyan, size: 20),
       suffixIcon: suffixIcon,
       filled: true,
@@ -189,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppTheme.primaryCyan, width: 1.5),
+        borderSide: BorderSide(color: AppTheme.primaryCyan, width: 1.5),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     );
@@ -275,15 +275,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                   ShaderMask(
-                    shaderCallback: (bounds) => const LinearGradient(
+                    shaderCallback: (bounds) => LinearGradient(
                       colors: [AppTheme.primaryCyan, AppTheme.primaryViolet],
                     ).createShader(bounds),
                     child: Text(
                       AppLocalization.get('login_title'),
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 32,
                         fontWeight: FontWeight.w900,
@@ -291,27 +291,27 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     AppLocalization.get('login_subtitle'),
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 15),
+                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 15),
                   ),
-                  const SizedBox(height: 40),
+                  SizedBox(height: 40),
                   
                   if (!_showOTPField) ...[
                     TextField(
                       controller: _emailController,
-                      style: const TextStyle(color: AppTheme.textPrimary),
+                      style: TextStyle(color: AppTheme.textPrimary),
                       decoration: _buildInputDecoration(
                         AppLocalization.get('email'),
                         Icons.email_outlined,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     TextField(
                       controller: _passwordController,
-                      style: const TextStyle(color: AppTheme.textPrimary),
+                      style: TextStyle(color: AppTheme.textPrimary),
                       decoration: _buildInputDecoration(
                         AppLocalization.get('password'),
                         Icons.lock_outline,
@@ -326,7 +326,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       obscureText: !_isPasswordVisible,
                       onSubmitted: (_) => _handleLogin(),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Align(
                       alignment: AlignmentDirectional.centerEnd,
                       child: TextButton(
@@ -336,17 +336,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: Text(
                           AppLocalization.get('forgot_password'),
-                          style: const TextStyle(color: AppTheme.primaryCyan),
+                          style: TextStyle(color: AppTheme.primaryCyan),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     GlowingButton(
                       onPressed: _handleLogin,
                       isLoading: _isLoading,
                       child: Text(AppLocalization.get('login_btn')),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     
                     // Side-by-side action buttons
                     Row(
@@ -365,13 +365,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(Icons.g_mobiledata, size: 28, color: Colors.redAccent),
-                                  const SizedBox(width: 4),
+                                  Icon(Icons.g_mobiledata, size: 28, color: Colors.redAccent),
+                                  SizedBox(width: 4),
                                   FittedBox(
                                     fit: BoxFit.scaleDown,
                                     child: Text(
                                       AppLocalization.get('google_btn'),
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         color: AppTheme.textPrimary,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 13,
@@ -383,7 +383,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         Expanded(
                           child: InkWell(
                             onTap: () {
@@ -400,7 +400,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: Colors.white.withValues(alpha: 0.03),
                                 border: Border.all(color: AppTheme.glassBorder.withValues(alpha: 0.5)),
                               ),
-                              child: const Row(
+                              child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(Icons.wifi, size: 18, color: Colors.orangeAccent),
@@ -423,7 +423,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     Center(
                       child: TextButton(
                         onPressed: () {
@@ -434,10 +434,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                         child: RichText(
                           text: TextSpan(
-                            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                            style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
                             children: [
                               TextSpan(text: "${AppLocalization.get('no_account')} "),
-                              const TextSpan(
+                              TextSpan(
                                 text: "Sign Up",
                                 style: TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold),
                               ),
@@ -447,19 +447,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ] else ...[
-                    const Icon(Icons.security, size: 64, color: AppTheme.primaryCyan),
-                    const SizedBox(height: 16),
-                    const Text(
+                    Icon(Icons.security, size: 64, color: AppTheme.primaryCyan),
+                    SizedBox(height: 16),
+                    Text(
                       'أدخل رمز التحقق المرسل لبريدك',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: AppTheme.textSecondary),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     TextField(
                       controller: _otpController,
                       keyboardType: TextInputType.number,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(color: AppTheme.textPrimary, fontSize: 24, letterSpacing: 8),
+                      style: TextStyle(color: AppTheme.textPrimary, fontSize: 24, letterSpacing: 8),
                       maxLength: 6,
                       onChanged: (value) {
                         if (value.length == 6) {
@@ -469,26 +469,26 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: InputDecoration(
                         counterText: "",
                         hintText: '000000',
-                        hintStyle: const TextStyle(color: Colors.white24),
+                        hintStyle: TextStyle(color: Colors.white24),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(color: Colors.white10),
+                          borderSide: BorderSide(color: Colors.white10),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(color: AppTheme.primaryCyan),
+                          borderSide: BorderSide(color: AppTheme.primaryCyan),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     GlowingButton(
                       onPressed: _handleVerifyOTP,
                       isLoading: _isLoading,
-                      child: const Text('تحقق وادخل'),
+                      child: Text('تحقق وادخل'),
                     ),
                     TextButton(
                       onPressed: () => setState(() => _showOTPField = false),
-                      child: const Text('الغاء', style: TextStyle(color: AppTheme.textSecondary)),
+                      child: Text('الغاء', style: TextStyle(color: AppTheme.textSecondary)),
                     ),
                   ],
                 ],
@@ -514,11 +514,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.language, size: 16, color: AppTheme.primaryCyan),
-                    const SizedBox(width: 6),
+                    Icon(Icons.language, size: 16, color: AppTheme.primaryCyan),
+                    SizedBox(width: 6),
                     Text(
                       AppLocalization.isArabicNotifier.value ? "EN" : "العربية",
-                      style: const TextStyle(color: AppTheme.textPrimary, fontSize: 12, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: AppTheme.textPrimary, fontSize: 12, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),

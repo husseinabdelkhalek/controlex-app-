@@ -107,7 +107,7 @@ class _WidgetToolSelectorDialogState extends State<WidgetToolSelectorDialog> {
                 children: [
                   Text(
                     isArabic ? 'اختر الأداة للودجت' : 'Select Widget Tool',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -115,11 +115,11 @@ class _WidgetToolSelectorDialogState extends State<WidgetToolSelectorDialog> {
                   ),
                   IconButton(
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close, color: Colors.white54),
+                    icon: Icon(Icons.close, color: Colors.white54),
                   ),
                 ],
               ),
-              const Divider(color: Colors.white12, height: 20),
+              Divider(color: Colors.white12, height: 20),
               
               // Content
               ConstrainedBox(
@@ -137,7 +137,7 @@ class _WidgetToolSelectorDialogState extends State<WidgetToolSelectorDialog> {
 
   Widget _buildContent(bool isArabic) {
     if (_isLoading) {
-      return const Padding(
+      return Padding(
         padding: EdgeInsets.symmetric(vertical: 40),
         child: Center(
           child: CircularProgressIndicator(color: AppTheme.primaryBrand),
@@ -152,18 +152,18 @@ class _WidgetToolSelectorDialogState extends State<WidgetToolSelectorDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.error_outline, color: AppTheme.semanticError, size: 48),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Text(
               isArabic ? 'حدث خطأ أثناء تحميل الأدوات' : 'Error loading tools',
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               _errorMessage!,
-              style: const TextStyle(color: Colors.white54, fontSize: 12),
+              style: TextStyle(color: Colors.white54, fontSize: 12),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             GlowingButton(
               onPressed: () {
                 setState(() {
@@ -184,7 +184,7 @@ class _WidgetToolSelectorDialogState extends State<WidgetToolSelectorDialog> {
         padding: const EdgeInsets.symmetric(vertical: 40),
         child: Text(
           isArabic ? 'لا توجد أدوات متاحة للربط.' : 'No tools available to link.',
-          style: const TextStyle(color: Colors.white54),
+          style: TextStyle(color: Colors.white54),
           textAlign: TextAlign.center,
         ),
       );
@@ -206,7 +206,7 @@ class _WidgetToolSelectorDialogState extends State<WidgetToolSelectorDialog> {
           margin: const EdgeInsets.symmetric(vertical: 6),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            side: const BorderSide(color: Colors.white10),
+            side: BorderSide(color: Colors.white10),
           ),
           child: ListTile(
             onTap: () => Navigator.pop(context, tool),
@@ -216,13 +216,13 @@ class _WidgetToolSelectorDialogState extends State<WidgetToolSelectorDialog> {
             ),
             title: Text(
               name,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
             subtitle: Text(
               type.toUpperCase(),
               style: TextStyle(color: color.withValues(alpha: 0.7), fontSize: 10, fontWeight: FontWeight.w600),
             ),
-            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white24, size: 14),
+            trailing: Icon(Icons.arrow_forward_ios, color: Colors.white24, size: 14),
           ),
         );
       },

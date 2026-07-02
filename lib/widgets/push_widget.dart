@@ -29,16 +29,16 @@ class PushWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon, size: 40, color: const Color(0xFFFF00FF)), // Magenta for Push Buttons
-              const SizedBox(height: 12),
-              Text(title, style: const TextStyle(color: Colors.white, fontSize: 16)),
-              const SizedBox(height: 8),
+              SizedBox(height: 12),
+              Text(title, style: TextStyle(color: Colors.white, fontSize: 16)),
+              SizedBox(height: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Text('PUSH', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                child: Text('PUSH', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
               )
             ],
           ),

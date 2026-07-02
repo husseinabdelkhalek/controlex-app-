@@ -137,16 +137,16 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
                         ),
                         child: Icon(Icons.security, color: _twoFactorEnabled ? AppTheme.primaryCyan : Colors.white54, size: 28),
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: 16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               AppLocalization.get('two_factor_auth'),
-                              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: 4),
                             Text(
                               _twoFactorEnabled ? AppLocalization.get('enabled') : AppLocalization.get('disabled'),
                               style: TextStyle(color: _twoFactorEnabled ? AppTheme.primaryCyan : Colors.white54, fontSize: 13),
@@ -155,7 +155,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
                         ),
                       ),
                       if (_is2FALoading)
-                        const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primaryCyan))
+                        SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primaryCyan))
                       else
                         Switch(
                           value: _twoFactorEnabled,
@@ -166,15 +166,15 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
                   ),
                 ),
                 
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
                 Text(
                   AppLocalization.get('active_sessions'),
-                  style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 
                 if (_sessions.isEmpty)
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.all(16.0),
                     child: Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan)),
                   )
@@ -208,10 +208,10 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
                            ),
                            child: Icon(deviceIcon, color: AppTheme.primaryCyan, size: 24),
                          ),
-                         title: Text(deviceName, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
-                         subtitle: Text(deviceInfo['ip'] ?? s['ip'] ?? 'Unknown IP', style: const TextStyle(color: Colors.white54, fontSize: 12)),
+                         title: Text(deviceName, style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                         subtitle: Text(deviceInfo['ip'] ?? s['ip'] ?? 'Unknown IP', style: TextStyle(color: Colors.white54, fontSize: 12)),
                          trailing: IconButton(
-                           icon: const Icon(Icons.power_settings_new, color: Colors.redAccent),
+                           icon: Icon(Icons.power_settings_new, color: Colors.redAccent),
                            tooltip: AppLocalization.isArabicNotifier.value ? 'إنهاء الجلسة' : 'Terminate',
                            onPressed: () => _terminateSession(s['id']),
                          ),
@@ -224,7 +224,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
           if (_isLoading && _sessions.isEmpty)
             Container(
               color: Colors.black54,
-              child: const Center(
+              child: Center(
                 child: CircularProgressIndicator(color: AppTheme.primaryCyan),
               ),
             ),

@@ -56,32 +56,32 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
         backgroundColor: const Color(0xFF15132C),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: AppTheme.primaryCyan, width: 1),
+          side: BorderSide(color: AppTheme.primaryCyan, width: 1),
         ),
         title: Text(
           isArabic ? 'اختر حجم أداة المشهد' : 'Select Scene Widget Size',
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.space_dashboard_outlined, color: AppTheme.primaryCyan),
+              leading: Icon(Icons.space_dashboard_outlined, color: AppTheme.primaryCyan),
               title: Text(
                 isArabic ? 'ودجت صغير (2x1)' : 'Small Widget (2x1)',
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Colors.white),
               ),
               onTap: () {
                 Navigator.pop(context);
                 _executePinRequest(sceneId, sceneName, 'ControlExWidgetProvider');
               },
             ),
-            const Divider(color: Colors.white24),
+            Divider(color: Colors.white24),
             ListTile(
-              leading: const Icon(Icons.dashboard, color: AppTheme.primaryViolet),
+              leading: Icon(Icons.dashboard, color: AppTheme.primaryViolet),
               title: Text(
                 isArabic ? 'ودجت متوسط (2x2)' : 'Medium Widget (2x2)',
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Colors.white),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -217,11 +217,11 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF1A1A2E),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(AppLocalization.get('delete_scene'), style: const TextStyle(color: Colors.white)),
+        title: Text(AppLocalization.get('delete_scene'), style: TextStyle(color: Colors.white)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(AppLocalization.get('cancel'), style: const TextStyle(color: Colors.white54)),
+            child: Text(AppLocalization.get('cancel'), style: TextStyle(color: Colors.white54)),
           ),
           TextButton(
             onPressed: () async {
@@ -248,7 +248,7 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                 }
               }
             },
-            child: Text(AppLocalization.get('delete'), style: const TextStyle(color: Colors.redAccent)),
+            child: Text(AppLocalization.get('delete'), style: TextStyle(color: Colors.redAccent)),
           ),
         ],
       ),
@@ -284,7 +284,7 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
       builder: (ctx) => StatefulBuilder(builder: (ctx, setModalState) {
         return Container(
           height: MediaQuery.of(ctx).size.height * 0.92,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Color(0xFF0B0A1A),
             borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
           ),
@@ -300,7 +300,7 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                 padding: const EdgeInsets.all(16),
                 child: Text(
                   existing != null ? AppLocalization.get('edit_scene') : AppLocalization.get('create_scene'),
-                  style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
               Expanded(
@@ -311,11 +311,11 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                     children: [
                       // Scene Name
                       _buildInputField(nameCtrl, AppLocalization.get('scene_name'), AppLocalization.get('scene_name_hint'), Icons.edit_note),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
 
                       // Icon Selector
-                      Text(AppLocalization.get('scene_icon'), style: const TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 10),
+                      Text(AppLocalization.get('scene_icon'), style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 10),
                       SizedBox(
                         height: 55,
                         child: ListView.builder(
@@ -341,11 +341,11 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                           },
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
 
                       // Color Theme Selector
-                      Text(AppLocalization.get('scene_color'), style: const TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 10),
+                      Text(AppLocalization.get('scene_color'), style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 10),
                       SizedBox(
                         height: 45,
                         child: ListView.builder(
@@ -370,13 +370,13 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                           },
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
 
                       // Show on Dashboard
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(AppLocalization.get('show_on_dashboard'), style: const TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.bold)),
+                          Text(AppLocalization.get('show_on_dashboard'), style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.bold)),
                           Transform.scale(
                             scale: 0.9,
                             child: Switch(
@@ -388,19 +388,19 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                           ),
                         ],
                       ),
-                      const Divider(color: Colors.white12, height: 30),
+                      Divider(color: Colors.white12, height: 30),
 
                       // Actions List
-                      Text(AppLocalization.get('select_devices'), style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 4),
-                      Text(AppLocalization.get('select_devices_desc'), style: const TextStyle(color: Colors.white30, fontSize: 11)),
-                      const SizedBox(height: 14),
+                      Text(AppLocalization.get('select_devices'), style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 4),
+                      Text(AppLocalization.get('select_devices_desc'), style: TextStyle(color: Colors.white30, fontSize: 11)),
+                      SizedBox(height: 14),
 
                       _widgets.isEmpty
                           ? Center(
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 20.0),
-                                child: Text(AppLocalization.get('no_widgets'), style: const TextStyle(color: Colors.white24, fontSize: 14)),
+                                child: Text(AppLocalization.get('no_widgets'), style: TextStyle(color: Colors.white24, fontSize: 14)),
                               ),
                             )
                           : () {
@@ -413,7 +413,7 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                                 return Center(
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 20.0),
-                                    child: Text(AppLocalization.get('no_widgets'), style: const TextStyle(color: Colors.white24, fontSize: 14)),
+                                    child: Text(AppLocalization.get('no_widgets'), style: TextStyle(color: Colors.white24, fontSize: 14)),
                                   ),
                                 );
                               }
@@ -459,7 +459,7 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                                     ),
                                     child: CheckboxListTile(
                                       activeColor: _getColorFromHex(selectedColor),
-                                      title: Text(wName, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                                      title: Text(wName, style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
                                       subtitle: Padding(
                                         padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
                                         child: isChecked
@@ -468,7 +468,7 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                                                   actionValues[wId] = newVal;
                                                 });
                                               }, selectedColor, tCtrl)
-                                            : Text(wType.toUpperCase(), style: const TextStyle(color: Colors.white24, fontSize: 10)),
+                                            : Text(wType.toUpperCase(), style: TextStyle(color: Colors.white24, fontSize: 10)),
                                       ),
                                       value: isChecked,
                                       onChanged: (v) {
@@ -481,7 +481,7 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                                 },
                               );
                             }(),
-                      const SizedBox(height: 30),
+                      SizedBox(height: 30),
 
                       if (existing != null) ...[
                         SizedBox(
@@ -490,13 +490,13 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                           child: OutlinedButton.icon(
                             style: OutlinedButton.styleFrom(
                               foregroundColor: Colors.redAccent,
-                              side: const BorderSide(color: Colors.redAccent, width: 1.5),
+                              side: BorderSide(color: Colors.redAccent, width: 1.5),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                             ),
-                            icon: const Icon(Icons.delete_outline, size: 20),
+                            icon: Icon(Icons.delete_outline, size: 20),
                             label: Text(
                               AppLocalization.isArabicNotifier.value ? 'حذف هذا السيناريو' : 'Delete this Scene',
-                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                             ),
                             onPressed: () {
                               Navigator.pop(ctx);
@@ -504,7 +504,7 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                             },
                           ),
                         ),
-                        const SizedBox(height: 14),
+                        SizedBox(height: 14),
                       ],
 
                       // Save Button
@@ -579,11 +579,11 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                           },
                           child: Text(
                             AppLocalization.get('save'),
-                            style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
+                            style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 40),
+                      SizedBox(height: 40),
                     ],
                   ),
                 ),
@@ -612,8 +612,8 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
 
       return Row(
         children: [
-          Text(AppLocalization.isArabicNotifier.value ? 'الحالة المستهدفة: ' : 'Target state: ', style: const TextStyle(color: Colors.white38, fontSize: 12)),
-          const SizedBox(width: 8),
+          Text(AppLocalization.isArabicNotifier.value ? 'الحالة المستهدفة: ' : 'Target state: ', style: TextStyle(color: Colors.white38, fontSize: 12)),
+          SizedBox(width: 8),
           GestureDetector(
             onTap: () {
               final nextVal = isCurrentlyOn ? offCmd : onCmd;
@@ -640,8 +640,8 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
       final pushCmd = (config['command'] ?? '1').toString();
       return Row(
         children: [
-          Text(AppLocalization.isArabicNotifier.value ? 'أمر التشغيل: ' : 'Trigger command: ', style: const TextStyle(color: Colors.white38, fontSize: 12)),
-          const SizedBox(width: 8),
+          Text(AppLocalization.isArabicNotifier.value ? 'أمر التشغيل: ' : 'Trigger command: ', style: TextStyle(color: Colors.white38, fontSize: 12)),
+          SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
@@ -666,7 +666,7 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
       return Row(
         children: [
           Text('${initial.toStringAsFixed(0)} ${config['unit'] ?? ''}', style: TextStyle(color: _getColorFromHex(themeColor), fontSize: 13, fontWeight: FontWeight.bold)),
-          const SizedBox(width: 10),
+          SizedBox(width: 10),
           Expanded(
             child: SliderTheme(
               data: SliderTheme.of(context).copyWith(
@@ -693,20 +693,20 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
     // Default: text input
     return Row(
       children: [
-        Text(AppLocalization.isArabicNotifier.value ? 'الطلب: ' : 'Command: ', style: const TextStyle(color: Colors.white38, fontSize: 12)),
-        const SizedBox(width: 8),
+        Text(AppLocalization.isArabicNotifier.value ? 'الطلب: ' : 'Command: ', style: TextStyle(color: Colors.white38, fontSize: 12)),
+        SizedBox(width: 8),
         Expanded(
           child: SizedBox(
             height: 35,
             child: TextField(
               controller: textController,
               onChanged: onChanged,
-              style: const TextStyle(color: Colors.white, fontSize: 12),
+              style: TextStyle(color: Colors.white, fontSize: 12),
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.white.withValues(alpha: 0.04),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Colors.white12)),
+                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Colors.white12)),
                 focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: _getColorFromHex(themeColor))),
               ),
             ),
@@ -729,12 +729,12 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
           ),
           child: TextField(
             controller: ctrl,
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.white),
             decoration: InputDecoration(
               labelText: label,
               hintText: hint,
-              labelStyle: const TextStyle(color: Colors.white54),
-              hintStyle: const TextStyle(color: Colors.white24),
+              labelStyle: TextStyle(color: Colors.white54),
+              hintStyle: TextStyle(color: Colors.white24),
               prefixIcon: Icon(icon, color: AppTheme.primaryCyan, size: 20),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -765,7 +765,7 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 24),
         decoration: BoxDecoration(color: Colors.redAccent.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(20)),
-        child: const Icon(Icons.delete_forever, color: Colors.redAccent, size: 32),
+        child: Icon(Icons.delete_forever, color: Colors.redAccent, size: 32),
       ),
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
@@ -789,21 +789,21 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                       ),
                       child: Icon(_getIconData(iconKey), color: Colors.black, size: 20),
                     ),
-                    const SizedBox(width: 14),
+                    SizedBox(width: 14),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(name, style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 4),
+                          Text(name, style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold)),
+                          SizedBox(height: 4),
                           Text(
                             AppLocalization.isArabicNotifier.value ? 'يتحكم في ${actions.length} أجهزة' : 'Controls ${actions.length} devices',
-                            style: const TextStyle(color: Colors.white30, fontSize: 11),
+                            style: TextStyle(color: Colors.white30, fontSize: 11),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
 
                     // Trigger/Play Button
                     GestureDetector(
@@ -816,11 +816,11 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                           border: Border.all(color: isExecuting ? Colors.white24 : themeColor.withValues(alpha: 0.4), width: 1.5),
                         ),
                         child: isExecuting
-                            ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                            ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                             : Icon(Icons.play_arrow, color: themeColor, size: 20),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     // Pin/Widget Button
                     GestureDetector(
                       onTap: () => _pinWidgetForScene(id, name),
@@ -831,10 +831,10 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                           color: AppTheme.primaryViolet.withValues(alpha: 0.1),
                           border: Border.all(color: AppTheme.primaryViolet.withValues(alpha: 0.3), width: 1.5),
                         ),
-                        child: const Icon(Icons.widgets_outlined, color: AppTheme.primaryViolet, size: 20),
+                        child: Icon(Icons.widgets_outlined, color: AppTheme.primaryViolet, size: 20),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     // Trash / Delete Button
                     GestureDetector(
                       onTap: () => _deleteScene(index),
@@ -845,12 +845,12 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                           color: Colors.redAccent.withValues(alpha: 0.1),
                           border: Border.all(color: Colors.redAccent.withValues(alpha: 0.3), width: 1.5),
                         ),
-                        child: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 20),
+                        child: Icon(Icons.delete_outline, color: Colors.redAccent, size: 20),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 14),
+                SizedBox(height: 14),
                 // Compact Action Tags
                 Wrap(
                   spacing: 6,
@@ -868,8 +868,8 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(devName, style: const TextStyle(color: Colors.white70, fontSize: 11)),
-                          const SizedBox(width: 4),
+                          Text(devName, style: TextStyle(color: Colors.white70, fontSize: 11)),
+                          SizedBox(width: 4),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                             decoration: BoxDecoration(
@@ -912,7 +912,7 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
       backgroundColor: AppTheme.backgroundBase,
       appBar: AppBar(
         title: Text(AppLocalization.get('smart_scenes')),
-        leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new), onPressed: () => Navigator.pop(context)),
+        leading: IconButton(icon: Icon(Icons.arrow_back_ios_new), onPressed: () => Navigator.pop(context)),
       ),
       body: Stack(
         children: [
@@ -939,17 +939,17 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
           ),
 
           _isLoading
-              ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan))
+              ? Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan))
               : _scenes.isEmpty
                   ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.bolt, size: 64, color: AppTheme.primaryCyan.withValues(alpha: 0.4)),
-                          const SizedBox(height: 16),
-                          Text(AppLocalization.get('no_scenes'), style: const TextStyle(color: Colors.white54, fontSize: 16, fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 8),
-                          Text(AppLocalization.get('no_scenes_hint'), style: const TextStyle(color: Colors.white30, fontSize: 13)),
+                          SizedBox(height: 16),
+                          Text(AppLocalization.get('no_scenes'), style: TextStyle(color: Colors.white54, fontSize: 16, fontWeight: FontWeight.bold)),
+                          SizedBox(height: 8),
+                          Text(AppLocalization.get('no_scenes_hint'), style: TextStyle(color: Colors.white30, fontSize: 13)),
                         ],
                       ),
                     )
@@ -973,7 +973,7 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
               children: [
                 if (!widget.isLocalMode) ...[
                   const AiFloatingButton(),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                 ],
                 AnimatedBuilder(
                   animation: _fabController,
@@ -986,8 +986,8 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                     message: AppLocalization.isArabicNotifier.value ? 'أنشئ أول مشهد لك!' : 'Create your first Scene!',
                     child: FloatingActionButton.extended(
                       backgroundColor: AppTheme.primaryViolet,
-                      icon: const Icon(Icons.add, color: Colors.white),
-                      label: Text(AppLocalization.get('create_scene'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      icon: Icon(Icons.add, color: Colors.white),
+                      label: Text(AppLocalization.get('create_scene'), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                       onPressed: _openSceneEditor,
                     ),
                   ),

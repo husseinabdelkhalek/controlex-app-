@@ -44,7 +44,7 @@ class _Verify2FAScreenState extends State<Verify2FAScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
-      appBar: AppBar(title: const Text('TWO-FACTOR AUTH')),
+      appBar: AppBar(title: Text('TWO-FACTOR AUTH')),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -55,15 +55,15 @@ class _Verify2FAScreenState extends State<Verify2FAScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.security, size: 64, color: AppTheme.primaryCyan),
-                  const SizedBox(height: 16),
+                  Icon(Icons.security, size: 64, color: AppTheme.primaryCyan),
+                  SizedBox(height: 16),
                   Text('Please enter the 6-digit code sent to\n${widget.email}',
-                     textAlign: TextAlign.center, style: const TextStyle(color: Colors.white70)),
-                  const SizedBox(height: 32),
+                     textAlign: TextAlign.center, style: TextStyle(color: Colors.white70)),
+                  SizedBox(height: 32),
                   TextField(
                     controller: _codeCtrl,
                     keyboardType: TextInputType.number,
-                    style: const TextStyle(color: Colors.white, fontSize: 24, letterSpacing: 8),
+                    style: TextStyle(color: Colors.white, fontSize: 24, letterSpacing: 8),
                     textAlign: TextAlign.center,
                     onChanged: (val) {
                       if (val.length == 6) {
@@ -74,13 +74,13 @@ class _Verify2FAScreenState extends State<Verify2FAScreen> {
                     maxLength: 6,
                     decoration: InputDecoration(
                       hintText: '000000',
-                      hintStyle: const TextStyle(color: Colors.white24),
+                      hintStyle: TextStyle(color: Colors.white24),
                       counterText: "",
-                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.white24)),
-                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppTheme.primaryCyan)),
+                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white24)),
+                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppTheme.primaryCyan)),
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32),
                   SizedBox(
                     width: double.infinity,
                     height: 50,
@@ -92,8 +92,8 @@ class _Verify2FAScreenState extends State<Verify2FAScreen> {
                       ),
                       onPressed: _isLoading ? null : _verifyCode,
                       child: _isLoading 
-                          ? const CircularProgressIndicator(color: Colors.white) 
-                          : const Text('Verify to Login', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                          ? CircularProgressIndicator(color: Colors.white) 
+                          : Text('Verify to Login', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     ),
                   ),
                 ],

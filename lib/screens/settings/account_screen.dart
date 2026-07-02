@@ -220,13 +220,13 @@ class _AccountScreenState extends State<AccountScreen> {
            surfaceTintColor: Colors.transparent,
            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
            title: Text(title, style: TextStyle(color: isDestructive ? Colors.redAccent : Colors.white)),
-           content: Text(content, style: const TextStyle(color: Colors.white70)),
+           content: Text(content, style: TextStyle(color: Colors.white70)),
            actions: [
-              TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('إلغاء', style: TextStyle(color: Colors.white54))),
+              TextButton(onPressed: () => Navigator.pop(context, false), child: Text('إلغاء', style: TextStyle(color: Colors.white54))),
               ElevatedButton(
                  style: ElevatedButton.styleFrom(backgroundColor: isDestructive ? Colors.redAccent : AppTheme.primaryCyan, foregroundColor: Colors.white),
                  onPressed: () => Navigator.pop(context, true),
-                 child: const Text('تأكيد'),
+                 child: Text('تأكيد'),
               ),
            ],
         )
@@ -235,7 +235,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) return const Scaffold(backgroundColor: AppTheme.darkBackground, body: Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan)));
+    if (_isLoading) return Scaffold(backgroundColor: AppTheme.darkBackground, body: Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan)));
 
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
@@ -255,15 +255,15 @@ class _AccountScreenState extends State<AccountScreen> {
                       radius: 45, 
                       backgroundColor: AppTheme.primaryViolet, 
                       backgroundImage: (_googleProfilePicture != null && _googleProfilePicture!.startsWith('http')) ? NetworkImage(_googleProfilePicture!) : null,
-                      child: (_googleProfilePicture == null || !_googleProfilePicture!.startsWith('http')) ? const Icon(Icons.person, size: 50, color: Colors.white) : null
+                      child: (_googleProfilePicture == null || !_googleProfilePicture!.startsWith('http')) ? Icon(Icons.person, size: 50, color: Colors.white) : null
                    ),
-                  const SizedBox(height: 16),
-                  Text(_usernameCtrl.text, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
-                  Text(_joinedDate, style: const TextStyle(color: Colors.white54, fontSize: 13)),
+                  SizedBox(height: 16),
+                  Text(_usernameCtrl.text, style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                  Text(_joinedDate, style: TextStyle(color: Colors.white54, fontSize: 13)),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
 
 
@@ -275,11 +275,11 @@ class _AccountScreenState extends State<AccountScreen> {
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(color: Colors.redAccent.withValues(alpha: 0.1), shape: BoxShape.circle),
-                    child: const Icon(Icons.shield, color: Colors.redAccent, size: 24),
+                    child: Icon(Icons.shield, color: Colors.redAccent, size: 24),
                   ),
-                  title: Text(AppLocalization.get('admin_panel'), style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
-                  subtitle: Text(AppLocalization.get('admin_desc'), style: const TextStyle(color: Colors.white54, fontSize: 12)),
-                  trailing: const Icon(Icons.chevron_right, color: Colors.redAccent),
+                  title: Text(AppLocalization.get('admin_panel'), style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                  subtitle: Text(AppLocalization.get('admin_desc'), style: TextStyle(color: Colors.white54, fontSize: 12)),
+                  trailing: Icon(Icons.chevron_right, color: Colors.redAccent),
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminDashboardScreen()));
                   },
@@ -292,7 +292,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                                     (isMainAdmin) || 
                                                     (_subAdminCode.isNotEmpty);
               
-              if (!showDistributorDashboard) return const SizedBox.shrink();
+              if (!showDistributorDashboard) return SizedBox.shrink();
 
               return Container(
                 margin: const EdgeInsets.only(bottom: 16),
@@ -305,19 +305,19 @@ class _AccountScreenState extends State<AccountScreen> {
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(color: const Color(0xFF00FFCC).withValues(alpha: 0.1), shape: BoxShape.circle),
-                    child: const Icon(Icons.storefront_rounded, color: Color(0xFF00FFCC), size: 24),
+                    child: Icon(Icons.storefront_rounded, color: Color(0xFF00FFCC), size: 24),
                   ),
                   title: Text(
                     AppLocalization.isArabicNotifier.value ? 'لوحة تحكم الموزع' : 'Distributor Dashboard',
-                    style: const TextStyle(color: Color(0xFF00FFCC), fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Color(0xFF00FFCC), fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(
                     AppLocalization.isArabicNotifier.value
                         ? 'أكواد QR للعملاء، التحكم بحساباتهم، ومراقبة التفعيل.'
                         : 'Customer QRs, group management, and activation monitoring.',
-                    style: const TextStyle(color: Colors.white54, fontSize: 12),
+                    style: TextStyle(color: Colors.white54, fontSize: 12),
                   ),
-                  trailing: const Icon(Icons.chevron_right, color: Color(0xFF00FFCC)),
+                  trailing: Icon(Icons.chevron_right, color: Color(0xFF00FFCC)),
                   onTap: () {
                     final profile = {
                       'username': _usernameCtrl.text,
@@ -334,7 +334,7 @@ class _AccountScreenState extends State<AccountScreen> {
                           future: ApiService.userMe(),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState == ConnectionState.waiting) {
-                              return const Scaffold(
+                              return Scaffold(
                                 backgroundColor: AppTheme.darkBackground,
                                 body: Center(child: CircularProgressIndicator(color: Color(0xFF00FFCC))),
                               );
@@ -363,7 +363,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 if (result == true) _fetchData();
               },
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             _buildGlassButton(
               icon: Icons.cloud_sync,
               title: AppLocalization.isArabicNotifier.value ? 'الربط والبيانات' : 'Integrations',
@@ -374,7 +374,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 if (result == true) _fetchData();
               },
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             _buildGlassButton(
               icon: Icons.security,
               title: AppLocalization.get('security_settings'),
@@ -385,7 +385,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 _fetchData();
               },
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             _buildSectionCard(
               AppLocalization.get('app_preferences'), Icons.tune,
@@ -393,9 +393,9 @@ class _AccountScreenState extends State<AccountScreen> {
               Column(
                  children: [
                      ListTile(
-                        leading: const Icon(Icons.language, color: AppTheme.primaryCyan),
-                        title: Text(AppLocalization.get('language'), style: const TextStyle(color: Colors.white)),
-                        subtitle: Text(AppLocalization.get('english_ar'), style: const TextStyle(color: Colors.white54, fontSize: 12)),
+                        leading: Icon(Icons.language, color: AppTheme.primaryCyan),
+                        title: Text(AppLocalization.get('language'), style: TextStyle(color: Colors.white)),
+                        subtitle: Text(AppLocalization.get('english_ar'), style: TextStyle(color: Colors.white54, fontSize: 12)),
                         trailing: Container(
                            height: 36,
                            width: 110,
@@ -480,16 +480,55 @@ class _AccountScreenState extends State<AccountScreen> {
                            ),
                         ),
                      ),
-                     const Divider(color: Colors.white10),
+                     Divider(color: Colors.white10),
+                     ValueListenableBuilder<String>(
+                       valueListenable: AppTheme.themeNotifier,
+                       builder: (context, currentTheme, _) {
+                         return ListTile(
+                            leading: Icon(Icons.color_lens, color: AppTheme.primaryCyan),
+                            title: Text(AppLocalization.isArabicNotifier.value ? 'مظهر التطبيق' : 'App Theme', style: TextStyle(color: Colors.white)),
+                            subtitle: Text(AppLocalization.isArabicNotifier.value ? 'داكن / زجاجي متوهج' : 'Dark / Glassmorphism', style: TextStyle(color: Colors.white54, fontSize: 12)),
+                            trailing: Container(
+                               height: 40,
+                               decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.05),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1.5),
+                               ),
+                               padding: const EdgeInsets.symmetric(horizontal: 8),
+                               child: DropdownButtonHideUnderline(
+                                 child: DropdownButton<String>(
+                                   value: currentTheme,
+                                   dropdownColor: const Color(0xFF15132C),
+                                   icon: Icon(Icons.arrow_drop_down, color: AppTheme.primaryCyan),
+                                   style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                                   onChanged: (String? newValue) async {
+                                     if (newValue != null) {
+                                       AppTheme.switchTheme(newValue);
+                                       final prefs = await SharedPreferences.getInstance();
+                                       await prefs.setString('app_theme', newValue);
+                                     }
+                                   },
+                                   items: [
+                                     DropdownMenuItem(value: 'dark', child: Text(AppLocalization.isArabicNotifier.value ? 'داكن' : 'Dark')),
+                                     DropdownMenuItem(value: 'glass', child: Text(AppLocalization.isArabicNotifier.value ? 'زجاجي' : 'Glass')),
+                                   ],
+                                 ),
+                               ),
+                            ),
+                         );
+                       },
+                     ),
+                     Divider(color: Colors.white10),
                      ListTile(
                         contentPadding: EdgeInsets.zero,
                         leading: Container(
                            padding: const EdgeInsets.all(8),
                            decoration: BoxDecoration(color: Colors.orangeAccent.withValues(alpha: 0.1), shape: BoxShape.circle),
-                           child: const Icon(Icons.wifi, color: Colors.orangeAccent, size: 20),
+                           child: Icon(Icons.wifi, color: Colors.orangeAccent, size: 20),
                         ),
-                        title: Text(AppLocalization.get('local_control'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                        subtitle: Text(AppLocalization.get('local_desc'), style: const TextStyle(color: Colors.white54, fontSize: 11)),
+                        title: Text(AppLocalization.get('local_control'), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        subtitle: Text(AppLocalization.get('local_desc'), style: TextStyle(color: Colors.white54, fontSize: 11)),
                         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LocalDashboardScreen())),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -514,11 +553,11 @@ class _AccountScreenState extends State<AccountScreen> {
                                 );
                               },
                             ),
-                            const Icon(Icons.chevron_right, color: Colors.white24),
+                            Icon(Icons.chevron_right, color: Colors.white24),
                           ],
                         ),
                      ),
-                     const Divider(color: Colors.white10),
+                     Divider(color: Colors.white10),
                      _buildListTile(
                         icon: Icons.explore,
                         title: AppLocalization.isArabicNotifier.value ? 'جولة في التطبيق' : 'App Tour',
@@ -541,32 +580,32 @@ class _AccountScreenState extends State<AccountScreen> {
                 children: [
                    ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.delete_sweep, color: Colors.orange), 
-                    title: Text(AppLocalization.get('clear_data'), style: const TextStyle(color: Colors.orange)), 
+                    leading: Icon(Icons.delete_sweep, color: Colors.orange), 
+                    title: Text(AppLocalization.get('clear_data'), style: TextStyle(color: Colors.orange)), 
                     onTap: _clearData
                    ),
-                   const Divider(color: Colors.white12),
+                   Divider(color: Colors.white12),
                    ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.warning, color: Colors.redAccent), 
-                    title: Text(AppLocalization.get('delete_account'), style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)), 
+                    leading: Icon(Icons.warning, color: Colors.redAccent), 
+                    title: Text(AppLocalization.get('delete_account'), style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)), 
                     onTap: _deleteAccount
                    ),
                 ],
               ),
             ),
             
-            _buildSectionCard(
+            _buildExpandableSectionCard(
               AppLocalization.get('technical_support'), Icons.support_agent,
               key: _supportSectionKey,
               Column(
                 children: [
                    ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.email_outlined, color: AppTheme.primaryCyan), 
-                    title: Text(AppLocalization.get('email'), style: const TextStyle(color: Colors.white, fontSize: 14)), 
-                    subtitle: const Text('hussianabdk577@gmail.com', style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.bold)),
-                    trailing: const Icon(Icons.open_in_new, color: Colors.white24, size: 16),
+                    leading: Icon(Icons.email_outlined, color: AppTheme.primaryCyan), 
+                    title: Text(AppLocalization.get('email'), style: TextStyle(color: Colors.white, fontSize: 14)), 
+                    subtitle: Text('hussianabdk577@gmail.com', style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.bold)),
+                    trailing: Icon(Icons.open_in_new, color: Colors.white24, size: 16),
                     onTap: () async {
                       final Uri url = Uri.parse('mailto:hussianabdk577@gmail.com');
                       if (await canLaunchUrl(url)) {
@@ -574,13 +613,13 @@ class _AccountScreenState extends State<AccountScreen> {
                       }
                     },
                    ),
-                   const Divider(color: Colors.white12),
+                   Divider(color: Colors.white12),
                    ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.phone_outlined, color: AppTheme.primaryCyan), 
-                    title: Text(AppLocalization.get('whatsapp_contact'), style: const TextStyle(color: Colors.white, fontSize: 14)), 
-                    subtitle: const Text('+201091601661', style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.bold)),
-                    trailing: const Icon(Icons.open_in_new, color: Colors.white24, size: 16),
+                    leading: Icon(Icons.phone_outlined, color: AppTheme.primaryCyan), 
+                    title: Text(AppLocalization.get('whatsapp_contact'), style: TextStyle(color: Colors.white, fontSize: 14)), 
+                    subtitle: Text('+201091601661', style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.bold)),
+                    trailing: Icon(Icons.open_in_new, color: Colors.white24, size: 16),
                     onTap: () async {
                       final Uri url = Uri.parse('https://wa.me/201091601661');
                       if (await canLaunchUrl(url)) {
@@ -594,17 +633,17 @@ class _AccountScreenState extends State<AccountScreen> {
 
 
             
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             ElevatedButton.icon(
-               style: ElevatedButton.styleFrom(backgroundColor: Colors.transparent, foregroundColor: Colors.redAccent, elevation: 0, side: const BorderSide(color: Colors.redAccent, width: 2), minimumSize: const Size(double.infinity, 55), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
-               icon: const Icon(Icons.logout),
-               label: Text(AppLocalization.get('logout'), style: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+               style: ElevatedButton.styleFrom(backgroundColor: Colors.transparent, foregroundColor: Colors.redAccent, elevation: 0, side: BorderSide(color: Colors.redAccent, width: 2), minimumSize: const Size(double.infinity, 55), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
+               icon: Icon(Icons.logout),
+               label: Text(AppLocalization.get('logout'), style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2)),
                onPressed: () async {
                  await ApiService.logout();
                  if (context.mounted) Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const LoginScreen()), (route) => false);
                },
             ),
-            const SizedBox(height: 48),
+            SizedBox(height: 48),
           ],
         ),
       ),
@@ -631,11 +670,11 @@ class _AccountScreenState extends State<AccountScreen> {
                 decoration: BoxDecoration(color: AppTheme.primaryCyan.withValues(alpha: 0.1), shape: BoxShape.circle),
                 child: Icon(icon, color: AppTheme.primaryCyan, size: 20),
               ),
-              const SizedBox(width: 12),
-              Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+              SizedBox(width: 12),
+              Text(title, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           child,
         ],
       ),
@@ -671,14 +710,14 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                   child: Icon(icon, color: color, size: 24),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                      const SizedBox(height: 4),
-                      Text(subtitle, style: const TextStyle(color: Colors.white54, fontSize: 13)),
+                      Text(title, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                      SizedBox(height: 4),
+                      Text(subtitle, style: TextStyle(color: Colors.white54, fontSize: 13)),
                     ],
                   ),
                 ),
@@ -699,14 +738,46 @@ class _AccountScreenState extends State<AccountScreen> {
           decoration: BoxDecoration(color: color.withValues(alpha: 0.1), shape: BoxShape.circle),
           child: Icon(icon, color: color, size: 20),
        ),
-       title: Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-       subtitle: Text(subtitle, style: const TextStyle(color: Colors.white54, fontSize: 11)),
+       title: Text(title, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+       subtitle: Text(subtitle, style: TextStyle(color: Colors.white54, fontSize: 11)),
        onTap: onTap,
-       trailing: const Icon(Icons.chevron_right, color: Colors.white24),
+       trailing: Icon(Icons.chevron_right, color: Colors.white24),
      );
    }
    
    void _showToast(String msg) {
      AppSnackbar.showSuccess(context, msg);
    }
+  Widget _buildExpandableSectionCard(String title, IconData icon, Widget child, {Key? key}) {
+    return Container(
+      key: key,
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: AppTheme.cardBaseColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.primaryCyan.withValues(alpha: 0.15)),
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          childrenPadding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+          iconColor: AppTheme.primaryCyan,
+          collapsedIconColor: Colors.white54,
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(color: AppTheme.primaryCyan.withValues(alpha: 0.1), shape: BoxShape.circle),
+                child: Icon(icon, color: AppTheme.primaryCyan, size: 20),
+              ),
+              SizedBox(width: 12),
+              Text(title, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+            ],
+          ),
+          children: [child],
+        ),
+      ),
+    );
+  }
 }

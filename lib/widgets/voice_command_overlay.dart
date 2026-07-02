@@ -169,7 +169,7 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay> {
             width: 40, height: 4,
             decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(10)),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           
           // Transcription Text
           Text(
@@ -192,11 +192,11 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay> {
               padding: const EdgeInsets.only(top: 8.0),
               child: Text(
                 AppLocalization.isArabicNotifier.value ? 'الرجاء التحدث بوضوح أكثر...' : 'Please speak more clearly...',
-                style: const TextStyle(color: Colors.white54, fontSize: 12)
+                style: TextStyle(color: Colors.white54, fontSize: 12)
               ),
             ),
           
-          const SizedBox(height: 32),
+          SizedBox(height: 32),
           
           // Microphone Button
           GestureDetector(
@@ -227,11 +227,11 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay> {
             ),
           ),
           
-          const SizedBox(height: 32),
+          SizedBox(height: 32),
           
           // Result Status
           if (_isProcessing)
-             const CircularProgressIndicator(color: AppTheme.primaryCyan)
+             CircularProgressIndicator(color: AppTheme.primaryCyan)
           else if (_result != null)
              Container(
                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -243,11 +243,11 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay> {
                child: Row(
                  children: [
                    Icon(_result!.success ? Icons.check_circle : Icons.error, color: _result!.success ? AppTheme.semanticSuccess : AppTheme.semanticError),
-                   const SizedBox(width: 12),
+                   SizedBox(width: 12),
                    Expanded(
                      child: Text(
                        _result!.message,
-                       style: const TextStyle(color: Colors.white, fontSize: 14),
+                       style: TextStyle(color: Colors.white, fontSize: 14),
                      ),
                    )
                  ],

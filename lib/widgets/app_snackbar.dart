@@ -267,12 +267,12 @@ class _AppSnackbarWidgetState extends State<_AppSnackbarWidget> with SingleTicke
                             ),
                             child: Icon(widget.icon, color: widget.glowColor, size: 20),
                           ),
-                          const SizedBox(width: 14),
+                          SizedBox(width: 14),
                           // Message text
                           Expanded(
                             child: Text(
                               widget.message,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 13.5,
                                 fontWeight: FontWeight.w600,

@@ -8,17 +8,17 @@ class InteractiveChartWidget extends StatefulWidget {
   final List<Map<String, dynamic>> history; // [{'time': String, 'value': num}]
   final double min;
   final double max;
-  final Color color;
+  final Color? color;
   final bool isEditMode;
   final String? unit;
 
-  const InteractiveChartWidget({
+  InteractiveChartWidget({
     key,
     required this.title,
     required this.history,
     this.min = 0,
     this.max = 100,
-    this.color = AppTheme.primaryCyan,
+    this.color,
     this.isEditMode = false,
     this.unit,
   }) : super(key: key);
@@ -185,7 +185,7 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
                     Expanded(
                       child: Text(
                         widget.title,
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 13),
@@ -208,7 +208,7 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
                             padding: const EdgeInsets.only(left: 2),
                             child: Text(
                               widget.unit!,
-                              style: const TextStyle(
+                              style: TextStyle(
                                   color: Colors.white54, fontSize: 10),
                             ),
                           ),
@@ -216,7 +216,7 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
                     ),
                   ],
                 ),
-                if (!isCompact) const SizedBox(height: 12),
+                if (!isCompact) SizedBox(height: 12),
                 
                 // Chart
                 if (!isCompact)
@@ -283,18 +283,18 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
                                     getTitlesWidget: (value, meta) {
                                       // Avoid drawing edge labels that fl_chart forces, to prevent overlaps and weird ordering.
                                       if (value == meta.min || value == meta.max) {
-                                        return const SizedBox.shrink();
+                                        return SizedBox.shrink();
                                       }
                                       // Avoid drawing labels outside our min/max window
                                       if (value < minX || value > maxX) {
-                                        return const SizedBox.shrink();
+                                        return SizedBox.shrink();
                                       }
                                       final label = _formatBottomTitle(_selectedFilter, value);
                                       return Padding(
                                         padding: const EdgeInsets.only(top: 6.0),
                                         child: Text(
                                           label,
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                               color: Colors.white38, fontSize: 8),
                                           textDirection: TextDirection.rtl,
                                         ),
@@ -310,11 +310,11 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
                                     getTitlesWidget: (value, meta) {
                                       // Avoid drawing edge labels that fl_chart forces, to prevent overlaps
                                       if (value == meta.min || value == meta.max) {
-                                        return const SizedBox.shrink();
+                                        return SizedBox.shrink();
                                       }
                                       return Text(
                                         value.toInt().toString(),
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                             color: Colors.white38, fontSize: 8),
                                         textAlign: TextAlign.left,
                                         textDirection: TextDirection.ltr,
@@ -340,8 +340,8 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
                             show: true,
                             gradient: LinearGradient(
                               colors: [
-                                widget.color.withValues(alpha: 0.25),
-                                widget.color.withValues(alpha: 0.0),
+                                (widget.color ?? AppTheme.primaryCyan).withValues(alpha: 0.25),
+                                (widget.color ?? AppTheme.primaryCyan).withValues(alpha: 0.0),
                               ],
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
@@ -358,7 +358,7 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
         ),
       ),
     ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             
             // Time range selector
                 if (!isCompact)
@@ -396,9 +396,9 @@ class _InteractiveChartWidgetState extends State<InteractiveChartWidget> {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: isSelected ? widget.color.withValues(alpha: 0.15) : Colors.transparent,
+          color: isSelected ? (widget.color ?? AppTheme.primaryCyan).withValues(alpha: 0.15) : Colors.transparent,
           border: Border.all(
-            color: isSelected ? widget.color.withValues(alpha: 0.3) : Colors.transparent,
+            color: isSelected ? (widget.color ?? AppTheme.primaryCyan).withValues(alpha: 0.3) : Colors.transparent,
             width: 1,
           ),
         ),

@@ -205,9 +205,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   InputDecoration _inputDec(String label, String hint, IconData icon, {Widget? suffix}) {
     return InputDecoration(
       labelText: label,
-      labelStyle: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+      labelStyle: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
       hintText: hint,
-      hintStyle: const TextStyle(color: Colors.white24, fontSize: 11),
+      hintStyle: TextStyle(color: Colors.white24, fontSize: 11),
       prefixIcon: Icon(icon, color: AppTheme.primaryCyan, size: 20),
       suffixIcon: suffix,
       filled: true,
@@ -218,7 +218,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppTheme.primaryCyan, width: 1.5),
+        borderSide: BorderSide(color: AppTheme.primaryCyan, width: 1.5),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     );
@@ -300,7 +300,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget _sectionHeader(String text) => Padding(
     padding: const EdgeInsets.only(top: 24, bottom: 8),
-    child: Text(text, style: const TextStyle(color: Colors.white54, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+    child: Text(text, style: TextStyle(color: Colors.white54, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
   );
 
   void _showJoinSubAdminDialog() {
@@ -360,27 +360,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 shape: BoxShape.circle,
                 color: const Color(0xFF00FFCC).withValues(alpha: 0.15),
               ),
-              child: const Icon(Icons.verified, color: Color(0xFF00FFCC), size: 20),
+              child: Icon(Icons.verified, color: Color(0xFF00FFCC), size: 20),
             ),
-            const SizedBox(width: 14),
+            SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     AppLocalization.isArabicNotifier.value ? 'ربط الحساب بالمشرف الجانبي' : 'Linked to Sub-Admin Distributor',
-                    style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 2),
+                  SizedBox(height: 2),
                   Text(
                     _parentAdminName ?? '',
-                    style: const TextStyle(color: Colors.white70, fontSize: 12),
+                    style: TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                 ],
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.cancel, color: Colors.redAccent, size: 20),
+              icon: Icon(Icons.cancel, color: Colors.redAccent, size: 20),
               onPressed: () {
                 setState(() {
                   _isLinkedToSubAdmin = false;
@@ -411,21 +411,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
         children: [
           Text(
             AppLocalization.isArabicNotifier.value ? 'هل تود التسجيل كعميل تابع لموزع؟' : 'Are you registering as a client of a merchant?',
-            style: const TextStyle(color: Colors.white38, fontSize: 12),
+            style: TextStyle(color: Colors.white38, fontSize: 12),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           OutlinedButton.icon(
             style: OutlinedButton.styleFrom(
               foregroundColor: const Color(0xFF00FFCC),
-              side: const BorderSide(color: Color(0xFF00FFCC), width: 1.2),
+              side: BorderSide(color: Color(0xFF00FFCC), width: 1.2),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               padding: const EdgeInsets.symmetric(vertical: 14),
             ),
-            icon: const Icon(Icons.qr_code_scanner, size: 18),
+            icon: Icon(Icons.qr_code_scanner, size: 18),
             label: Text(
               AppLocalization.isArabicNotifier.value ? 'مسح QR أو إدخال كود الموزع' : 'Scan QR or Enter Distributor Code',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
             ),
             onPressed: _showJoinSubAdminDialog,
           )
@@ -443,7 +443,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       appBar: PremiumAppBar(
         titleText: titleText,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -475,41 +475,41 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Icon(Icons.person_add, size: 60, color: AppTheme.primaryCyan),
-                const SizedBox(height: 8),
+                Icon(Icons.person_add, size: 60, color: AppTheme.primaryCyan),
+                SizedBox(height: 8),
                 Text(
                   AppLocalization.isArabicNotifier.value ? 'أنشئ حسابك الآن' : 'Create Your Account',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 Text(
                   AppLocalization.isArabicNotifier.value ? 'أدخل بياناتك للبدء في رحلتك الذكية' : 'Input your details to start your smart journey',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white54, fontSize: 13),
+                  style: TextStyle(color: Colors.white54, fontSize: 13),
                 ),
                 
                 _sectionHeader(AppLocalization.isArabicNotifier.value ? 'المعلومات الأساسية' : 'Primary Information'),
                 TextField(
                   controller: _usernameCtrl,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.white),
                   decoration: _inputDec(
                     AppLocalization.isArabicNotifier.value ? 'اسم المستخدم' : 'Username',
                     AppLocalization.isArabicNotifier.value ? 'أدخل اسم المستخدم الخاص بك' : 'Enter your username',
                     Icons.person_outline,
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: _emailCtrl,
                   keyboardType: TextInputType.emailAddress,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.white),
                   decoration: _inputDec(
                     AppLocalization.isArabicNotifier.value ? 'البريد الإلكتروني' : 'Email Address',
                     AppLocalization.isArabicNotifier.value ? 'أدخل بريدك الإلكتروني' : 'Enter your email',
                     Icons.email_outlined,
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 
                 // Password input (with promo key check auto-trigger)
                 TextField(
@@ -527,7 +527,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     _isSubAdmin ? Icons.verified_user_rounded : Icons.lock_outline,
                     suffix: _isSubAdmin
                         ? IconButton(
-                            icon: const Icon(Icons.edit, color: AppTheme.primaryCyan),
+                            icon: Icon(Icons.edit, color: AppTheme.primaryCyan),
                             onPressed: () {
                               setState(() {
                                 _isSubAdmin = false;
@@ -546,11 +546,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 
                 // Sub-admin secondary real password (also shown when linking as merchant client)
                 if (_isSubAdmin || _isLinkedToSubAdmin) ...[
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   TextField(
                     controller: _realPassCtrl,
                     obscureText: !_realPassVisible,
-                    style: const TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.white),
                     decoration: _inputDec(
                       AppLocalization.isArabicNotifier.value
                           ? (_isSubAdmin ? 'كلمة المرور الحقيقية للأدمن' : 'كلمة مرور الحساب الخاص بك')
@@ -568,10 +568,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   
                 // Setup code field (Optional)
                 if (!_isSubAdmin) ...[
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   TextField(
                     controller: _setupCodeCtrl,
-                    style: const TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.white),
                     decoration: _inputDec(
                       AppLocalization.isArabicNotifier.value ? 'كود إعداد الجهاز (اختياري)' : 'Device Setup Code (Optional)',
                       AppLocalization.isArabicNotifier.value ? 'أدخل كود CX-XXXXXX الممنوح لك' : 'Enter CX-XXXXXX setup code if you have one',
@@ -580,7 +580,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     textCapitalization: TextCapitalization.characters,
                   ),
                   if (_isSetupCodeChecking)
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.only(top: 8.0, left: 4, right: 4),
                       child: Row(
                         children: [
@@ -632,30 +632,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         AppLocalization.isArabicNotifier.value
                             ? 'للتحكم بالأجهزة واللمبات الذكية عبر Adafruit IO (يمكن إضافتها لاحقاً)'
                             : 'To control smart devices via Adafruit IO (can be added later)',
-                        style: const TextStyle(color: Colors.white38, fontSize: 11),
+                        style: TextStyle(color: Colors.white38, fontSize: 11),
                       ),
-                      const SizedBox(height: 14),
+                      SizedBox(height: 14),
                       TextField(
                         controller: _aioUserCtrl,
-                        style: const TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.white),
                         decoration: _inputDec(
                           AppLocalization.isArabicNotifier.value ? 'اسم مستخدم Adafruit' : 'Adafruit IO Username',
                           'Adafruit IO username',
                           Icons.cloud_circle_outlined,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
                       TextField(
                         controller: _aioKeyCtrl,
                         obscureText: true,
-                        style: const TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.white),
                         decoration: _inputDec(
                           AppLocalization.isArabicNotifier.value ? 'مفتاح Adafruit API' : 'Adafruit IO AIO Key',
                           'Adafruit AIO key',
                           Icons.vpn_key_outlined,
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
                       _sectionHeader('FIREBASE RTDB - ${AppLocalization.isArabicNotifier.value ? 'اختياري' : 'Optional'}'),
                       Container(
                         margin: const EdgeInsets.only(top: 8, bottom: 16),
@@ -671,23 +671,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               AppLocalization.isArabicNotifier.value
                                   ? 'للتحكم في الأجهزة الاحترافية عبر Firebase (يمكن إضافته لاحقاً)'
                                   : 'To control smart devices via Firebase RTDB (can be added later)',
-                              style: const TextStyle(color: Colors.white38, fontSize: 11),
+                              style: TextStyle(color: Colors.white38, fontSize: 11),
                             ),
-                            const SizedBox(height: 14),
+                            SizedBox(height: 14),
                             TextField(
                               controller: _firebaseUrlCtrl,
-                              style: const TextStyle(color: Colors.white),
+                              style: TextStyle(color: Colors.white),
                               decoration: _inputDec(
                                 AppLocalization.get('firebase_db_url'),
                                 'https://your-project.firebaseio.com/',
                                 Icons.link,
                               ),
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12),
                             TextField(
                               controller: _firebaseSecretCtrl,
                               obscureText: true,
-                              style: const TextStyle(color: Colors.white),
+                              style: TextStyle(color: Colors.white),
                               decoration: _inputDec(
                                 AppLocalization.get('firebase_secret'),
                                 'Firebase Secret Key',
@@ -701,7 +701,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
   
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
                 GlowingButton(
                   onPressed: _isLoading ? null : _handleRegister,
                   isLoading: _isLoading,
@@ -711,7 +711,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     AppLocalization.isArabicNotifier.value ? 'إنشاء الحساب' : 'Create Account',
                   ),
                 ),
-                const SizedBox(height: 40),
+                SizedBox(height: 40),
               ],
             ),
           ),
@@ -750,59 +750,59 @@ class _JoinSubAdminChoiceSheet extends StatelessWidget {
                 decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(10)),
               ),
             ),
-            const SizedBox(height: 24),
-            const Icon(Icons.supervised_user_circle, size: 50, color: Color(0xFF00FFCC)),
-            const SizedBox(height: 16),
+            SizedBox(height: 24),
+            Icon(Icons.supervised_user_circle, size: 50, color: Color(0xFF00FFCC)),
+            SizedBox(height: 16),
             Text(
               ar ? 'الانضمام لموزع معتمد' : 'Join a Distributor',
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               ar 
                   ? 'حابب تعمل اسكان لل QR كود ولا تحط الكود يدوي؟' 
                   : 'Would you like to scan the QR code or enter the code manually?',
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.white54, fontSize: 13),
+              style: TextStyle(color: Colors.white54, fontSize: 13),
             ),
-            const SizedBox(height: 28),
+            SizedBox(height: 28),
             
             // Scan QR Button
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF00FFCC).withValues(alpha: 0.15),
                 foregroundColor: const Color(0xFF00FFCC),
-                side: const BorderSide(color: Color(0xFF00FFCC), width: 1.5),
+                side: BorderSide(color: Color(0xFF00FFCC), width: 1.5),
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
               onPressed: () => onChoiceSelected(true),
-              icon: const Icon(Icons.qr_code_scanner, size: 20),
+              icon: Icon(Icons.qr_code_scanner, size: 20),
               label: Text(
                 ar ? 'مسح رمز الـ QR (الكاميرا)' : 'Scan QR Code (Camera)',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
               ),
             ),
-            const SizedBox(height: 14),
+            SizedBox(height: 14),
             
             // Manual Code Button
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF00E5FF).withValues(alpha: 0.15),
                 foregroundColor: const Color(0xFF00E5FF),
-                side: const BorderSide(color: Color(0xFF00E5FF), width: 1.5),
+                side: BorderSide(color: Color(0xFF00E5FF), width: 1.5),
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
               onPressed: () => onChoiceSelected(false),
-              icon: const Icon(Icons.keyboard_outlined, size: 20),
+              icon: Icon(Icons.keyboard_outlined, size: 20),
               label: Text(
                 ar ? 'كتابة الكود يدوياً' : 'Enter Code Manually',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
           ],
         ),
       ),
@@ -965,28 +965,28 @@ class _JoinSubAdminSheetState extends State<_JoinSubAdminSheet> with SingleTicke
                 decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(10)),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   ar ? 'الاتصال بالموزع والمشرف' : 'Distributor Integration Console',
-                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white54, size: 20),
+                  icon: Icon(Icons.close, color: Colors.white54, size: 20),
                   onPressed: () => Navigator.pop(context),
                 )
               ],
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             Text(
               ar
                   ? 'اربط حسابك بالموزع الخاص بك لتحميل أدواتك المخصصة والسيناريوهات فورياً.'
                   : 'Link under your merchant to deploy pre-configured assets instantly.',
-              style: const TextStyle(color: Colors.white38, fontSize: 12),
+              style: TextStyle(color: Colors.white38, fontSize: 12),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             
             // Neon Selector Tabs
             Row(
@@ -1008,7 +1008,7 @@ class _JoinSubAdminSheetState extends State<_JoinSubAdminSheet> with SingleTicke
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.qr_code_scanner, color: _activeTab == 0 ? const Color(0xFF00FFCC) : Colors.white54, size: 18),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Text(
                             ar ? 'مسح QR كود' : 'Scan QR Code',
                             style: TextStyle(color: _activeTab == 0 ? const Color(0xFF00FFCC) : Colors.white70, fontWeight: FontWeight.bold, fontSize: 13),
@@ -1018,7 +1018,7 @@ class _JoinSubAdminSheetState extends State<_JoinSubAdminSheet> with SingleTicke
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: GestureDetector(
                     onTap: () => setState(() => _activeTab = 1),
@@ -1036,7 +1036,7 @@ class _JoinSubAdminSheetState extends State<_JoinSubAdminSheet> with SingleTicke
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.keyboard_outlined, color: _activeTab == 1 ? const Color(0xFF00FFCC) : Colors.white54, size: 18),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Text(
                             ar ? 'إدخال يدوي' : 'Enter Manually',
                             style: TextStyle(color: _activeTab == 1 ? const Color(0xFF00FFCC) : Colors.white70, fontWeight: FontWeight.bold, fontSize: 13),
@@ -1048,12 +1048,12 @@ class _JoinSubAdminSheetState extends State<_JoinSubAdminSheet> with SingleTicke
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // Tab Views
             if (_activeTab == 0) ...[
               if (!_hasCheckedPermission)
-                const Center(
+                Center(
                   child: SizedBox(
                     height: 200,
                     child: Center(child: CircularProgressIndicator(color: Color(0xFF00FFCC))),
@@ -1074,14 +1074,14 @@ class _JoinSubAdminSheetState extends State<_JoinSubAdminSheet> with SingleTicke
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const Icon(Icons.camera_alt_outlined, color: Colors.white38, size: 40),
-                        const SizedBox(height: 12),
+                        Icon(Icons.camera_alt_outlined, color: Colors.white38, size: 40),
+                        SizedBox(height: 12),
                         Text(
                           ar ? 'مطلوب صلاحية الكاميرا لمسح الـ QR' : 'Camera permission required to scan QR',
                           textAlign: TextAlign.center,
-                          style: const TextStyle(color: Colors.white54, fontSize: 10),
+                          style: TextStyle(color: Colors.white54, fontSize: 10),
                         ),
-                        const SizedBox(height: 14),
+                        SizedBox(height: 14),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF00FFCC),
@@ -1090,7 +1090,7 @@ class _JoinSubAdminSheetState extends State<_JoinSubAdminSheet> with SingleTicke
                             padding: const EdgeInsets.symmetric(vertical: 8),
                           ),
                           onPressed: _requestCameraPermission,
-                          child: Text(ar ? 'سماح للكاميرا' : 'Allow Camera', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                          child: Text(ar ? 'سماح للكاميرا' : 'Allow Camera', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
                         )
                       ],
                     ),
@@ -1131,10 +1131,10 @@ class _JoinSubAdminSheetState extends State<_JoinSubAdminSheet> with SingleTicke
                           ),
                           
                           // Viewfinder corner marks
-                          Positioned(top: 12, left: 12, child: Container(width: 20, height: 20, decoration: const BoxDecoration(border: Border(top: BorderSide(color: Color(0xFF00FFCC), width: 3), left: BorderSide(color: Color(0xFF00FFCC), width: 3))))),
-                          Positioned(top: 12, right: 12, child: Container(width: 20, height: 20, decoration: const BoxDecoration(border: Border(top: BorderSide(color: Color(0xFF00FFCC), width: 3), right: BorderSide(color: Color(0xFF00FFCC), width: 3))))),
-                          Positioned(bottom: 12, left: 12, child: Container(width: 20, height: 20, decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xFF00FFCC), width: 3), left: BorderSide(color: Color(0xFF00FFCC), width: 3))))),
-                          Positioned(bottom: 12, right: 12, child: Container(width: 20, height: 20, decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xFF00FFCC), width: 3), right: BorderSide(color: Color(0xFF00FFCC), width: 3))))),
+                          Positioned(top: 12, left: 12, child: Container(width: 20, height: 20, decoration: BoxDecoration(border: Border(top: BorderSide(color: Color(0xFF00FFCC), width: 3), left: BorderSide(color: Color(0xFF00FFCC), width: 3))))),
+                          Positioned(top: 12, right: 12, child: Container(width: 20, height: 20, decoration: BoxDecoration(border: Border(top: BorderSide(color: Color(0xFF00FFCC), width: 3), right: BorderSide(color: Color(0xFF00FFCC), width: 3))))),
+                          Positioned(bottom: 12, left: 12, child: Container(width: 20, height: 20, decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xFF00FFCC), width: 3), left: BorderSide(color: Color(0xFF00FFCC), width: 3))))),
+                          Positioned(bottom: 12, right: 12, child: Container(width: 20, height: 20, decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xFF00FFCC), width: 3), right: BorderSide(color: Color(0xFF00FFCC), width: 3))))),
                           
                           // Animated scanning laser line
                           AnimatedBuilder(
@@ -1146,7 +1146,7 @@ class _JoinSubAdminSheetState extends State<_JoinSubAdminSheet> with SingleTicke
                                 right: 16,
                                 child: Container(
                                   height: 3,
-                                  decoration: const BoxDecoration(
+                                  decoration: BoxDecoration(
                                     color: Color(0xFF00FFCC),
                                     boxShadow: [
                                       BoxShadow(color: Color(0xFF00FFCC), blurRadius: 10, spreadRadius: 1.5)
@@ -1159,7 +1159,7 @@ class _JoinSubAdminSheetState extends State<_JoinSubAdminSheet> with SingleTicke
                           if (_isChecking)
                             Container(
                               color: Colors.black54,
-                              child: const Center(
+                              child: Center(
                                 child: CircularProgressIndicator(color: Color(0xFF00FFCC)),
                               ),
                             )
@@ -1168,32 +1168,32 @@ class _JoinSubAdminSheetState extends State<_JoinSubAdminSheet> with SingleTicke
                     ),
                   ),
                 ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               
               if (_errorMessage != null) ...[
-                Text(_errorMessage!, style: const TextStyle(color: Colors.redAccent, fontSize: 12, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-                const SizedBox(height: 10),
+                Text(_errorMessage!, style: TextStyle(color: Colors.redAccent, fontSize: 12, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                SizedBox(height: 10),
               ],
 
             ] else ...[
               // Manual Code Input
               TextField(
                 controller: _codeCtrl,
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: ar ? 'رمز الموزع المعتمد' : 'Distributor Activation Code',
-                  labelStyle: const TextStyle(color: Colors.white54, fontSize: 12),
-                  prefixIcon: const Icon(Icons.key, color: Colors.white54, size: 18),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.white12)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF00FFCC))),
+                  labelStyle: TextStyle(color: Colors.white54, fontSize: 12),
+                  prefixIcon: Icon(Icons.key, color: Colors.white54, size: 18),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white12)),
+                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Color(0xFF00FFCC))),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                 ),
               ),
               if (_errorMessage != null) ...[
-                const SizedBox(height: 10),
-                Text(_errorMessage!, style: const TextStyle(color: Colors.redAccent, fontSize: 12, fontWeight: FontWeight.bold)),
+                SizedBox(height: 10),
+                Text(_errorMessage!, style: TextStyle(color: Colors.redAccent, fontSize: 12, fontWeight: FontWeight.bold)),
               ],
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               SizedBox(
                 height: 50,
                 child: ElevatedButton(
@@ -1204,8 +1204,8 @@ class _JoinSubAdminSheetState extends State<_JoinSubAdminSheet> with SingleTicke
                   ),
                   onPressed: _isChecking ? null : () => _verifyCode(_codeCtrl.text),
                   child: _isChecking
-                      ? const CircularProgressIndicator(color: Colors.black)
-                      : Text(ar ? 'تحقق وربط المجموعة' : 'Verify & Link Group', style: const TextStyle(fontWeight: FontWeight.bold)),
+                      ? CircularProgressIndicator(color: Colors.black)
+                      : Text(ar ? 'تحقق وربط المجموعة' : 'Verify & Link Group', style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               )
             ],

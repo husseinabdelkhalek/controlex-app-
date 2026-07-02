@@ -80,24 +80,24 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
           backgroundColor: const Color(0xFF1A1A2E),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Row(children: [
-            const Icon(Icons.battery_saver, color: Colors.orangeAccent, size: 28),
-            const SizedBox(width: 10),
+            Icon(Icons.battery_saver, color: Colors.orangeAccent, size: 28),
+            SizedBox(width: 10),
             Expanded(child: Text(AppLocalization.get('power_saving_reminder_title'),
-              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold))),
+              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold))),
           ]),
           content: Text(
             AppLocalization.get('power_saving_reminder_msg'),
-            style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.5),
+            style: TextStyle(color: Colors.white70, fontSize: 13, height: 1.5),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: Text(AppLocalization.get('later'), style: const TextStyle(color: Colors.white38)),
+              child: Text(AppLocalization.get('later'), style: TextStyle(color: Colors.white38)),
             ),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.orangeAccent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-              icon: const Icon(Icons.battery_saver, color: Colors.white, size: 18),
-              label: Text(AppLocalization.get('enable_now'), style: const TextStyle(color: Colors.white)),
+              icon: Icon(Icons.battery_saver, color: Colors.white, size: 18),
+              label: Text(AppLocalization.get('enable_now'), style: TextStyle(color: Colors.white)),
               onPressed: () async {
                 Navigator.pop(ctx);
                 try {
@@ -117,9 +117,9 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
     final rule = _rules[index];
     showDialog(context: context, builder: (ctx) => AlertDialog(
       backgroundColor: const Color(0xFF1A1A2E),
-      title: Text(AppLocalization.get('delete_rule_confirm'), style: const TextStyle(color: Colors.white)),
+      title: Text(AppLocalization.get('delete_rule_confirm'), style: TextStyle(color: Colors.white)),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalization.get('cancel'), style: const TextStyle(color: Colors.white54))),
+        TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalization.get('cancel'), style: TextStyle(color: Colors.white54))),
         TextButton(onPressed: () async {
           Navigator.pop(ctx);
           try {
@@ -129,7 +129,7 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
           } catch (e) {
             if (mounted) AppSnackbar.showError(context, e.toString());
           }
-        }, child: Text(AppLocalization.get('delete'), style: const TextStyle(color: Colors.redAccent))),
+        }, child: Text(AppLocalization.get('delete'), style: TextStyle(color: Colors.redAccent))),
       ],
     ));
   }
@@ -213,53 +213,53 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
 
         return Container(
           height: MediaQuery.of(ctx).size.height * 0.92,
-          decoration: const BoxDecoration(color: Color(0xFF0B0A1A), borderRadius: BorderRadius.vertical(top: Radius.circular(28))),
+          decoration: BoxDecoration(color: Color(0xFF0B0A1A), borderRadius: BorderRadius.vertical(top: Radius.circular(28))),
           child: Column(children: [
             Container(margin: const EdgeInsets.only(top: 12), width: 40, height: 4,
               decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(2))),
             Padding(padding: const EdgeInsets.all(16),
               child: Text(existing != null ? AppLocalization.get('edit_rule') : AppLocalization.get('create_rule'),
-                style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold))),
+                style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold))),
             Expanded(child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 _buildInputField(nameCtrl, AppLocalization.get('rule_name'), AppLocalization.get('rule_name_hint'), Icons.label),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 // ═══════ IF BLOCK ═══════
                 _buildBlockHeader(AppLocalization.get('if_trigger'), AppTheme.primaryCyan, Icons.sensors),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 _buildDropdownCard<String>(
                   label: AppLocalization.get('select_sensor'), value: selTriggerWidgetId,
-                  items: sensors.map((s) => DropdownMenuItem<String>(value: s['id'], child: Text(s['name'] ?? 'Sensor', style: const TextStyle(color: Colors.white)))).toList(),
+                  items: sensors.map((s) => DropdownMenuItem<String>(value: s['id'], child: Text(s['name'] ?? 'Sensor', style: TextStyle(color: Colors.white)))).toList(),
                   onChanged: (v) { setModalState(() { selTriggerWidgetId = v; selTriggerWidgetName = sensors.firstWhere((s) => s['id'] == v)['name']; }); },
                   icon: Icons.sensors,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 _buildDropdownCard<String>(
                   label: AppLocalization.get('select_condition'), value: selCondition,
                   items: conditions.map((c) {
                     String label;
                     switch (c) { case '>': label = AppLocalization.get('greater_than'); break; case '<': label = AppLocalization.get('less_than'); break;
                       case '=': label = AppLocalization.get('equal_to'); break; case '!=': label = AppLocalization.get('not_equal'); break; default: label = c; }
-                    return DropdownMenuItem<String>(value: c, child: Text(label, style: const TextStyle(color: Colors.white)));
+                    return DropdownMenuItem<String>(value: c, child: Text(label, style: TextStyle(color: Colors.white)));
                   }).toList(),
                   onChanged: (v) => setModalState(() => selCondition = v ?? '>'),
                   icon: Icons.compare_arrows,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 // Value field - accepts BOTH text and numbers
                 _buildInputField(valueCtrl, AppLocalization.get('enter_value'), '25 or ON', Icons.pin),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Center(child: _buildConnectorLine()),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 // ═══════ THEN BLOCK ═══════
                 _buildBlockHeader(AppLocalization.get('then_action'), AppTheme.accentNeon, Icons.bolt),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 _buildDropdownCard<String>(
                   label: AppLocalization.get('select_action'), value: selActionType,
                   items: actions.map((a) => DropdownMenuItem<String>(value: a, child: Row(children: [
-                    Icon(_actionIcon(a), color: AppTheme.accentNeon, size: 18), const SizedBox(width: 8),
-                    Flexible(child: Text(_actionLabel(a), style: const TextStyle(color: Colors.white), overflow: TextOverflow.ellipsis)),
+                    Icon(_actionIcon(a), color: AppTheme.accentNeon, size: 18), SizedBox(width: 8),
+                    Flexible(child: Text(_actionLabel(a), style: TextStyle(color: Colors.white), overflow: TextOverflow.ellipsis)),
                   ]))).toList(),
                   onChanged: (v) async {
                     setModalState(() { selActionType = v ?? 'turn_on'; selActionWidgetId = null; selActionWidgetName = null; });
@@ -276,11 +276,11 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
                               backgroundColor: const Color(0xFF1A1A2E),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                               title: Row(children: [
-                                const Icon(Icons.warning_amber_rounded, color: Colors.orangeAccent, size: 28),
-                                const SizedBox(width: 10),
+                                Icon(Icons.warning_amber_rounded, color: Colors.orangeAccent, size: 28),
+                                SizedBox(width: 10),
                                 Expanded(child: Text(
                                   isAr ? '⚠️ إعداد مطلوب لمكالمات الطوارئ' : '⚠️ Setup Required for Emergency Calls',
-                                  style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                                  style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
                                 )),
                               ]),
                               content: SingleChildScrollView(
@@ -292,13 +292,13 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
                                       isAr
                                         ? 'عشان مكالمة الطوارئ توصلك حتى لو التطبيق مغلق، لازم تفعّل هذه الإعدادات في موبايلك:'
                                         : 'For emergency calls to work even when the app is closed, you must enable these settings on your phone:',
-                                      style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.5),
+                                      style: TextStyle(color: Colors.white70, fontSize: 13, height: 1.5),
                                     ),
-                                    const SizedBox(height: 16),
+                                    SizedBox(height: 16),
                                     _buildSetupStep('1', isAr ? 'تفعيل التشغيل التلقائي (Autostart)' : 'Enable Autostart', isAr ? 'الإعدادات ← التطبيقات ← controlex ← تشغيل تلقائي ✅' : 'Settings → Apps → controlex → Autostart ✅', Icons.play_circle_fill_rounded, Colors.greenAccent),
-                                    const SizedBox(height: 12),
+                                    SizedBox(height: 12),
                                     _buildSetupStep('2', isAr ? 'السماح بالنوافذ المنبثقة في الخلفية' : 'Allow Popups in Background', isAr ? 'الإعدادات ← التطبيقات ← controlex ← أذونات أخرى ← عرض نوافذ منبثقة: دائماً مسموح' : 'Settings → Apps → controlex → Other permissions → Display pop-up windows: Always Allow', Icons.open_in_new, Colors.cyanAccent),
-                                    const SizedBox(height: 12),
+                                    SizedBox(height: 12),
                                     _buildSetupStep('3', isAr ? 'السماح بالعرض على شاشة القفل' : 'Show on Lock Screen', isAr ? 'الإعدادات ← التطبيقات ← controlex ← أذونات أخرى ← عرض على شاشة القفل: مفعّل' : 'Settings → Apps → controlex → Other permissions → Show on Lock screen: Enabled', Icons.lock_open_rounded, Colors.amberAccent),
                                   ],
                                 ),
@@ -307,7 +307,7 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(backgroundColor: Colors.orangeAccent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                                   onPressed: () => Navigator.pop(dialogCtx),
-                                  child: Text(isAr ? 'فهمت، شكراً!' : 'Got it, Thanks!', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                  child: Text(isAr ? 'فهمت، شكراً!' : 'Got it, Thanks!', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                                 ),
                               ],
                             ),
@@ -318,12 +318,12 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
                   },
                   icon: Icons.flash_on,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 if (needsWidget)
                   _buildDropdownCard<String>(
                     label: AppLocalization.get('select_widget'), value: selActionWidgetId,
                     items: (selActionType == 'send_feed' ? allWidgets : toggles)
-                      .map((w) => DropdownMenuItem<String>(value: w['id'], child: Text(w['name'] ?? 'Widget', style: const TextStyle(color: Colors.white)))).toList(),
+                      .map((w) => DropdownMenuItem<String>(value: w['id'], child: Text(w['name'] ?? 'Widget', style: TextStyle(color: Colors.white)))).toList(),
                     onChanged: (v) {
                       final list = selActionType == 'send_feed' ? allWidgets : toggles;
                       setModalState(() { selActionWidgetId = v; selActionWidgetName = list.firstWhere((w) => w['id'] == v)['name']; });
@@ -332,39 +332,39 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
                   ),
                 // ── Email: two fields (address + message) ──
                 if (selActionType == 'send_email') ...[
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   _buildInputField(emailCtrl, AppLocalization.get('email_address'), 'user@example.com', Icons.email),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   _buildInputField(emailMsgCtrl, AppLocalization.get('notif_message'), AppLocalization.get('notif_message_hint'), Icons.message),
                 ],
                 // ── Notification: message field ──
                 if (selActionType == 'send_notif') ...[
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   _buildInputField(notifMsgCtrl, AppLocalization.get('notif_message'), AppLocalization.get('notif_message_hint'), Icons.message),
                 ],
                 if (selActionType == 'send_feed') ...[
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   _buildInputField(feedValCtrl, AppLocalization.get('feed_value'), '1', Icons.send),
                 ],
                 // ── Emergency Call: message field + ringtone ──
                 if (selActionType == 'emergency_call') ...[
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   _buildInputField(emergencyMsgCtrl, AppLocalization.isArabicNotifier.value ? 'نص التحذير' : 'Alert Message', AppLocalization.isArabicNotifier.value ? 'مثال: حريق!' : 'e.g. Fire!', Icons.warning),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   _buildDropdownCard<String>(
                     label: AppLocalization.isArabicNotifier.value ? 'اختر النغمة' : 'Select Ringtone',
                     value: selRingtone,
                     items: [
-                      DropdownMenuItem(value: 'default', child: Text(AppLocalization.isArabicNotifier.value ? 'الافتراضي' : 'Default', style: const TextStyle(color: Colors.white))),
-                      DropdownMenuItem(value: 'alarm1', child: Text(AppLocalization.isArabicNotifier.value ? 'إنذار 1' : 'Alarm 1', style: const TextStyle(color: Colors.white))),
-                      DropdownMenuItem(value: 'alarm2', child: Text(AppLocalization.isArabicNotifier.value ? 'إنذار 2' : 'Alarm 2', style: const TextStyle(color: Colors.white))),
-                      DropdownMenuItem(value: 'silent', child: Text(AppLocalization.isArabicNotifier.value ? 'صامت (اهتزاز فقط)' : 'Silent (Vibrate Only)', style: const TextStyle(color: Colors.white))),
+                      DropdownMenuItem(value: 'default', child: Text(AppLocalization.isArabicNotifier.value ? 'الافتراضي' : 'Default', style: TextStyle(color: Colors.white))),
+                      DropdownMenuItem(value: 'alarm1', child: Text(AppLocalization.isArabicNotifier.value ? 'إنذار 1' : 'Alarm 1', style: TextStyle(color: Colors.white))),
+                      DropdownMenuItem(value: 'alarm2', child: Text(AppLocalization.isArabicNotifier.value ? 'إنذار 2' : 'Alarm 2', style: TextStyle(color: Colors.white))),
+                      DropdownMenuItem(value: 'silent', child: Text(AppLocalization.isArabicNotifier.value ? 'صامت (اهتزاز فقط)' : 'Silent (Vibrate Only)', style: TextStyle(color: Colors.white))),
                     ],
                     onChanged: (v) => setModalState(() => selRingtone = v ?? 'default'),
                     icon: Icons.music_note,
                   ),
                 ],
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
                 SizedBox(width: double.infinity, height: 54, child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryViolet,
@@ -412,9 +412,9 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
                       if (mounted) AppSnackbar.showError(context, e.toString());
                     }
                   },
-                  child: Text(AppLocalization.get('save_rule'), style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                  child: Text(AppLocalization.get('save_rule'), style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                 )),
-                const SizedBox(height: 40),
+                SizedBox(height: 40),
               ]),
             )),
           ]),
@@ -432,7 +432,7 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
         border: Border.all(color: color.withValues(alpha: 0.5), width: 1.5),
       ),
       child: Row(children: [
-        Icon(icon, color: color, size: 22), const SizedBox(width: 10),
+        Icon(icon, color: color, size: 22), SizedBox(width: 10),
         Text(title, style: TextStyle(color: color, fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: 2)),
       ]),
     );
@@ -441,7 +441,7 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
   Widget _buildConnectorLine() {
     return Column(children: [
       Container(width: 3, height: 20, decoration: BoxDecoration(
-        gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppTheme.primaryCyan, AppTheme.primaryViolet]),
+        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppTheme.primaryCyan, AppTheme.primaryViolet]),
         borderRadius: BorderRadius.circular(2),
       )),
       Container(width: 14, height: 14, decoration: BoxDecoration(
@@ -450,7 +450,7 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
         boxShadow: [BoxShadow(color: AppTheme.accentNeon.withValues(alpha: 0.5), blurRadius: 8)],
       )),
       Container(width: 3, height: 20, decoration: BoxDecoration(
-        gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppTheme.primaryViolet, AppTheme.accentNeon]),
+        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppTheme.primaryViolet, AppTheme.accentNeon]),
         borderRadius: BorderRadius.circular(2),
       )),
     ]);
@@ -466,10 +466,10 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
             border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
           ),
           child: TextField(
-            controller: ctrl, style: const TextStyle(color: Colors.white),
+            controller: ctrl, style: TextStyle(color: Colors.white),
             decoration: InputDecoration(
               labelText: label, hintText: hint,
-              labelStyle: const TextStyle(color: Colors.white54), hintStyle: const TextStyle(color: Colors.white24),
+              labelStyle: TextStyle(color: Colors.white54), hintStyle: TextStyle(color: Colors.white24),
               prefixIcon: Icon(icon, color: AppTheme.primaryCyan, size: 20),
               border: InputBorder.none, contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             ),
@@ -490,11 +490,11 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
             border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
           ),
           child: Row(children: [
-            Icon(icon, color: AppTheme.primaryCyan, size: 20), const SizedBox(width: 8),
+            Icon(icon, color: AppTheme.primaryCyan, size: 20), SizedBox(width: 8),
             Expanded(child: DropdownButtonHideUnderline(
               child: DropdownButton<T>(
                 value: (items.any((i) => i.value == value)) ? value : null,
-                hint: Text(label, style: const TextStyle(color: Colors.white38)),
+                hint: Text(label, style: TextStyle(color: Colors.white38)),
                 dropdownColor: const Color(0xFF1A1A2E), isExpanded: true, items: items, onChanged: onChanged,
               ),
             )),
@@ -532,7 +532,7 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
       background: Container(
         alignment: Alignment.centerRight, padding: const EdgeInsets.only(right: 24),
         decoration: BoxDecoration(color: Colors.redAccent.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(20)),
-        child: const Icon(Icons.delete_forever, color: Colors.redAccent, size: 32),
+        child: Icon(Icons.delete_forever, color: Colors.redAccent, size: 32),
       ),
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
@@ -550,15 +550,15 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
                       isActive ? AppTheme.primaryCyan : Colors.grey,
                       isActive ? AppTheme.primaryViolet : Colors.grey.shade700,
                     ])),
-                  child: const Icon(Icons.auto_awesome, color: Colors.white, size: 18),
+                  child: Icon(Icons.auto_awesome, color: Colors.white, size: 18),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(name, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 2),
+                  Text(name, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                  SizedBox(height: 2),
                   Row(children: [
                     Container(width: 8, height: 8, decoration: BoxDecoration(shape: BoxShape.circle, color: isActive ? Colors.greenAccent : Colors.redAccent)),
-                    const SizedBox(width: 6),
+                    SizedBox(width: 6),
                     Text(isActive ? AppLocalization.get('scenario_running') : AppLocalization.get('scenario_stopped'),
                       style: TextStyle(color: isActive ? Colors.greenAccent : Colors.redAccent, fontSize: 12)),
                   ]),
@@ -576,14 +576,14 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
                       },
                     )),
                     IconButton(
-                      icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 22),
+                      icon: Icon(Icons.delete_outline, color: Colors.redAccent, size: 22),
                       tooltip: AppLocalization.get('delete') ?? 'Delete',
                       onPressed: () => _deleteRule(index),
                     ),
                   ],
                 ),
               ]),
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
               _buildMiniBlock(AppLocalization.get('if_trigger'), AppTheme.primaryCyan,
                 '$triggerName ${_conditionSymbol(condition)} $triggerValue', Icons.sensors),
               Padding(padding: const EdgeInsets.only(left: 20), child: Container(width: 2, height: 16,
@@ -592,12 +592,12 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
                 '${_actionLabel(aType)}${actionName.isNotEmpty ? ' → $actionName' : ''}',
                 _actionIcon(aType)),
               if (lastTriggeredLabel.isNotEmpty) ...[
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Row(
                   children: [
-                    const Icon(Icons.access_time, color: Colors.white54, size: 14),
-                    const SizedBox(width: 6),
-                    Text(lastTriggeredLabel, style: const TextStyle(color: Colors.white54, fontSize: 11)),
+                    Icon(Icons.access_time, color: Colors.white54, size: 14),
+                    SizedBox(width: 6),
+                    Text(lastTriggeredLabel, style: TextStyle(color: Colors.white54, fontSize: 11)),
                   ],
                 ),
               ],
@@ -616,10 +616,10 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
           border: Border.all(color: color.withValues(alpha: 0.4))),
         child: Text(tag, style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w800)),
       ),
-      const SizedBox(width: 10),
+      SizedBox(width: 10),
       Icon(icon, color: color.withValues(alpha: 0.7), size: 16),
-      const SizedBox(width: 6),
-      Flexible(child: Text(text, style: const TextStyle(color: Colors.white70, fontSize: 13), overflow: TextOverflow.ellipsis)),
+      SizedBox(width: 6),
+      Flexible(child: Text(text, style: TextStyle(color: Colors.white70, fontSize: 13), overflow: TextOverflow.ellipsis)),
     ]);
   }
 
@@ -639,17 +639,17 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
             decoration: BoxDecoration(shape: BoxShape.circle, color: color.withValues(alpha: 0.2), border: Border.all(color: color)),
             child: Center(child: Text(number, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 14))),
           ),
-          const SizedBox(width: 10),
+          SizedBox(width: 10),
           Expanded(child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(children: [
                 Icon(icon, color: color, size: 16),
-                const SizedBox(width: 6),
+                SizedBox(width: 6),
                 Flexible(child: Text(title, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 13))),
               ]),
-              const SizedBox(height: 4),
-              Text(description, style: const TextStyle(color: Colors.white54, fontSize: 11, height: 1.4)),
+              SizedBox(height: 4),
+              Text(description, style: TextStyle(color: Colors.white54, fontSize: 11, height: 1.4)),
             ],
           )),
         ],
@@ -663,7 +663,7 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
       backgroundColor: AppTheme.backgroundBase,
       appBar: AppBar(
         title: Text(AppLocalization.get('automations')),
-        leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new), onPressed: () => Navigator.pop(context)),
+        leading: IconButton(icon: Icon(Icons.arrow_back_ios_new), onPressed: () => Navigator.pop(context)),
         actions: [
           // Power Saving indicator (read-only — admin controls it)
           if (_powerSaving)
@@ -677,14 +677,14 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: Colors.orangeAccent.withValues(alpha: 0.4)),
                 ),
-                child: const Row(mainAxisSize: MainAxisSize.min, children: [
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
                   Icon(Icons.battery_saver, color: Colors.orangeAccent, size: 16),
                   SizedBox(width: 4),
                   Text('⚡', style: TextStyle(fontSize: 12)),
                 ]),
               ),
             ),
-          const SizedBox(width: 4),
+          SizedBox(width: 4),
         ],
       ),
       body: Stack(children: [
@@ -695,14 +695,14 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
           decoration: BoxDecoration(shape: BoxShape.circle, color: AppTheme.accentNeon.withValues(alpha: 0.1)),
           child: BackdropFilter(filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80), child: Container()))),
         _isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan))
+          ? Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan))
           : _rules.isEmpty
             ? Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Icon(Icons.auto_fix_high, size: 64, color: AppTheme.primaryCyan.withValues(alpha: 0.4)),
-                const SizedBox(height: 16),
-                Text(AppLocalization.get('no_rules'), style: const TextStyle(color: Colors.white54, fontSize: 16)),
-                const SizedBox(height: 8),
-                Text(AppLocalization.get('no_rules_hint'), style: const TextStyle(color: Colors.white30, fontSize: 13)),
+                SizedBox(height: 16),
+                Text(AppLocalization.get('no_rules'), style: TextStyle(color: Colors.white54, fontSize: 16)),
+                SizedBox(height: 8),
+                Text(AppLocalization.get('no_rules_hint'), style: TextStyle(color: Colors.white30, fontSize: 13)),
               ]))
              : RefreshIndicator(
                 color: AppTheme.primaryCyan,
@@ -735,7 +735,7 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
                             color: _powerSaving ? Colors.orangeAccent : Colors.greenAccent, 
                             size: 20,
                           ),
-                          const SizedBox(width: 10),
+                          SizedBox(width: 10),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -748,12 +748,12 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                const SizedBox(height: 2),
+                                SizedBox(height: 2),
                                 Text(
                                   AppLocalization.isArabicNotifier.value 
                                     ? 'يتحكم في معدل تحديث البيانات للحفاظ على استقرار السيرفر'
                                     : 'Controls data refresh rate to preserve server stability',
-                                  style: const TextStyle(color: Colors.white38, fontSize: 10),
+                                  style: TextStyle(color: Colors.white38, fontSize: 10),
                                 ),
                               ],
                             ),
@@ -790,11 +790,11 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
                     if (i == 1) {
                       return Padding(padding: const EdgeInsets.only(bottom: 16),
                         child: Row(children: [
-                          const Icon(Icons.auto_awesome_mosaic, color: AppTheme.primaryCyan, size: 20),
-                          const SizedBox(width: 8),
-                          Text(AppLocalization.get('my_scenarios'), style: const TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w600)),
+                          Icon(Icons.auto_awesome_mosaic, color: AppTheme.primaryCyan, size: 20),
+                          SizedBox(width: 8),
+                          Text(AppLocalization.get('my_scenarios'), style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w600)),
                           const Spacer(),
-                          Text('${_rules.length}', style: const TextStyle(color: AppTheme.primaryCyan, fontSize: 14, fontWeight: FontWeight.bold)),
+                          Text('${_rules.length}', style: TextStyle(color: AppTheme.primaryCyan, fontSize: 14, fontWeight: FontWeight.bold)),
                         ]));
                     }
                     
@@ -809,7 +809,7 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           const AiFloatingButton(),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           AnimatedBuilder(
             animation: _fabController,
             builder: (ctx, child) => Transform.scale(
@@ -821,8 +821,8 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
               message: AppLocalization.isArabicNotifier.value ? 'أنشئ أول أتمتة لك!' : 'Create your first Automation!',
               child: FloatingActionButton.extended(
                 backgroundColor: AppTheme.primaryViolet,
-                icon: const Icon(Icons.add, color: Colors.white),
-                label: Text(AppLocalization.get('create_rule'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                icon: Icon(Icons.add, color: Colors.white),
+                label: Text(AppLocalization.get('create_rule'), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 onPressed: () => _openRuleEditor(),
               ),
             ),

@@ -119,19 +119,19 @@ class _SubAdminDashboardScreenState extends State<SubAdminDashboardScreen> with 
         titleText: screenTitle,
         leading: _selectedViewIndex > 0
             ? IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                icon: Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () => setState(() => _selectedViewIndex = 0),
               )
             : null,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh, color: Color(0xFF00FFCC)),
+            icon: Icon(Icons.refresh, color: Color(0xFF00FFCC)),
             onPressed: _loadGroupData,
           ),
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF00FFCC)))
+          ? Center(child: CircularProgressIndicator(color: Color(0xFF00FFCC)))
           : _selectedViewIndex == 0
               ? _buildOverviewTab()
               : _selectedViewIndex == 1
@@ -178,18 +178,18 @@ class _SubAdminDashboardScreenState extends State<SubAdminDashboardScreen> with 
                       )
                     ]
                   ),
-                  child: const Icon(Icons.storefront_rounded, color: Color(0xFF00FFCC), size: 36),
+                  child: Icon(Icons.storefront_rounded, color: Color(0xFF00FFCC), size: 36),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         widget.userProfile['username'] ?? 'موزع معتمد',
-                        style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                         decoration: BoxDecoration(
@@ -198,7 +198,7 @@ class _SubAdminDashboardScreenState extends State<SubAdminDashboardScreen> with 
                         ),
                         child: Text(
                           ar ? 'شريك موزع معتمد' : 'Authorized Merchant Partner',
-                          style: const TextStyle(color: Color(0xFF00FFCC), fontSize: 10, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: Color(0xFF00FFCC), fontSize: 10, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
@@ -207,14 +207,14 @@ class _SubAdminDashboardScreenState extends State<SubAdminDashboardScreen> with 
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // Invite Key Quick Box
           Text(
             ar ? 'كود اتصال العملاء الخاص بك' : 'Your Customer Inviting Code',
-            style: const TextStyle(color: Colors.white60, fontSize: 12, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.white60, fontSize: 12, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -224,29 +224,29 @@ class _SubAdminDashboardScreenState extends State<SubAdminDashboardScreen> with 
             ),
             child: Row(
               children: [
-                const Icon(Icons.key, color: Color(0xFF00FFCC), size: 20),
-                const SizedBox(width: 12),
+                Icon(Icons.key, color: Color(0xFF00FFCC), size: 20),
+                SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     _subAdminCode,
-                    style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                    style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 0.5),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.copy, color: Colors.white70, size: 20),
+                  icon: Icon(Icons.copy, color: Colors.white70, size: 20),
                   onPressed: _copyToClipboard,
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // Overview Stats Grid
           Text(
             ar ? 'إحصائيات المجموعة' : 'Group Statistics',
-            style: const TextStyle(color: Colors.white60, fontSize: 12, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.white60, fontSize: 12, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           GridView.count(
             crossAxisCount: 2,
             shrinkWrap: true,
@@ -281,14 +281,14 @@ class _SubAdminDashboardScreenState extends State<SubAdminDashboardScreen> with 
               ),
             ],
           ),
-          const SizedBox(height: 28),
+          SizedBox(height: 28),
 
           // Action Shortcuts Menu
           Text(
             ar ? 'العمليات المتاحة' : 'Distributor Operations',
-            style: const TextStyle(color: Colors.white60, fontSize: 12, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.white60, fontSize: 12, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _buildOperationTile(
             index: 1,
             title: ar ? 'إدارة وحظر العملاء' : 'Manage & Suspend Customers',
@@ -296,7 +296,7 @@ class _SubAdminDashboardScreenState extends State<SubAdminDashboardScreen> with 
             icon: Icons.people_outline,
             color: const Color(0xFF00FFCC),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _buildOperationTile(
             index: 2,
             title: ar ? 'توليد ومشاركة كود الـ QR' : 'Deploy Invitation QR Code',
@@ -325,12 +325,12 @@ class _SubAdminDashboardScreenState extends State<SubAdminDashboardScreen> with 
             children: [
               Text(
                 value,
-                style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
               ),
               Icon(icon, color: color, size: 18),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(
             label,
             style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 11),
@@ -365,7 +365,7 @@ class _SubAdminDashboardScreenState extends State<SubAdminDashboardScreen> with 
         ),
         title: Text(
           title,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4.0),
@@ -387,7 +387,7 @@ class _SubAdminDashboardScreenState extends State<SubAdminDashboardScreen> with 
       return Center(
         child: Text(
           ar ? 'لا يوجد عملاء مسجلين تحت كودك بعد!' : 'No clients registered under your code yet!',
-          style: const TextStyle(color: Colors.white38, fontSize: 14),
+          style: TextStyle(color: Colors.white38, fontSize: 14),
         ),
       );
     }
@@ -418,7 +418,7 @@ class _SubAdminDashboardScreenState extends State<SubAdminDashboardScreen> with 
             ),
             title: Text(
               client['username'] ?? 'User',
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
             ),
             subtitle: Row(
               children: [
@@ -433,10 +433,10 @@ class _SubAdminDashboardScreenState extends State<SubAdminDashboardScreen> with 
                     style: TextStyle(color: isActive ? Colors.greenAccent : Colors.redAccent, fontSize: 10, fontWeight: FontWeight.bold),
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text(
                   '${client['widgetCount'] ?? 0} ${ar ? 'أداة ذكية' : 'Widgets'}',
-                  style: const TextStyle(color: Colors.white38, fontSize: 11),
+                  style: TextStyle(color: Colors.white38, fontSize: 11),
                 ),
               ],
             ),
@@ -446,18 +446,18 @@ class _SubAdminDashboardScreenState extends State<SubAdminDashboardScreen> with 
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Divider(color: Colors.white12),
+                    Divider(color: Colors.white12),
                     Row(
                       children: [
-                        const Icon(Icons.email_outlined, color: Colors.white38, size: 14),
-                        const SizedBox(width: 8),
+                        Icon(Icons.email_outlined, color: Colors.white38, size: 14),
+                        SizedBox(width: 8),
                         Text(
                           client['email'] ?? '',
-                          style: const TextStyle(color: Colors.white60, fontSize: 12),
+                          style: TextStyle(color: Colors.white60, fontSize: 12),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 14),
+                    SizedBox(height: 14),
                     Row(
                       children: [
                         Expanded(
@@ -472,7 +472,7 @@ class _SubAdminDashboardScreenState extends State<SubAdminDashboardScreen> with 
                             icon: Icon(isActive ? Icons.block : Icons.check_circle_outline, size: 16),
                             label: Text(
                               isActive ? (ar ? 'تعليق الحساب' : 'Suspend Account') : (ar ? 'تفعيل الحساب' : 'Activate Account'),
-                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                             ),
                             onPressed: () => _toggleClientStatus(client),
                           ),
@@ -500,17 +500,17 @@ class _SubAdminDashboardScreenState extends State<SubAdminDashboardScreen> with 
         children: [
           Text(
             ar ? 'كود الانضمام للمشرف' : 'Distributor Connection Code',
-            style: const TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             ar
                 ? 'اجعل عملائك يمسحون هذا الرمز لتثبيت الإعدادات والتحكم بالملفات فورياً.'
                 : 'Share this scan code for quick and automated client configurations.',
-            style: const TextStyle(color: Colors.white38, fontSize: 11),
+            style: TextStyle(color: Colors.white38, fontSize: 11),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 28),
+          SizedBox(height: 28),
 
           // High fidelity Vector neon QR Code painting container
           Container(
@@ -543,15 +543,15 @@ class _SubAdminDashboardScreenState extends State<SubAdminDashboardScreen> with 
                     color: Color(0xFF00FFCC),
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 Text(
                   _subAdminCode,
-                  style: const TextStyle(color: Color(0xFF00FFCC), fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                  style: TextStyle(color: Color(0xFF00FFCC), fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 0.5),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 32),
+          SizedBox(height: 32),
 
           // Operations Buttons
           Row(
@@ -564,27 +564,27 @@ class _SubAdminDashboardScreenState extends State<SubAdminDashboardScreen> with 
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  icon: const Icon(Icons.copy, size: 18),
+                  icon: Icon(Icons.copy, size: 18),
                   label: Text(
                     ar ? 'نسخ الكود' : 'Copy Code',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   onPressed: _copyToClipboard,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    side: const BorderSide(color: Colors.white24),
+                    side: BorderSide(color: Colors.white24),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  icon: const Icon(Icons.share, size: 18),
+                  icon: Icon(Icons.share, size: 18),
                   label: Text(
                     ar ? 'مشاركة QR' : 'Share QR',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   onPressed: () {
                     final ar = AppLocalization.isArabicNotifier.value;

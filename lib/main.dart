@@ -214,7 +214,11 @@ void main() async {
   
   // Register Widget Background Handler
   HomeWidget.registerBackgroundCallback(backgroundCallbackHandler);
-  
+  // Load Theme
+  final prefs = await SharedPreferences.getInstance();
+  final savedTheme = prefs.getString('app_theme') ?? 'dark';
+  AppTheme.switchTheme(savedTheme);
+
   await AppLocalization.loadSavedLanguage();
   await NotificationService.initialize();
   ErrorHandler.initialize();
@@ -226,22 +230,27 @@ class ControlExApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<bool>(
-      valueListenable: AppLocalization.isArabicNotifier,
-      builder: (context, isArabic, child) {
-         return MaterialApp(
-           key: ValueKey(isArabic),
-           title: 'ControlEx',
-           debugShowCheckedModeBanner: false,
-           theme: AppTheme.darkTheme,
-           builder: (context, child) {
-              return Directionality(
-                 textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
-                 child: child!,
-              );
-           },
-           home: const AppInitializer(),
-         );
+    return ValueListenableBuilder<String>(
+      valueListenable: AppTheme.themeNotifier,
+      builder: (context, themeName, _) {
+        return ValueListenableBuilder<bool>(
+          valueListenable: AppLocalization.isArabicNotifier,
+          builder: (context, isArabic, child) {
+             return MaterialApp(
+               key: ValueKey('$isArabic-$themeName'),
+               title: 'ControlEx',
+               debugShowCheckedModeBanner: false,
+               theme: AppTheme.darkTheme,
+               builder: (context, child) {
+                  return Directionality(
+                     textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+                     child: child!,
+                  );
+               },
+               home: const AppInitializer(),
+             );
+          }
+        );
       }
     );
   }
@@ -331,21 +340,21 @@ class _AppInitializerState extends State<AppInitializer> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('🚀', style: TextStyle(fontSize: 60)),
-                const SizedBox(height: 16),
+                Text('🚀', style: TextStyle(fontSize: 60)),
+                SizedBox(height: 16),
                 Text(
                   AppLocalization.isArabicNotifier.value ? 'تحديث متوفر!' : 'Update Available!',
-                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Text(
                   AppLocalization.isArabicNotifier.value 
                     ? '✨ خش نزل النسخة الجديدة من هنا واستمتع بأحدث الميزات! 😍'
                     : '✨ A new version is available! Please update to enjoy the latest features. 😍',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 ElevatedButton.icon(
                   onPressed: () async {
                     if (_downloadUrl.isNotEmpty) {
@@ -355,7 +364,7 @@ class _AppInitializerState extends State<AppInitializer> {
                       }
                     }
                   },
-                  icon: const Icon(Icons.download),
+                  icon: Icon(Icons.download),
                   label: Text(AppLocalization.isArabicNotifier.value ? 'تحديث الآن' : 'Update Now'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.cyan,
@@ -364,7 +373,7 @@ class _AppInitializerState extends State<AppInitializer> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextButton(
                   onPressed: () {
                     setState(() {
@@ -373,7 +382,7 @@ class _AppInitializerState extends State<AppInitializer> {
                   },
                   child: Text(
                     AppLocalization.isArabicNotifier.value ? 'تخطي الآن' : 'Skip for now',
-                    style: const TextStyle(color: Colors.grey, decoration: TextDecoration.underline),
+                    style: TextStyle(color: Colors.grey, decoration: TextDecoration.underline),
                   ),
                 ),
               ],

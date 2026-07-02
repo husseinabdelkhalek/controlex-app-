@@ -57,7 +57,7 @@ class _JoystickWidgetState extends State<JoystickWidget> {
               children: [
                 Expanded(
                   child: Text(widget.title, 
-                    style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
                     maxLines: 1, overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -68,12 +68,12 @@ class _JoystickWidgetState extends State<JoystickWidget> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(_currentDirection, 
-                    style: const TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold, fontSize: 10),
+                    style: TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold, fontSize: 10),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Expanded(
               child: IgnorePointer(
                 ignoring: widget.isEditMode, // Don't interact with joystick if editing grid
@@ -116,7 +116,7 @@ class _JoystickWidgetState extends State<JoystickWidget> {
                         height: 50,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          gradient: const LinearGradient(
+                          gradient: LinearGradient(
                             colors: [AppTheme.primaryCyan, AppTheme.primaryCyan],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,

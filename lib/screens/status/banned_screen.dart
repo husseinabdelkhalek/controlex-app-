@@ -69,34 +69,34 @@ class BannedScreen extends StatelessWidget {
                             )
                           ],
                         ),
-                        child: const Icon(Icons.block_flipped, color: Colors.redAccent, size: 80),
+                        child: Icon(Icons.block_flipped, color: Colors.redAccent, size: 80),
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
                       
                       // Title
                       Text(
                         AppLocalization.get('banned_title'),
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 2,
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       
                       // Message
                       Text(
                         message ?? AppLocalization.get('banned_msg'),
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white70,
                           fontSize: 15,
                           height: 1.5,
                         ),
                       ),
-                      const SizedBox(height: 40),
+                      SizedBox(height: 40),
                       
                       // Contact Buttons
                       _buildContactButton(
@@ -105,7 +105,7 @@ class BannedScreen extends StatelessWidget {
                         color: Colors.greenAccent,
                         onTap: _launchWhatsApp,
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       _buildContactButton(
                         label: AppLocalization.get('email_contact'),
                         icon: Icons.email_outlined,
@@ -113,12 +113,12 @@ class BannedScreen extends StatelessWidget {
                         onTap: _launchEmail,
                       ),
                       
-                      const SizedBox(height: 32),
+                      SizedBox(height: 32),
                       TextButton(
                         onPressed: () => Navigator.pop(context),
                         child: Text(
                           AppLocalization.get('close'),
-                          style: const TextStyle(color: Colors.white38),
+                          style: TextStyle(color: Colors.white38),
                         ),
                       ),
                     ],
@@ -162,7 +162,7 @@ class BannedScreen extends StatelessWidget {
         child: Row(
           children: [
             Icon(icon, color: color, size: 24),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(
               child: Text(
                 label,

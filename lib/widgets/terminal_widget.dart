@@ -191,7 +191,7 @@ class _TerminalWidgetState extends State<TerminalWidget> {
             // Mac-style Terminal Header
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: Color(0xFF10141a),
                 borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
                 border: Border(bottom: BorderSide(color: Colors.white10))
@@ -202,16 +202,16 @@ class _TerminalWidgetState extends State<TerminalWidget> {
                   Row(
                      children: [
                         _buildDot(AppTheme.semanticError),
-                        const SizedBox(width: 6),
+                        SizedBox(width: 6),
                         _buildDot(AppTheme.semanticWarning),
-                        const SizedBox(width: 6),
+                        SizedBox(width: 6),
                         _buildDot(AppTheme.semanticSuccess),
                      ],
                   ),
-                  Text(widget.title.toUpperCase(), style: const TextStyle(color: Colors.white60, fontWeight: FontWeight.bold, fontSize: 11, fontFamily: 'Courier', letterSpacing: 1.2)),
+                  Text(widget.title.toUpperCase(), style: TextStyle(color: Colors.white60, fontWeight: FontWeight.bold, fontSize: 11, fontFamily: 'Courier', letterSpacing: 1.2)),
                   GestureDetector(
                     onTap: _fetchLogs,
-                    child: const Icon(Icons.refresh, color: AppTheme.primaryBrand, size: 16),
+                    child: Icon(Icons.refresh, color: AppTheme.primaryBrand, size: 16),
                   ),
                 ],
               ),
@@ -234,7 +234,7 @@ class _TerminalWidgetState extends State<TerminalWidget> {
                       child: RichText(
                          text: TextSpan(
                             children: [
-                               if (!isSys) TextSpan(text: isSent ? "user@device:~\$ " : "[relay] >> ", style: const TextStyle(color: Colors.white54, fontFamily: 'Courier', fontSize: 11)),
+                               if (!isSys) TextSpan(text: isSent ? "user@device:~\$ " : "[relay] >> ", style: TextStyle(color: Colors.white54, fontFamily: 'Courier', fontSize: 11)),
                                TextSpan(text: log['message'], style: TextStyle(
                                   fontFamily: 'Courier',
                                   color: _getLogColor(log['type']),
@@ -253,24 +253,24 @@ class _TerminalWidgetState extends State<TerminalWidget> {
             // Input Area
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                  color: Color(0xFF10141a),
                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
                  border: Border(top: BorderSide(color: Colors.white10))
               ),
               child: Row(
                 children: [
-                  const Text("root:~\\\$ ", style: TextStyle(color: AppTheme.semanticWarning, fontFamily: 'Courier', fontSize: 13)),
+                  Text("root:~\\\$ ", style: TextStyle(color: AppTheme.semanticWarning, fontFamily: 'Courier', fontSize: 13)),
                   Expanded(
                     child: TextField(
                       controller: _controller,
-                      style: const TextStyle(fontFamily: 'Courier', color: AppTheme.primaryBrand, fontSize: 13, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontFamily: 'Courier', color: AppTheme.primaryBrand, fontSize: 13, fontWeight: FontWeight.bold),
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         enabledBorder: InputBorder.none,
                         focusedBorder: InputBorder.none,
                         hintText: AppLocalization.get('terminal_hint'),
-                        hintStyle: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                        hintStyle: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
                         contentPadding: EdgeInsets.zero,
                         isDense: true
                       ),
@@ -282,7 +282,7 @@ class _TerminalWidgetState extends State<TerminalWidget> {
                      child: Container(
                         padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(color: AppTheme.primaryBrand.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(4)),
-                        child: const Icon(Icons.send, size: 16, color: AppTheme.primaryBrand),
+                        child: Icon(Icons.send, size: 16, color: AppTheme.primaryBrand),
                      ),
                   )
                 ],

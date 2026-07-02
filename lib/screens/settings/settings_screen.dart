@@ -241,6 +241,10 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
   }
 
   void _saveWidget() async {
+    if (AppTour.isShowing) {
+       return; // Bypass save logic during the app tour
+    }
+
     if (_nameCtrl.text.isEmpty || _feedCtrl.text.isEmpty) {
        _showToast(AppLocalization.isArabicNotifier.value ? 'الاسم والمجرى مطلوبان!' : 'Name and Feed are required!');
        return;
@@ -338,7 +342,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan)),
+      builder: (context) => Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan)),
     );
 
     try {
@@ -356,19 +360,19 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
         builder: (context) => AlertDialog(
           backgroundColor: AppTheme.darkBackground,
           surfaceTintColor: Colors.transparent,
-          title: const Text('اختر المجرى (Feed)', style: TextStyle(color: AppTheme.primaryCyan)),
+          title: Text('اختر المجرى (Feed)', style: TextStyle(color: AppTheme.primaryCyan)),
           content: SizedBox(
             width: double.maxFinite,
             height: 300,
             child: ListView.separated(
               itemCount: feeds.length,
-              separatorBuilder: (_, __) => const Divider(color: Colors.white24),
+              separatorBuilder: (_, __) => Divider(color: Colors.white24),
               itemBuilder: (context, index) {
                 final feed = feeds[index];
                 return ListTile(
-                  title: Text(feed['name'] ?? '', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                  subtitle: Text(feed['key'] ?? '', style: const TextStyle(color: Colors.white70)),
-                  trailing: const Icon(Icons.check_circle_outline, color: AppTheme.primaryCyan),
+                  title: Text(feed['name'] ?? '', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  subtitle: Text(feed['key'] ?? '', style: TextStyle(color: Colors.white70)),
+                  trailing: Icon(Icons.check_circle_outline, color: AppTheme.primaryCyan),
                   onTap: () {
                     setState(() {
                       _feedCtrl.text = feed['key'];
@@ -385,7 +389,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('إلغاء', style: TextStyle(color: Colors.grey)),
+              child: Text('إلغاء', style: TextStyle(color: Colors.grey)),
             )
           ],
         ),
@@ -402,7 +406,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan)),
+      builder: (context) => Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan)),
     );
 
     try {
@@ -422,14 +426,14 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
           surfaceTintColor: Colors.transparent,
           title: Text(
             isArabic ? 'اختر المسار من Firebase' : 'Select Firebase Path',
-            style: const TextStyle(color: AppTheme.primaryCyan),
+            style: TextStyle(color: AppTheme.primaryCyan),
           ),
           content: SizedBox(
             width: double.maxFinite,
             height: 400,
             child: ListView.separated(
               itemCount: paths.length,
-              separatorBuilder: (_, __) => const Divider(color: Colors.white12, height: 1),
+              separatorBuilder: (_, __) => Divider(color: Colors.white12, height: 1),
               itemBuilder: (context, index) {
                 final item = paths[index];
                 final path = item['path'] ?? '';
@@ -445,11 +449,11 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                   ),
                   title: Text(
                     path.split('/').last,
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
                   ),
                   subtitle: Text(
                     '/$path',
-                    style: const TextStyle(color: Colors.white38, fontSize: 11),
+                    style: TextStyle(color: Colors.white38, fontSize: 11),
                   ),
                   trailing: Icon(
                     hasChildren ? Icons.subdirectory_arrow_right : Icons.check_circle_outline,
@@ -472,7 +476,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(isArabic ? 'إلغاء' : 'Cancel', style: const TextStyle(color: Colors.grey)),
+              child: Text(isArabic ? 'إلغاء' : 'Cancel', style: TextStyle(color: Colors.grey)),
             )
           ],
         ),
@@ -494,18 +498,18 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           isArabic ? 'تأكيد الحذف' : 'Confirm Deletion',
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         content: Text(
           isArabic ? 'هل أنت متأكد من رغبتك في حذف أداة التحكم هذه؟' : 'Are you sure you want to delete this control widget?',
-          style: const TextStyle(color: Colors.white70),
+          style: TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
               isArabic ? 'إلغاء' : 'Cancel',
-              style: const TextStyle(color: Colors.grey),
+              style: TextStyle(color: Colors.grey),
             ),
           ),
           ElevatedButton(
@@ -519,7 +523,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
             },
             child: Text(
               isArabic ? 'حذف' : 'Delete',
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -540,7 +544,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
         actions: [
           if (_editingWidgetId != null)
             IconButton(
-              icon: const Icon(Icons.close, color: Colors.white),
+              icon: Icon(Icons.close, color: Colors.white),
               onPressed: () {
                 setState(() {
                   _editingWidgetId = null;
@@ -568,11 +572,11 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
           dividerColor: Colors.transparent,
           tabs: [
             Tab(
-              icon: const Icon(Icons.add_box_rounded),
+              icon: Icon(Icons.add_box_rounded),
               text: isArabic ? 'أداة جديدة' : 'New Widget',
             ),
             Tab(
-              icon: const Icon(Icons.widgets_rounded),
+              icon: Icon(Icons.widgets_rounded),
               text: isArabic ? 'أدواتي الحالية' : 'My Widgets',
             ),
           ],
@@ -598,7 +602,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
             isArabic ? 'بيانات الأداة الأساسية' : 'Core Widget Settings',
             [
               _buildTextField(AppLocalization.get('widget_name'), _nameCtrl, Icons.widgets, key: _nameKey),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               // Show dropdown only if they have BOTH providers or NEITHER provider
               if ((_hasAdafruit && _hasFirebase) || (!_hasAdafruit && !_hasFirebase))
                 Container(
@@ -614,15 +618,15 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                       isExpanded: true,
                       dropdownColor: AppTheme.darkBackground,
                       value: _selectedProvider,
-                      icon: const Icon(Icons.arrow_drop_down, color: Colors.white54),
+                      icon: Icon(Icons.arrow_drop_down, color: Colors.white54),
                       items: [
                         DropdownMenuItem(
                           value: 'adafruit',
-                          child: Text(AppLocalization.get('provider_adafruit'), style: const TextStyle(color: Colors.white)),
+                          child: Text(AppLocalization.get('provider_adafruit'), style: TextStyle(color: Colors.white)),
                         ),
                         DropdownMenuItem(
                           value: 'firebase',
-                          child: Text(AppLocalization.get('provider_firebase'), style: const TextStyle(color: Colors.white)),
+                          child: Text(AppLocalization.get('provider_firebase'), style: TextStyle(color: Colors.white)),
                         ),
                       ],
                       onChanged: (v) => setState(() => _selectedProvider = v!),
@@ -641,13 +645,13 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                   child: Row(
                     children: [
                       Icon(_selectedProvider == 'firebase' ? Icons.storage : Icons.cloud_sync, color: AppTheme.primaryCyan, size: 20),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Text(
                         _selectedProvider == 'firebase' ? AppLocalization.get('provider_firebase') : AppLocalization.get('provider_adafruit'),
-                        style: const TextStyle(color: Colors.white, fontSize: 16),
+                        style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
                       const Spacer(),
-                      const Icon(Icons.check_circle, color: AppTheme.primaryCyan, size: 20),
+                      Icon(Icons.check_circle, color: AppTheme.primaryCyan, size: 20),
                     ],
                   ),
                 ),
@@ -657,7 +661,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                     child: _buildTextField(AppLocalization.get('feed_name'), _feedCtrl, Icons.rss_feed, key: _feedKey),
                   ),
                   if (_selectedProvider == 'adafruit') ...[
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Container(
                       decoration: BoxDecoration(
                         color: AppTheme.primaryCyan.withValues(alpha: 0.1),
@@ -665,14 +669,14 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                         border: Border.all(color: AppTheme.primaryCyan.withValues(alpha: 0.5)),
                       ),
                       child: IconButton(
-                        icon: const Icon(Icons.search, color: AppTheme.primaryCyan),
+                        icon: Icon(Icons.search, color: AppTheme.primaryCyan),
                         tooltip: isArabic ? 'اختر مجرى (Feed)' : 'Select Feed',
                         onPressed: _showFeedsDialog,
                       ),
                     ),
                   ],
                   if (_selectedProvider == 'firebase') ...[
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.orangeAccent.withValues(alpha: 0.1),
@@ -680,7 +684,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                         border: Border.all(color: Colors.orangeAccent.withValues(alpha: 0.5)),
                       ),
                       child: IconButton(
-                        icon: const Icon(Icons.account_tree_outlined, color: Colors.orangeAccent),
+                        icon: Icon(Icons.account_tree_outlined, color: Colors.orangeAccent),
                         tooltip: isArabic ? 'استعراض مسارات Firebase' : 'Browse Firebase Paths',
                         onPressed: _showFirebasePathsDialog,
                       ),
@@ -688,7 +692,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                   ],
                 ],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Theme(
                 data: Theme.of(context).copyWith(
                   canvasColor: const Color(0xFF1A1F26),
@@ -696,48 +700,48 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                 child: DropdownButtonFormField<String>(
                   key: _typeKey,
                   value: _selectedType,
-                  style: const TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold, fontSize: 16),
-                  icon: const Icon(Icons.arrow_drop_down_circle, color: AppTheme.primaryCyan),
+                  style: TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold, fontSize: 16),
+                  icon: Icon(Icons.arrow_drop_down_circle, color: AppTheme.primaryCyan),
                   decoration: InputDecoration(
                     labelText: AppLocalization.get('widget_type'),
-                    labelStyle: const TextStyle(color: AppTheme.primaryCyan, fontSize: 16, fontWeight: FontWeight.bold),
-                    prefixIcon: const Icon(Icons.category, color: AppTheme.primaryCyan),
+                    labelStyle: TextStyle(color: AppTheme.primaryCyan, fontSize: 16, fontWeight: FontWeight.bold),
+                    prefixIcon: Icon(Icons.category, color: AppTheme.primaryCyan),
                     filled: true,
                     fillColor: Colors.black26,
-                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: AppTheme.primaryCyan, width: 1.5)),
-                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: AppTheme.primaryCyan, width: 2.5)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide(color: AppTheme.primaryCyan, width: 1.5)),
+                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide(color: AppTheme.primaryCyan, width: 2.5)),
                   ),
                   items: _types.map((type) => DropdownMenuItem(
                     value: type, 
-                    child: Text(type, style: const TextStyle(color: Colors.white, fontSize: 16))
+                    child: Text(type, style: TextStyle(color: Colors.white, fontSize: 16))
                   )).toList(),
                   onChanged: (val) => setState(() => _selectedType = val!),
                 ),
               ),
               if (_pages.isNotEmpty) ...[
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Theme(
                   data: Theme.of(context).copyWith(
                     canvasColor: const Color(0xFF1A1F26),
                   ),
                   child: DropdownButtonFormField<String>(
                     value: _selectedPageId,
-                    style: const TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold, fontSize: 16),
-                    icon: const Icon(Icons.arrow_drop_down_circle, color: AppTheme.primaryCyan),
+                    style: TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold, fontSize: 16),
+                    icon: Icon(Icons.arrow_drop_down_circle, color: AppTheme.primaryCyan),
                     decoration: InputDecoration(
                       labelText: isArabic ? 'اختر الصفحة (اختياري)' : 'Select Page (Optional)',
-                      labelStyle: const TextStyle(color: AppTheme.primaryCyan, fontSize: 16, fontWeight: FontWeight.bold),
-                      prefixIcon: const Icon(Icons.pages, color: AppTheme.primaryCyan),
+                      labelStyle: TextStyle(color: AppTheme.primaryCyan, fontSize: 16, fontWeight: FontWeight.bold),
+                      prefixIcon: Icon(Icons.pages, color: AppTheme.primaryCyan),
                       filled: true,
                       fillColor: Colors.black26,
-                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: AppTheme.primaryCyan, width: 1.5)),
-                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: AppTheme.primaryCyan, width: 2.5)),
+                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide(color: AppTheme.primaryCyan, width: 1.5)),
+                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide(color: AppTheme.primaryCyan, width: 2.5)),
                     ),
                     items: [
-                      DropdownMenuItem(value: null, child: Text(isArabic ? 'بدون صفحة' : 'None', style: const TextStyle(color: Colors.white, fontSize: 16))),
+                      DropdownMenuItem(value: null, child: Text(isArabic ? 'بدون صفحة' : 'None', style: TextStyle(color: Colors.white, fontSize: 16))),
                       ..._pages.map((p) => DropdownMenuItem(
                         value: p['id'].toString(), 
-                        child: Text(p['name'].toString(), style: const TextStyle(color: Colors.white, fontSize: 16))
+                        child: Text(p['name'].toString(), style: TextStyle(color: Colors.white, fontSize: 16))
                       ))
                     ],
                     onChanged: (val) => setState(() => _selectedPageId = val),
@@ -747,7 +751,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
             ],
           ),
           
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           
           if (_selectedType == 'Toggle' || _selectedType == 'Push' || _selectedType == 'Joystick' || _selectedType == 'Sensor' || _selectedType == 'Slider' || _selectedType == 'Chart')
             _buildGlassSection(
@@ -756,7 +760,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                 if (_selectedType == 'Toggle' || _selectedType == 'Push') ...[
                   _buildTextField('ON Command', _onCmdCtrl, Icons.power),
                   if (_selectedType == 'Toggle') ...[
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     _buildTextField('OFF Command', _offCmdCtrl, Icons.power_off),
                   ]
                 ],
@@ -764,14 +768,14 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                   _buildTextField('Unit (e.g. °C, %)', _unitCtrl, Icons.square_foot),
                 if (_selectedType == 'Slider' || _selectedType == 'Chart') ...[
                   _buildTextField(AppLocalization.get('min_value'), _minCtrl, Icons.arrow_downward, isNumber: true),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   _buildTextField(AppLocalization.get('max_value'), _maxCtrl, Icons.arrow_upward, isNumber: true),
                 ]
               ],
             ),
             
           if (_selectedType == 'Toggle' || _selectedType == 'Push' || _selectedType == 'Joystick' || _selectedType == 'Sensor' || _selectedType == 'Slider' || _selectedType == 'Chart')
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
           if (_selectedType == 'Toggle' || _selectedType == 'Push' || _selectedType == 'Slider') ...[
             _buildGlassSection(
@@ -780,7 +784,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                 SwitchListTile(
                   title: Text(
                     isArabic ? 'تفعيل الإشعار المخصص عند تغير القيمة' : 'Enable custom notification on change',
-                    style: const TextStyle(color: Colors.white, fontSize: 13),
+                    style: TextStyle(color: Colors.white, fontSize: 13),
                   ),
                   activeColor: AppTheme.primaryCyan,
                   value: _enableAutomation,
@@ -793,19 +797,19 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                   }),
                 ),
                 if (_enableAutomation) ...[
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   if (_selectedType == 'Toggle' || _selectedType == 'Push')
                     Theme(
                       data: Theme.of(context).copyWith(canvasColor: const Color(0xFF1A1F26)),
                       child: DropdownButtonFormField<String>(
                         value: _automationValueCtrl.text.isEmpty ? _onCmdCtrl.text : _automationValueCtrl.text,
-                        style: const TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                           labelText: isArabic ? 'عندما تصبح القيمة' : 'When value becomes',
-                          labelStyle: const TextStyle(color: Colors.white54),
-                          prefixIcon: const Icon(Icons.touch_app, color: Colors.white54),
-                          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.white24)),
-                          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppTheme.primaryCyan)),
+                          labelStyle: TextStyle(color: Colors.white54),
+                          prefixIcon: Icon(Icons.touch_app, color: Colors.white54),
+                          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white24)),
+                          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppTheme.primaryCyan)),
                         ),
                         items: [
                           DropdownMenuItem(value: _onCmdCtrl.text, child: Text('On (${_onCmdCtrl.text})')),
@@ -818,36 +822,36 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                   else if (_selectedType == 'Slider')
                     _buildTextField(isArabic ? 'عندما يصبح السلايدر بقيمة' : 'When slider value is', _automationValueCtrl, Icons.tune, isNumber: true),
                   
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   _buildTextField(isArabic ? 'نص رسالة الإشعار' : 'Alert notification text', _automationMsgCtrl, Icons.notifications_active),
                 ]
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
           ],
           
           _buildGlassSection(
             isArabic ? 'إعدادات NFC' : 'NFC Configuration',
             [
               SwitchListTile(
-                title: Text(isArabic ? 'تفعيل التحكم عبر NFC' : 'Enable NFC Control', style: const TextStyle(color: Colors.white, fontSize: 13)),
+                title: Text(isArabic ? 'تفعيل التحكم عبر NFC' : 'Enable NFC Control', style: TextStyle(color: Colors.white, fontSize: 13)),
                 activeColor: AppTheme.primaryCyan,
                 value: _enableNfcControl,
                 contentPadding: EdgeInsets.zero,
                 onChanged: (val) => setState(() => _enableNfcControl = val),
               ),
               if (_enableNfcControl) ...[
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 SwitchListTile(
-                  title: Text(isArabic ? 'التحكم عبر NFC فقط (إيقاف Cloud)' : 'NFC Control Only (Disable Cloud)', style: const TextStyle(color: Colors.white, fontSize: 13)),
+                  title: Text(isArabic ? 'التحكم عبر NFC فقط (إيقاف Cloud)' : 'NFC Control Only (Disable Cloud)', style: TextStyle(color: Colors.white, fontSize: 13)),
                   activeColor: AppTheme.primaryCyan,
                   value: _nfcOnly,
                   contentPadding: EdgeInsets.zero,
                   onChanged: (val) => setState(() => _nfcOnly = val),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 _buildTextField(isArabic ? 'اسم الأداة في جهاز القارئ' : 'Tool Name on Reader Device', _nfcToolNameCtrl, Icons.memory),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Row(
                   children: [
                     Expanded(
@@ -860,7 +864,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                     ),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryCyan, foregroundColor: Colors.black),
-                      icon: const Icon(Icons.contactless, size: 16),
+                      icon: Icon(Icons.contactless, size: 16),
                       label: Text(isArabic ? 'إعداد الآن' : 'Setup Now'),
                       onPressed: _setupNfc,
                     )
@@ -871,12 +875,12 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
           ),
           
           if (_selectedType != 'Slider' && _selectedType != 'Joystick' && _selectedType != 'ColorPicker') ...[
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             _buildGlassSection(
               isArabic ? 'إعدادات الحماية (البصمة/الوجه)' : 'Security (Biometrics/Face ID)',
               [
                 SwitchListTile(
-                  title: Text(isArabic ? 'طلب المصادقة قبل الإرسال' : 'Require Authentication before send', style: const TextStyle(color: Colors.white, fontSize: 13)),
+                  title: Text(isArabic ? 'طلب المصادقة قبل الإرسال' : 'Require Authentication before send', style: TextStyle(color: Colors.white, fontSize: 13)),
                   activeColor: AppTheme.primaryCyan,
                   value: _requireBiometric,
                   contentPadding: EdgeInsets.zero,
@@ -885,13 +889,13 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
               ]
             ),
           ],
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           _buildGlassSection(
             AppLocalization.get('appearance'),
             [
-              Text(AppLocalization.get('primary_color'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
-              const SizedBox(height: 12),
+              Text(AppLocalization.get('primary_color'), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+              SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: _swatches.map((color) => GestureDetector(
@@ -899,14 +903,14 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                   child: CircleAvatar(
                     backgroundColor: color,
                     radius: 22,
-                    child: _selectedPrimary == color ? const Icon(Icons.check, color: Colors.black, size: 20) : null,
+                    child: _selectedPrimary == color ? Icon(Icons.check, color: Colors.black, size: 20) : null,
                   ),
                 )).toList()
               )
             ],
           ),
           
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           
           GestureDetector(
             key: _saveButtonKey,
@@ -914,7 +918,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
+                gradient: LinearGradient(
                   colors: [AppTheme.primaryCyan, AppTheme.primaryViolet],
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
@@ -935,18 +939,18 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                     _editingWidgetId == null ? Icons.add_circle : Icons.save,
                     color: Colors.black,
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Text(
                     _editingWidgetId == null 
                         ? (isArabic ? 'إنشاء أداة تحكم جديدة' : 'Create Control Widget')
                         : (isArabic ? 'حفظ تعديلات الأداة' : 'Save Changes'),
-                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
+                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 32),
+          SizedBox(height: 32),
         ],
       ),
     );
@@ -954,19 +958,19 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
 
   Widget _buildExistingWidgetsTab(bool isArabic) {
     return _isLoadingList 
-       ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan))
+       ? Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan))
        : _existingWidgets.isEmpty 
           ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.widgets_outlined, size: 80, color: Colors.white.withValues(alpha: 0.2)),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Text(
                     AppLocalization.get('no_widgets_yet'), 
-                    style: const TextStyle(color: Colors.white54, fontSize: 16),
+                    style: TextStyle(color: Colors.white54, fontSize: 16),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.primaryCyan,
@@ -974,7 +978,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    icon: const Icon(Icons.add),
+                    icon: Icon(Icons.add),
                     label: Text(isArabic ? 'إنشاء أداة الآن' : 'Create a widget now'),
                     onPressed: () => _tabController?.animateTo(0),
                   ),
@@ -984,7 +988,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
           : ListView.separated(
                padding: const EdgeInsets.all(16),
                itemCount: _existingWidgets.length,
-               separatorBuilder: (_, __) => const SizedBox(height: 12),
+               separatorBuilder: (_, __) => SizedBox(height: 12),
                itemBuilder: (context, index) {
                   final w = _existingWidgets[index];
                   final color = _hexToColor(w['appearance']?['primaryColor']);
@@ -1024,13 +1028,13 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                         ),
                         title: Text(
                           w['name'] ?? '', 
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                         subtitle: Padding(
                           padding: const EdgeInsets.only(top: 4),
                           child: Text(
                             '${type.toUpperCase()} • Feed: ${w["feedName"]}', 
-                            style: const TextStyle(color: Colors.white38, fontSize: 12),
+                            style: TextStyle(color: Colors.white38, fontSize: 12),
                           ),
                         ),
                         trailing: Row(
@@ -1043,7 +1047,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                                   shape: BoxShape.circle,
                                 ),
                                 child: IconButton(
-                                  icon: const Icon(Icons.push_pin_outlined, color: AppTheme.primaryViolet), 
+                                  icon: Icon(Icons.push_pin_outlined, color: AppTheme.primaryViolet), 
                                   onPressed: () {
                                     showDialog(
                                       context: context,
@@ -1051,20 +1055,20 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                                         backgroundColor: const Color(0xFF15132C),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(16),
-                                          side: const BorderSide(color: AppTheme.primaryCyan, width: 1),
+                                          side: BorderSide(color: AppTheme.primaryCyan, width: 1),
                                         ),
                                         title: Text(
                                           isArabic ? 'اختر حجم الأداة' : 'Select Widget Size',
-                                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                                         ),
                                         content: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             ListTile(
-                                              leading: const Icon(Icons.space_dashboard_outlined, color: AppTheme.primaryCyan),
+                                              leading: Icon(Icons.space_dashboard_outlined, color: AppTheme.primaryCyan),
                                               title: Text(
                                                 isArabic ? 'ودجت صغير (2x1)' : 'Small Widget (2x1)',
-                                                style: const TextStyle(color: Colors.white),
+                                                style: TextStyle(color: Colors.white),
                                               ),
                                               onTap: () async {
                                                 Navigator.pop(ctx);
@@ -1092,12 +1096,12 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                                                 }
                                               },
                                             ),
-                                            const Divider(color: Colors.white24),
+                                            Divider(color: Colors.white24),
                                             ListTile(
-                                              leading: const Icon(Icons.dashboard, color: AppTheme.primaryViolet),
+                                              leading: Icon(Icons.dashboard, color: AppTheme.primaryViolet),
                                               title: Text(
                                                 isArabic ? 'ودجت متوسط (2x2)' : 'Medium Widget (2x2)',
-                                                style: const TextStyle(color: Colors.white),
+                                                style: TextStyle(color: Colors.white),
                                               ),
                                               onTap: () async {
                                                 Navigator.pop(ctx);
@@ -1132,25 +1136,25 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
                                   },
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              SizedBox(width: 8),
                               Container(
                                 decoration: BoxDecoration(
                                   color: AppTheme.primaryCyan.withValues(alpha: 0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: IconButton(
-                                   icon: const Icon(Icons.edit_rounded, color: AppTheme.primaryCyan), 
+                                   icon: Icon(Icons.edit_rounded, color: AppTheme.primaryCyan), 
                                    onPressed: () => _fillFormForEditing(w)
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              SizedBox(width: 8),
                               Container(
                                 decoration: BoxDecoration(
                                   color: Colors.redAccent.withValues(alpha: 0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: IconButton(
-                                   icon: const Icon(Icons.delete_rounded, color: Colors.redAccent), 
+                                   icon: Icon(Icons.delete_rounded, color: Colors.redAccent), 
                                    onPressed: () => _showDeleteConfirm(w['id'])
                                 ),
                               ),
@@ -1181,8 +1185,8 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
         child: Column(
            crossAxisAlignment: CrossAxisAlignment.start,
            children: [
-              Text(title, style: const TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
+              Text(title, style: TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold)),
+              SizedBox(height: 16),
               ...children
            ],
         ),
@@ -1194,13 +1198,13 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
         key: key,
         controller: ctrl,
         keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-        style: const TextStyle(color: Colors.white),
+        style: TextStyle(color: Colors.white),
         decoration: InputDecoration(
            labelText: label,
-           labelStyle: const TextStyle(color: Colors.white54),
+           labelStyle: TextStyle(color: Colors.white54),
            prefixIcon: Icon(icon, color: Colors.white54),
-           enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.white24)),
-           focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppTheme.primaryCyan)),
+           enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white24)),
+           focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppTheme.primaryCyan)),
         ),
      );
   }

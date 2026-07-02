@@ -26,7 +26,7 @@ class AiFloatingButton extends StatelessWidget {
         height: 56,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             colors: [Color(0xFF8A2BE2), Color(0xFF00E5FF)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -39,7 +39,7 @@ class AiFloatingButton extends StatelessWidget {
             )
           ]
         ),
-        child: const Icon(Icons.auto_awesome, color: Colors.white, size: 28),
+        child: Icon(Icons.auto_awesome, color: Colors.white, size: 28),
       ),
     );
   }

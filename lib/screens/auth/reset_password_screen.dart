@@ -61,7 +61,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
-      appBar: AppBar(title: const Text('NEW PASSWORD')),
+      appBar: AppBar(title: Text('NEW PASSWORD')),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -72,37 +72,37 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.lock_reset, size: 64, color: AppTheme.primaryViolet),
-                  const SizedBox(height: 16),
+                  Icon(Icons.lock_reset, size: 64, color: AppTheme.primaryViolet),
+                  SizedBox(height: 16),
                   Text('We sent a 6-digit code to\n${widget.email}',
-                     textAlign: TextAlign.center, style: const TextStyle(color: Colors.white70)),
-                  const SizedBox(height: 32),
+                     textAlign: TextAlign.center, style: TextStyle(color: Colors.white70)),
+                  SizedBox(height: 32),
                   TextField(
                     controller: _codeCtrl,
                     keyboardType: TextInputType.number,
-                    style: const TextStyle(color: Colors.white, fontSize: 24, letterSpacing: 8),
+                    style: TextStyle(color: Colors.white, fontSize: 24, letterSpacing: 8),
                     textAlign: TextAlign.center,
                     decoration: InputDecoration(
                       hintText: '000000',
-                      hintStyle: const TextStyle(color: Colors.white24),
-                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.white24)),
-                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppTheme.primaryCyan)),
+                      hintStyle: TextStyle(color: Colors.white24),
+                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white24)),
+                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppTheme.primaryCyan)),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                   TextField(
                     controller: _passwordCtrl,
                     obscureText: true,
-                    style: const TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       labelText: 'New Password',
-                      labelStyle: const TextStyle(color: Colors.white54),
-                      prefixIcon: const Icon(Icons.lock, color: Colors.white54),
-                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.white24)),
-                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppTheme.primaryCyan)),
+                      labelStyle: TextStyle(color: Colors.white54),
+                      prefixIcon: Icon(Icons.lock, color: Colors.white54),
+                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white24)),
+                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppTheme.primaryCyan)),
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32),
                   SizedBox(
                     width: double.infinity,
                     height: 50,
@@ -114,8 +114,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ),
                       onPressed: _isLoading ? null : _resetPassword,
                       child: _isLoading 
-                          ? const CircularProgressIndicator(color: Colors.black) 
-                          : const Text('Update Password', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                          ? CircularProgressIndicator(color: Colors.black) 
+                          : Text('Update Password', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     ),
                   ),
                 ],

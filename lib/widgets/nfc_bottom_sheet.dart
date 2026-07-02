@@ -111,27 +111,27 @@ class _NfcBottomSheetState extends State<NfcBottomSheet> {
   Widget _buildIcon() {
     switch (_state) {
       case NfcSheetState.waiting:
-        return const SizedBox(
+        return SizedBox(
           height: 150,
           child: _PhoneTapAnimation(),
         );
       case NfcSheetState.processing:
-        return const SizedBox(
+        return SizedBox(
           height: 150,
           child: Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan)),
         );
       case NfcSheetState.success:
-        return const SizedBox(
+        return SizedBox(
           height: 150,
           child: _SuccessCheckAnimation(),
         );
       case NfcSheetState.error:
-        return const SizedBox(
+        return SizedBox(
           height: 150,
           child: Icon(Icons.error_outline, size: 100, color: Colors.redAccent),
         );
       case NfcSheetState.disabled:
-        return const SizedBox(
+        return SizedBox(
           height: 150,
           child: Icon(Icons.nfc_outlined, size: 100, color: Colors.orangeAccent),
         );
@@ -176,16 +176,16 @@ class _NfcBottomSheetState extends State<NfcBottomSheet> {
                   borderRadius: BorderRadius.circular(2.5),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               Text(
                 widget.title,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text(
                 _getStatusText(),
                 textAlign: TextAlign.center,
@@ -194,9 +194,9 @@ class _NfcBottomSheetState extends State<NfcBottomSheet> {
                   fontSize: 16,
                 ),
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
               _buildIcon(),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
               if (_state == NfcSheetState.error)
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -213,7 +213,7 @@ class _NfcBottomSheetState extends State<NfcBottomSheet> {
                     });
                     _startNfc();
                   },
-                  child: const Text('Retry', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: Text('Retry', style: TextStyle(fontWeight: FontWeight.bold)),
                 )
               else if (_state == NfcSheetState.disabled)
                 ElevatedButton.icon(
@@ -231,11 +231,11 @@ class _NfcBottomSheetState extends State<NfcBottomSheet> {
                     setState(() => _state = NfcSheetState.processing);
                     _startNfc();
                   },
-                  icon: const Icon(Icons.settings),
-                  label: Text(AppLocalization.isArabicNotifier.value ? 'تفعيل NFC' : 'Enable NFC', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  icon: Icon(Icons.settings),
+                  label: Text(AppLocalization.isArabicNotifier.value ? 'تفعيل NFC' : 'Enable NFC', style: TextStyle(fontWeight: FontWeight.bold)),
                 )
               else
-                const SizedBox(height: 48), // Padding equivalent
+                SizedBox(height: 48), // Padding equivalent
             ],
           ),
         ),
@@ -327,7 +327,7 @@ class _PhoneTapAnimationState extends State<_PhoneTapAnimation> with SingleTicke
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(18),
-                          gradient: const LinearGradient(
+                          gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
@@ -378,7 +378,7 @@ class _PhoneTapAnimationState extends State<_PhoneTapAnimation> with SingleTicke
                           width: 60,
                           height: 38,
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
+                            gradient: LinearGradient(
                               colors: [Color(0xFF00C6FF), Color(0xFF0072FF)], // Vibrant card colors
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
@@ -392,7 +392,7 @@ class _PhoneTapAnimationState extends State<_PhoneTapAnimation> with SingleTicke
                               )
                             ]
                           ),
-                          child: const Center(
+                          child: Center(
                             child: Icon(Icons.contactless, color: Colors.white, size: 20),
                           ),
                         ),

@@ -98,10 +98,10 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     return TextField(
       controller: controller,
       obscureText: isPassword,
-      style: const TextStyle(color: Colors.white),
+      style: TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: Colors.white54),
+        labelStyle: TextStyle(color: Colors.white54),
         prefixIcon: Icon(icon, color: AppTheme.primaryCyan),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -109,11 +109,11 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppTheme.glassBorder),
+          borderSide: BorderSide(color: AppTheme.glassBorder),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppTheme.primaryCyan, width: 2),
+          borderSide: BorderSide(color: AppTheme.primaryCyan, width: 2),
         ),
         filled: true,
         fillColor: AppTheme.cardBaseColor.withValues(alpha: 0.3),
@@ -145,17 +145,17 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       radius: 50, 
                       backgroundColor: AppTheme.primaryViolet, 
                       backgroundImage: (_googleProfilePicture != null && _googleProfilePicture!.startsWith('http')) ? NetworkImage(_googleProfilePicture!) : null,
-                      child: (_googleProfilePicture == null || !_googleProfilePicture!.startsWith('http')) ? const Icon(Icons.person, size: 50, color: Colors.white) : null
+                      child: (_googleProfilePicture == null || !_googleProfilePicture!.startsWith('http')) ? Icon(Icons.person, size: 50, color: Colors.white) : null
                     ),
                   ),
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
                 _buildTextField(AppLocalization.get('username'), _usernameCtrl, Icons.person_outline),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 _buildTextField(AppLocalization.get('email'), _emailCtrl, Icons.email_outlined),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 _buildTextField(AppLocalization.get('new_password_optional'), _passCtrl, Icons.lock_outline, isPassword: true),
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryCyan,
@@ -168,7 +168,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   onPressed: _isLoading ? null : _updateProfile,
                   child: Text(
                     AppLocalization.get('update_profile'),
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 )
               ],
@@ -177,7 +177,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           if (_isLoading)
             Container(
               color: Colors.black54,
-              child: const Center(
+              child: Center(
                 child: CircularProgressIndicator(color: AppTheme.primaryCyan),
               ),
             ),

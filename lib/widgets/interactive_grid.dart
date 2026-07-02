@@ -457,7 +457,7 @@ class _DragHandle extends StatelessWidget {
             end: Alignment.bottomCenter,
           ),
         ),
-        child: const Center(
+        child: Center(
           child: Icon(
             Icons.drag_handle_rounded,
             size: 20,
@@ -534,7 +534,7 @@ class _ResizeHandleState extends State<_ResizeHandle> {
               ),
             ],
           ),
-          child: const Icon(
+          child: Icon(
             Icons.zoom_out_map_rounded,
             size: 15,
             color: Color(0xFF00E5FF),

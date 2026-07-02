@@ -181,10 +181,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
       appBar: AppBar(
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
         leading: _selectedViewIndex > 0
             ? IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                icon: Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () => setState(() => _selectedViewIndex = 0),
               )
             : null,
@@ -199,13 +199,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh, color: AppTheme.primaryCyan),
+            icon: Icon(Icons.refresh, color: AppTheme.primaryCyan),
             onPressed: _loadAllData,
           ),
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan))
+          ? Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan))
           : _selectedViewIndex == 0
               ? _buildAdminHomeHub()
               : _buildActiveView(),
@@ -264,18 +264,18 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                     color: AppTheme.primaryCyan.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.admin_panel_settings, color: AppTheme.primaryCyan, size: 36),
+                  child: Icon(Icons.admin_panel_settings, color: AppTheme.primaryCyan, size: 36),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         AppLocalization.isArabicNotifier.value ? 'لوحة التحكم والعمليات' : 'Control Center & Operations',
-                        style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Text(
                         AppLocalization.isArabicNotifier.value 
                             ? 'إدارة النظام والأمان وحصص الأداة والاتصال في مكان واحد.' 
@@ -288,14 +288,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // Overview Stats Grid
           Text(
             AppLocalization.isArabicNotifier.value ? 'نظرة عامة على النظام' : 'System Overview',
-            style: const TextStyle(color: Colors.white54, fontSize: 13, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.white54, fontSize: 13, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           GridView.count(
             crossAxisCount: 2,
             shrinkWrap: true,
@@ -330,17 +330,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _buildFirebaseQuotaCard(),
-          const SizedBox(height: 28),
+          SizedBox(height: 28),
 
 
           // Operations Menu Grid
           Text(
             AppLocalization.isArabicNotifier.value ? '👥 إدارة المستخدمين والأمان' : '👥 Users & Security',
-            style: const TextStyle(color: Colors.white54, fontSize: 13, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.white54, fontSize: 13, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           ListView(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -354,7 +354,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                 icon: Icons.people,
                 color: AppTheme.primaryCyan,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               _buildOperationTile(
                 index: 7,
                 title: AppLocalization.isArabicNotifier.value ? 'أكواد الموزعين والشركاء' : 'Sub-Admin Promo Keys',
@@ -364,7 +364,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                 icon: Icons.key_rounded,
                 color: const Color(0xFF00FFCC),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               _buildOperationTile(
                 index: 5,
                 title: AppLocalization.get('banned_users') ?? 'قائمة الأجهزة المحظورة',
@@ -374,7 +374,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                 icon: Icons.block,
                 color: Colors.redAccent,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               _buildOperationTile(
                 index: 3,
                 title: AppLocalization.get('notifications') ?? 'بث الإعلانات والإشعارات',
@@ -386,12 +386,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           Text(
             AppLocalization.isArabicNotifier.value ? '⚙️ النظام والأداء' : '⚙️ System & Performance',
-            style: const TextStyle(color: Colors.white54, fontSize: 13, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.white54, fontSize: 13, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           ListView(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -405,7 +405,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                 icon: Icons.terminal,
                 color: Colors.orangeAccent,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               _buildOperationTile(
                 index: 4,
                 title: AppLocalization.get('quota') ?? 'استهلاك وحصص الأداة',
@@ -415,7 +415,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                 icon: Icons.cloud_sync,
                 color: Colors.greenAccent,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               _buildOperationTile(
                 index: 6,
                 title: AppLocalization.get('admin_automations') ?? 'الأتمتة وتوفير الطاقة',
@@ -427,7 +427,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
               ),
             ],
           ),
-          const SizedBox(height: 40),
+          SizedBox(height: 40),
         ],
       ),
     );
@@ -449,12 +449,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
             children: [
               Text(
                 value,
-                style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
               ),
               Icon(icon, color: color.withValues(alpha: 0.8), size: 20),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(
             label,
             style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 11),
@@ -489,7 +489,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
             ),
             child: Icon(icon, color: color, size: 28),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -498,10 +498,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                   label,
                   style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   value,
-                  style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -537,7 +537,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
         ),
         title: Text(
           title,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4.0),
@@ -555,7 +555,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
   // ==================== TAB 1: USERS ====================
   Widget _buildUsersTab() {
     if (_users.isEmpty) {
-      return Center(child: Text(AppLocalization.get('no_users'), style: const TextStyle(color: Colors.white54)));
+      return Center(child: Text(AppLocalization.get('no_users'), style: TextStyle(color: Colors.white54)));
     }
     return RefreshIndicator(
       onRefresh: _loadAllData,
@@ -640,10 +640,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                       children: [
                         Text(
                           user['username'] ?? 'Unknown',
-                          style: const TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold, fontSize: 15),
+                          style: TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold, fontSize: 15),
                         ),
-                        const SizedBox(width: 6),
-                        const Icon(Icons.open_in_new, color: AppTheme.primaryCyan, size: 14),
+                        SizedBox(width: 6),
+                        Icon(Icons.open_in_new, color: AppTheme.primaryCyan, size: 14),
                       ],
                     ),
                   ),
@@ -662,7 +662,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                       style: TextStyle(color: isActive ? Colors.greenAccent : Colors.redAccent, fontSize: 11),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
@@ -681,8 +681,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                       )
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Text('${user['widgetCount'] ?? 0} ${AppLocalization.get('widgets')}', style: const TextStyle(color: Colors.white38, fontSize: 11)),
+                  SizedBox(width: 8),
+                  Text('${user['widgetCount'] ?? 0} ${AppLocalization.get('widgets')}', style: TextStyle(color: Colors.white38, fontSize: 11)),
                 ],
               ),
               iconColor: Colors.white54,
@@ -693,15 +693,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Divider(color: Colors.white12),
-                      Text('📧 ${user['email'] ?? ''}', style: const TextStyle(color: Colors.white54, fontSize: 12)),
-                      const SizedBox(height: 8),
-                      Text('📅 تاريخ الانضمام: ${_formatDate(user['createdAt'])}', style: const TextStyle(color: Colors.white54, fontSize: 11)),
-                      Text('⏱️ آخر ظهور: ${_formatDate(user['lastActive'] ?? user['lastLogin'])}', style: const TextStyle(color: Colors.white54, fontSize: 11)),
-                      Text('🌐 المنصة: $platformStr', style: const TextStyle(color: Colors.white54, fontSize: 11)),
-                      Text('🗄️ قاعدة البيانات: $backendStr', style: const TextStyle(color: Colors.white54, fontSize: 11)),
-                      Text('🔗 مربوط بـ: ${user['parentAdminName'] ?? user['parentAdminEmail'] ?? user['parentAdminId'] ?? 'المدير العام'}', style: const TextStyle(color: Colors.white54, fontSize: 11)),
-                      const SizedBox(height: 12),
+                      Divider(color: Colors.white12),
+                      Text('📧 ${user['email'] ?? ''}', style: TextStyle(color: Colors.white54, fontSize: 12)),
+                      SizedBox(height: 8),
+                      Text('📅 تاريخ الانضمام: ${_formatDate(user['createdAt'])}', style: TextStyle(color: Colors.white54, fontSize: 11)),
+                      Text('⏱️ آخر ظهور: ${_formatDate(user['lastActive'] ?? user['lastLogin'])}', style: TextStyle(color: Colors.white54, fontSize: 11)),
+                      Text('🌐 المنصة: $platformStr', style: TextStyle(color: Colors.white54, fontSize: 11)),
+                      Text('🗄️ قاعدة البيانات: $backendStr', style: TextStyle(color: Colors.white54, fontSize: 11)),
+                      Text('🔗 مربوط بـ: ${user['parentAdminName'] ?? user['parentAdminEmail'] ?? user['parentAdminId'] ?? 'المدير العام'}', style: TextStyle(color: Colors.white54, fontSize: 11)),
+                      SizedBox(height: 12),
                       Row(
                         children: [
                           Expanded(
@@ -712,7 +712,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                               onTap: () => _toggleUserStatus(user),
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Expanded(
                             child: _buildActionButton(
                               label: AppLocalization.get('sessions'),
@@ -721,7 +721,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                               onTap: () => _showUserSessions(user),
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Expanded(
                             child: _buildActionButton(
                               label: role == 'admin' ? AppLocalization.get('user') : AppLocalization.get('admin'),
@@ -760,7 +760,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
           child: Column(
             children: [
               Icon(icon, color: color, size: 20),
-              const SizedBox(height: 4),
+              SizedBox(height: 4),
               Text(label, style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.bold)),
             ],
           ),
@@ -850,10 +850,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
       future: ApiService.getAdminAutomationStats(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan));
+          return Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan));
         }
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text(AppLocalization.get('no_automations'), style: const TextStyle(color: Colors.white54, fontSize: 16)));
+          return Center(child: Text(AppLocalization.get('no_automations'), style: TextStyle(color: Colors.white54, fontSize: 16)));
         }
         final stats = snapshot.data!;
         // Only show users that have automations or are worth managing
@@ -896,14 +896,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                   ),
                   title: Text(
                     user['username'] ?? 'Unknown',
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                   subtitle: Row(
                     children: [
                       _buildMiniChip('$totalRules ${AppLocalization.get('total_automations')}', Colors.white38),
-                      const SizedBox(width: 6),
+                      SizedBox(width: 6),
                       if (activeRules > 0) _buildMiniChip('$activeRules ${AppLocalization.get('active_automations')}', Colors.greenAccent),
-                      if (activeRules > 0) const SizedBox(width: 6),
+                      if (activeRules > 0) SizedBox(width: 6),
                       if (inactiveRules > 0) _buildMiniChip('$inactiveRules ${AppLocalization.get('inactive_automations')}', Colors.redAccent),
                     ],
                   ),
@@ -915,9 +915,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const Divider(color: Colors.white12),
-                          Text('📧 ${user['email'] ?? ''}', style: const TextStyle(color: Colors.white38, fontSize: 11)),
-                          const SizedBox(height: 12),
+                          Divider(color: Colors.white12),
+                          Text('📧 ${user['email'] ?? ''}', style: TextStyle(color: Colors.white38, fontSize: 11)),
+                          SizedBox(height: 12),
                           // Power Saving Toggle
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -941,7 +941,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                                   color: powerSaving ? Colors.orangeAccent : Colors.greenAccent,
                                   size: 20,
                                 ),
-                                const SizedBox(width: 10),
+                                SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
                                     AppLocalization.get(powerSaving ? 'power_saving_on' : 'power_saving_off'),
@@ -971,10 +971,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                               ],
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12),
                           // Rules list
                           if (rules.isEmpty)
-                            Center(child: Text(AppLocalization.get('no_automations'), style: const TextStyle(color: Colors.white24, fontSize: 12)))
+                            Center(child: Text(AppLocalization.get('no_automations'), style: TextStyle(color: Colors.white24, fontSize: 12)))
                           else
                             ...rules.map((rule) {
                               final r = Map<String, dynamic>.from(rule);
@@ -998,19 +998,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                                         color: isActive ? Colors.greenAccent : Colors.redAccent,
                                       ),
                                     ),
-                                    const SizedBox(width: 10),
+                                    SizedBox(width: 10),
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             r['name'] ?? '',
-                                            style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                                            style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
                                           ),
-                                          const SizedBox(height: 2),
+                                          SizedBox(height: 2),
                                           Text(
                                             'IF ${r['triggerWidgetName']} ${r['condition']} ${r['triggerValue']} → ${r['actionType']}${(r['actionWidgetName'] ?? '').isNotEmpty ? ' (${r['actionWidgetName']})' : ''}',
-                                            style: const TextStyle(color: Colors.white38, fontSize: 10),
+                                            style: TextStyle(color: Colors.white38, fontSize: 10),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ],
@@ -1094,8 +1094,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.check_circle_outline, color: Colors.green.withValues(alpha: 0.5), size: 60),
-            const SizedBox(height: 16),
-            Text(AppLocalization.get('no_logs'), style: const TextStyle(color: Colors.white54, fontSize: 16)),
+            SizedBox(height: 16),
+            Text(AppLocalization.get('no_logs'), style: TextStyle(color: Colors.white54, fontSize: 16)),
           ],
         ),
       );
@@ -1110,7 +1110,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
       child: ListView.separated(
         padding: const EdgeInsets.all(12),
         itemCount: logs.length,
-        separatorBuilder: (_, __) => const Divider(color: Colors.white10, height: 1),
+        separatorBuilder: (_, __) => Divider(color: Colors.white10, height: 1),
         itemBuilder: (context, index) {
           final log = logs[index];
           final message = isServer ? (log['message'] ?? '') : (log['error'] ?? log['message'] ?? '');
@@ -1138,14 +1138,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         message.toString(),
-                        style: const TextStyle(color: Colors.white70, fontSize: 12, fontFamily: 'monospace'),
+                        style: TextStyle(color: Colors.white70, fontSize: 12, fontFamily: 'monospace'),
                         maxLines: 4,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -1154,7 +1154,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                           padding: const EdgeInsets.only(top: 4),
                           child: Text(
                             timestamp.toString(),
-                            style: const TextStyle(color: Colors.white24, fontSize: 10),
+                            style: TextStyle(color: Colors.white24, fontSize: 10),
                           ),
                         ),
                     ],
@@ -1187,21 +1187,21 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
             ),
             child: Row(
               children: [
-                const Icon(Icons.campaign, color: AppTheme.primaryCyan, size: 32),
-                const SizedBox(width: 12),
+                Icon(Icons.campaign, color: AppTheme.primaryCyan, size: 32),
+                SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(AppLocalization.get('broadcast_notif'), style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                      Text(AppLocalization.get('broadcast_desc'), style: const TextStyle(color: Colors.white54, fontSize: 12)),
+                      Text(AppLocalization.get('broadcast_notif'), style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text(AppLocalization.get('broadcast_desc'), style: TextStyle(color: Colors.white54, fontSize: 12)),
                     ],
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // Target selector
           Container(
@@ -1213,17 +1213,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(AppLocalization.get('target'), style: const TextStyle(color: Colors.white70, fontSize: 13)),
-                const SizedBox(height: 8),
+                Text(AppLocalization.get('target'), style: TextStyle(color: Colors.white70, fontSize: 13)),
+                SizedBox(height: 8),
                 DropdownButtonFormField<String>(
                   value: _notifTarget,
                   dropdownColor: AppTheme.cardBaseColor,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.white.withValues(alpha: 0.05),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                    prefixIcon: const Icon(Icons.group, color: AppTheme.primaryCyan),
+                    prefixIcon: Icon(Icons.group, color: AppTheme.primaryCyan),
                   ),
                   items: [
                     DropdownMenuItem(value: 'all', child: Text(AppLocalization.get('all_users'))),
@@ -1237,7 +1237,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           // Title
           Container(
@@ -1245,18 +1245,18 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
             decoration: BoxDecoration(color: AppTheme.cardBaseColor, borderRadius: BorderRadius.circular(16)),
             child: TextField(
               controller: _notifTitleCtrl,
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: AppLocalization.get('notif_title_hint'),
-                hintStyle: const TextStyle(color: Colors.white24),
-                prefixIcon: const Icon(Icons.title, color: AppTheme.primaryCyan),
+                hintStyle: TextStyle(color: Colors.white24),
+                prefixIcon: Icon(Icons.title, color: AppTheme.primaryCyan),
                 filled: true,
                 fillColor: Colors.white.withValues(alpha: 0.05),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           // Body
           Container(
@@ -1264,12 +1264,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
             decoration: BoxDecoration(color: AppTheme.cardBaseColor, borderRadius: BorderRadius.circular(16)),
             child: TextField(
               controller: _notifBodyCtrl,
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.white),
               maxLines: 4,
               decoration: InputDecoration(
                 hintText: AppLocalization.get('notif_body_hint'),
-                hintStyle: const TextStyle(color: Colors.white24),
-                prefixIcon: const Padding(
+                hintStyle: TextStyle(color: Colors.white24),
+                prefixIcon: Padding(
                   padding: EdgeInsets.only(bottom: 60),
                   child: Icon(Icons.message, color: AppTheme.primaryCyan),
                 ),
@@ -1279,7 +1279,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
               ),
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // Send button
           ElevatedButton.icon(
@@ -1290,8 +1290,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               elevation: 8,
             ),
-            icon: const Icon(Icons.send, size: 20),
-            label: Text(AppLocalization.get('send_notif'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            icon: Icon(Icons.send, size: 20),
+            label: Text(AppLocalization.get('send_notif'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             onPressed: _sendNotification,
           ),
         ],
@@ -1327,26 +1327,26 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
           Row(
             children: [
               Expanded(child: _buildStatCard(AppLocalization.isArabicNotifier.value ? 'مستخدمي التطبيق النشطين' : 'Active App Users', _users.where((u) => u['status'] == 'active').length.toString(), Icons.people, AppTheme.primaryCyan)),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(child: _buildStatCard(AppLocalization.isArabicNotifier.value ? 'طلبات Adafruit' : 'Adafruit IO Requests', _todayDatabaseWrites.toString(), Icons.cloud_sync, Colors.greenAccent)),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Row(
             children: [
               Expanded(child: _buildStatCard(AppLocalization.get('system_errors') ?? 'System Errors', _serverLogs.length.toString(), Icons.error_outline, Colors.redAccent)),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(child: _buildStatCard(AppLocalization.get('client_errors') ?? 'Client Errors', _clientLogs.length.toString(), Icons.phone_android, Colors.orange)),
             ],
           ),
-           const SizedBox(height: 24),
+           SizedBox(height: 24),
 
           // Firebase Database Usage (Today) / استهلاك قاعدة بيانات Firebase (اليوم)
           Text(
             AppLocalization.isArabicNotifier.value ? 'استهلاك قاعدة بيانات Firebase (اليوم)' : 'Firebase Database Usage (Today)',
-            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -1364,7 +1364,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                   icon: Icons.read_more_rounded,
                   color: AppTheme.primaryCyan,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 _buildFirebaseQuotaItem(
                   title: AppLocalization.isArabicNotifier.value ? 'كتابة البيانات (Writes)' : 'Database Writes',
                   used: _todayDatabaseWrites,
@@ -1372,7 +1372,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                   icon: Icons.edit_note_rounded,
                   color: AppTheme.primaryViolet,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 _buildFirebaseQuotaItem(
                   title: AppLocalization.isArabicNotifier.value ? 'حذف البيانات (Deletes)' : 'Database Deletes',
                   used: _todayDatabaseDeletes,
@@ -1383,16 +1383,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // Adafruit Quotas
-          Text(AppLocalization.get('adafruit_quota'), style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 12),
+          Text(AppLocalization.get('adafruit_quota'), style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+          SizedBox(height: 12),
           if (_quotas.isEmpty)
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(color: AppTheme.cardBaseColor, borderRadius: BorderRadius.circular(16)),
-              child: Center(child: Text(AppLocalization.get('no_quota_data'), style: const TextStyle(color: Colors.white54))),
+              child: Center(child: Text(AppLocalization.get('no_quota_data'), style: TextStyle(color: Colors.white54))),
             )
           else
             ..._quotas.map((q) => Container(
@@ -1405,14 +1405,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.cloud, color: AppTheme.primaryCyan, size: 24),
-                  const SizedBox(width: 12),
+                  Icon(Icons.cloud, color: AppTheme.primaryCyan, size: 24),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(q['username'] ?? 'Unknown', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                        Text('${AppLocalization.get('remaining')}: ${q['remaining'] ?? 'N/A'}', style: const TextStyle(color: Colors.white54, fontSize: 12)),
+                        Text(q['username'] ?? 'Unknown', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        Text('${AppLocalization.get('remaining')}: ${q['remaining'] ?? 'N/A'}', style: TextStyle(color: Colors.white54, fontSize: 12)),
                       ],
                     ),
                   ),
@@ -1443,8 +1443,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.check_circle_outline, color: Colors.green.withValues(alpha: 0.3), size: 60),
-            const SizedBox(height: 16),
-            Text(AppLocalization.get('no_banned_devices'), style: const TextStyle(color: Colors.white54)),
+            SizedBox(height: 16),
+            Text(AppLocalization.get('no_banned_devices'), style: TextStyle(color: Colors.white54)),
           ],
         ),
       );
@@ -1472,16 +1472,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(color: Colors.redAccent.withValues(alpha: 0.1), shape: BoxShape.circle),
-                  child: const Icon(Icons.block, color: Colors.redAccent, size: 20),
+                  child: Icon(Icons.block, color: Colors.redAccent, size: 20),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(ban['deviceName'] ?? AppLocalization.get('unknown_device'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                      if (ban['ip'] != null) Text('IP: ${ban['ip']}', style: const TextStyle(color: Colors.white38, fontSize: 11)),
-                      Text('${AppLocalization.get('at_date')}: $bannedAt', style: const TextStyle(color: Colors.white24, fontSize: 10)),
+                      Text(ban['deviceName'] ?? AppLocalization.get('unknown_device'), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      if (ban['ip'] != null) Text('IP: ${ban['ip']}', style: TextStyle(color: Colors.white38, fontSize: 11)),
+                      Text('${AppLocalization.get('at_date')}: $bannedAt', style: TextStyle(color: Colors.white24, fontSize: 10)),
                     ],
                   ),
                 ),
@@ -1495,8 +1495,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                       _showToast('خطأ: $e');
                     }
                   },
-                  icon: const Icon(Icons.undo, size: 16, color: Colors.greenAccent),
-                  label: Text(AppLocalization.get('unban'), style: const TextStyle(color: Colors.greenAccent, fontSize: 12)),
+                  icon: Icon(Icons.undo, size: 16, color: Colors.greenAccent),
+                  label: Text(AppLocalization.get('unban'), style: TextStyle(color: Colors.greenAccent, fontSize: 12)),
                 ),
               ],
             ),
@@ -1536,20 +1536,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
             Row(
               children: [
                 Icon(icon, color: color, size: 20),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text(
                   title,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
                 ),
               ],
             ),
             Text(
               '$used / $limit',
-              style: const TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold),
+              style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold),
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: LinearProgressIndicator(
@@ -1559,7 +1559,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
             valueColor: AlwaysStoppedAnimation<Color>(color),
           ),
         ),
-        const SizedBox(height: 6),
+        SizedBox(height: 6),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -1569,7 +1569,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
             ),
             Text(
               '${(percent * 100).toStringAsFixed(1)}%',
-              style: const TextStyle(color: Colors.white38, fontSize: 11),
+              style: TextStyle(color: Colors.white38, fontSize: 11),
             ),
           ],
         ),
@@ -1598,7 +1598,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
               filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: AppTheme.darkBackground,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
                   border: Border(top: BorderSide(color: Colors.white10, width: 1.5)),
@@ -1614,27 +1614,27 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                         decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(10)),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
                     Row(
                       children: [
-                        const Icon(Icons.security, color: Color(0xFF00FFCC), size: 24),
-                        const SizedBox(width: 12),
+                        Icon(Icons.security, color: Color(0xFF00FFCC), size: 24),
+                        SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             ar ? 'تخصيص صلاحيات الموزع ($code)' : 'Distributor Permissions ($code)',
-                            style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                            style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     Text(
                       ar 
                           ? 'حدد الصلاحيات الممنوحة للتجار المسجلين باستخدام هذا الكود.' 
                           : 'Configure permissions granted to distributors registered via this code.',
-                      style: const TextStyle(color: Colors.white38, fontSize: 11),
+                      style: TextStyle(color: Colors.white38, fontSize: 11),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     
                     // Allow Suspend Switch
                     SwitchListTile(
@@ -1642,18 +1642,18 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                       activeColor: const Color(0xFF00FFCC),
                       title: Text(
                         ar ? 'السماح بحظر وتعليق العملاء' : 'Allow Client Suspension',
-                        style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
                       ),
                       subtitle: Text(
                         ar ? 'تمكين الموزع من إيقاف حسابات عملائه مؤقتاً.' : 'Let the merchant suspend his own client accounts.',
-                        style: const TextStyle(color: Colors.white38, fontSize: 10),
+                        style: TextStyle(color: Colors.white38, fontSize: 10),
                       ),
                       value: allowSuspend,
                       onChanged: (val) {
                         setStateSheet(() => allowSuspend = val);
                       },
                     ),
-                    const Divider(color: Colors.white10),
+                    Divider(color: Colors.white10),
                     
                     // Allow Bypass Quota Switch
                     SwitchListTile(
@@ -1661,24 +1661,24 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                       activeColor: const Color(0xFF00FFCC),
                       title: Text(
                         ar ? 'السماح بتجاوز الحصص الإحصائية' : 'Allow Quota Bypassing',
-                        style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
                       ),
                       subtitle: Text(
                         ar ? 'تجاوز حدود استهلاك قواعد البيانات والحزم.' : 'Bypass cloud read/write limitation rules.',
-                        style: const TextStyle(color: Colors.white38, fontSize: 10),
+                        style: TextStyle(color: Colors.white38, fontSize: 10),
                       ),
                       value: allowBypassQuota,
                       onChanged: (val) {
                         setStateSheet(() => allowBypassQuota = val);
                       },
                     ),
-                    const Divider(color: Colors.white10),
+                    Divider(color: Colors.white10),
                     
                     // Max Clients slider/input
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Text(
                       (ar ? 'الحد الأقصى للعملاء: ' : 'Max Clients Count: ') + (maxClients == 1000 ? (ar ? 'غير محدود' : 'Unlimited') : '$maxClients'),
-                      style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
                     ),
                     Slider(
                       activeColor: const Color(0xFF00FFCC),
@@ -1694,7 +1694,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                       },
                     ),
                     
-                    const SizedBox(height: 28),
+                    SizedBox(height: 28),
                     
                     // Save Button
                     SizedBox(
@@ -1716,11 +1716,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                             _showToast(ar ? 'تم حفظ الصلاحيات بنجاح! 🔐' : 'Permissions saved successfully! 🔐');
                           }
                         },
-                        icon: const Icon(Icons.save, size: 20),
-                        label: Text(ar ? 'حفظ وإرسال الصلاحيات' : 'Save Permissions', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                        icon: Icon(Icons.save, size: 20),
+                        label: Text(ar ? 'حفظ وإرسال الصلاحيات' : 'Save Permissions', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                   ],
                 ),
               ),
@@ -1856,29 +1856,29 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                     children: [
                       Text(
                         ar ? 'إنشاء كود تفعيل موزع جديد' : 'Generate New Distributor Promo Key',
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Text(
                         ar ? 'امنح هذا الكود للتاجر ليُسجّل كأدمن جانبي ويُدير عملاءه.' : 'Give this key to a merchant to register as sub-admin.',
-                        style: const TextStyle(color: Colors.white38, fontSize: 11),
+                        style: TextStyle(color: Colors.white38, fontSize: 11),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
                       Row(children: [
                         Expanded(
                           child: TextField(
                             controller: _subAdminKeyCtrl,
-                            style: const TextStyle(color: Colors.white, fontSize: 14),
+                            style: TextStyle(color: Colors.white, fontSize: 14),
                             decoration: InputDecoration(
                               hintText: ar ? 'مثال: PARTNER_VIP_2026' : 'E.g., PARTNER_VIP_2026',
-                              hintStyle: const TextStyle(color: Colors.white24, fontSize: 12),
-                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.white12)),
-                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF00FFCC))),
+                              hintStyle: TextStyle(color: Colors.white24, fontSize: 12),
+                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white12)),
+                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Color(0xFF00FFCC))),
                               contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF00FFCC),
@@ -1887,7 +1887,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                           ),
                           onPressed: _isKeysLoading ? null : addKey,
-                          child: const Icon(Icons.add, size: 20),
+                          child: Icon(Icons.add, size: 20),
                         ),
                       ]),
                     ],
@@ -1902,9 +1902,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Row(children: [
                   _buildMiniStat(ar ? 'أكواد مفعلة' : 'Active Keys', '${_subAdminKeys.length}', const Color(0xFF00FFCC)),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   _buildMiniStat(ar ? 'موزعون نشطون' : 'Active Distributors', '${subAdmins.length}', Colors.amberAccent),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   _buildMiniStat(
                     ar ? 'عملاء مربوطون' : 'Linked Clients',
                     '$totalLinkedClients',
@@ -1920,7 +1920,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
                 child: Text(
                   ar ? 'أكواد التسجيل المتاحة' : 'Available Registration Keys',
-                  style: const TextStyle(color: Colors.white54, fontSize: 12, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.white54, fontSize: 12, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -1933,7 +1933,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
             else if (_subAdminKeys.isEmpty)
               SliverToBoxAdapter(child: Center(child: Padding(
                 padding: const EdgeInsets.all(20),
-                child: Text(ar ? 'لا توجد أكواد بعد' : 'No promo keys yet', style: const TextStyle(color: Colors.white38)),
+                child: Text(ar ? 'لا توجد أكواد بعد' : 'No promo keys yet', style: TextStyle(color: Colors.white38)),
               )))
             else
               SliverPadding(
@@ -1958,33 +1958,33 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                             color: const Color(0xFF00FFCC).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Icon(Icons.vpn_key, color: Color(0xFF00FFCC), size: 16),
+                          child: Icon(Icons.vpn_key, color: Color(0xFF00FFCC), size: 16),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         Expanded(child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(code, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                            Text(code, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
                             Text(
                               '${ar ? 'استُخدم ' : 'Used '}$uses ${ar ? 'مرة' : 'time(s)'}',
-                              style: const TextStyle(color: Colors.white38, fontSize: 11),
+                              style: TextStyle(color: Colors.white38, fontSize: 11),
                             ),
                           ],
                         )),
                         IconButton(
-                          icon: const Icon(Icons.settings_outlined, color: Color(0xFF00FFCC), size: 18),
+                          icon: Icon(Icons.settings_outlined, color: Color(0xFF00FFCC), size: 18),
                           tooltip: ar ? 'تعديل الصلاحيات' : 'Edit Permissions',
                           onPressed: () => _showPermissionsSheet(context, code),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.copy, color: Colors.white54, size: 18),
+                          icon: Icon(Icons.copy, color: Colors.white54, size: 18),
                           onPressed: () {
                             Clipboard.setData(ClipboardData(text: code));
                             _showToast(ar ? 'تم النسخ!' : 'Copied!');
                           },
                         ),
                         IconButton(
-                          icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 18),
+                          icon: Icon(Icons.delete_outline, color: Colors.redAccent, size: 18),
                           onPressed: () => deleteKey(code),
                         ),
                       ]),
@@ -1999,7 +1999,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                 child: Text(
                   ar ? 'الموزعون النشطون وعملاؤهم' : 'Active Distributors & Their Clients',
-                  style: const TextStyle(color: Colors.white54, fontSize: 12, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.white54, fontSize: 12, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -2009,7 +2009,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                     padding: const EdgeInsets.all(20),
                     child: Center(child: Text(
                       ar ? 'لا يوجد موزعون مسجلون بعد' : 'No distributors registered yet',
-                      style: const TextStyle(color: Colors.white38),
+                      style: TextStyle(color: Colors.white38),
                     )),
                   ))
                 : SliverPadding(
@@ -2043,14 +2043,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                                   color: Colors.amberAccent.withValues(alpha: 0.12),
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(Icons.storefront_rounded, color: Colors.amberAccent, size: 22),
+                                child: Icon(Icons.storefront_rounded, color: Colors.amberAccent, size: 22),
                               ),
-                              const SizedBox(width: 12),
+                              SizedBox(width: 12),
                               Expanded(child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(subAdminName, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
-                                  Text(subAdminEmail, style: const TextStyle(color: Colors.white38, fontSize: 11)),
+                                  Text(subAdminName, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                                  Text(subAdminEmail, style: TextStyle(color: Colors.white38, fontSize: 11)),
                                 ],
                               )),
                             ]),
@@ -2061,9 +2061,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                                   isActive ? (ar ? 'نشط' : 'Active') : (ar ? 'معلق' : 'Suspended'),
                                   isActive ? Colors.greenAccent : Colors.redAccent,
                                 ),
-                                const SizedBox(width: 8),
+                                SizedBox(width: 8),
                                 _buildBadge('${clients.length} ${ar ? "عميل" : "clients"}', Colors.amberAccent),
-                                const SizedBox(width: 8),
+                                SizedBox(width: 8),
                                 FutureBuilder<Map<String, dynamic>>(
                                   future: ApiService.getSubAdminPermissions(subAdminCode),
                                   builder: (ctx, snapshot) {
@@ -2071,14 +2071,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                                       final max = snapshot.data!['maxClients'] ?? 100;
                                       return _buildBadge(ar ? 'كوبونات: $max' : 'Coupons: $max', Colors.blueAccent);
                                     }
-                                    return const SizedBox();
+                                    return SizedBox();
                                   }
                                 ),
                                 if (subAdminCode.isNotEmpty) ...[
-                                  const SizedBox(width: 8),
+                                  SizedBox(width: 8),
                                   Flexible(child: Text(
                                     subAdminCode,
-                                    style: const TextStyle(color: Colors.white24, fontSize: 9),
+                                    style: TextStyle(color: Colors.white24, fontSize: 9),
                                     overflow: TextOverflow.ellipsis,
                                   )),
                                 ],
@@ -2090,22 +2090,22 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.stretch,
                                   children: [
-                                    const Divider(color: Colors.white10),
+                                    Divider(color: Colors.white10),
 
                                     // Action buttons for the distributor itself
                                     Row(children: [
                                       Expanded(child: OutlinedButton.icon(
                                         style: OutlinedButton.styleFrom(
                                           foregroundColor: Colors.amberAccent,
-                                          side: const BorderSide(color: Colors.amberAccent),
+                                          side: BorderSide(color: Colors.amberAccent),
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                           padding: const EdgeInsets.symmetric(vertical: 10),
                                         ),
-                                        icon: const Icon(Icons.settings, size: 14),
-                                        label: Text(ar ? 'الصلاحيات' : 'Permissions', style: const TextStyle(fontSize: 12)),
+                                        icon: Icon(Icons.settings, size: 14),
+                                        label: Text(ar ? 'الصلاحيات' : 'Permissions', style: TextStyle(fontSize: 12)),
                                         onPressed: () => _showPermissionsSheet(context, subAdminCode),
                                       )),
-                                      const SizedBox(width: 8),
+                                      SizedBox(width: 8),
                                       Expanded(child: ElevatedButton.icon(
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: isActive ? Colors.redAccent.withValues(alpha: 0.15) : Colors.green.withValues(alpha: 0.15),
@@ -2117,7 +2117,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                                         icon: Icon(isActive ? Icons.block : Icons.check_circle_outline, size: 14),
                                         label: Text(
                                           isActive ? (ar ? 'تعليق الموزع' : 'Suspend') : (ar ? 'تفعيل' : 'Activate'),
-                                          style: const TextStyle(fontSize: 12),
+                                          style: TextStyle(fontSize: 12),
                                         ),
                                         onPressed: () async {
                                           final newStatus = isActive ? 'suspended' : 'active';
@@ -2138,17 +2138,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                                         padding: const EdgeInsets.only(top: 12),
                                         child: Text(
                                           ar ? 'لا يوجد عملاء مرتبطون بهذا الموزع بعد.' : 'No clients linked to this distributor yet.',
-                                          style: const TextStyle(color: Colors.white38, fontSize: 12),
+                                          style: TextStyle(color: Colors.white38, fontSize: 12),
                                           textAlign: TextAlign.center,
                                         ),
                                       )
                                     else ...[
-                                      const SizedBox(height: 12),
+                                      SizedBox(height: 12),
                                       Text(
                                         ar ? 'العملاء المرتبطون (${clients.length})' : 'Linked Clients (${clients.length})',
-                                        style: const TextStyle(color: Colors.white54, fontSize: 11, fontWeight: FontWeight.bold),
+                                        style: TextStyle(color: Colors.white54, fontSize: 11, fontWeight: FontWeight.bold),
                                       ),
-                                      const SizedBox(height: 8),
+                                      SizedBox(height: 8),
                                       ...clients.map((client) {
                                         final cName = (client['username'] ?? 'User').toString();
                                         final cEmail = (client['email'] ?? '').toString();
@@ -2172,19 +2172,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                                                 size: 14,
                                               ),
                                             ),
-                                            const SizedBox(width: 10),
+                                            SizedBox(width: 10),
                                             Expanded(child: Column(
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                Text(cName, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13)),
-                                                if (cEmail.isNotEmpty) Text(cEmail, style: const TextStyle(color: Colors.white38, fontSize: 10)),
+                                                Text(cName, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13)),
+                                                if (cEmail.isNotEmpty) Text(cEmail, style: TextStyle(color: Colors.white38, fontSize: 10)),
                                               ],
                                             )),
                                             _buildBadge(
                                               cActive ? (ar ? 'نشط' : 'Active') : (ar ? 'معلق' : 'Suspended'),
                                               cActive ? Colors.greenAccent : Colors.redAccent,
                                             ),
-                                            const SizedBox(width: 6),
+                                            SizedBox(width: 6),
                                             // Toggle client status
                                             GestureDetector(
                                               onTap: () async {
@@ -2244,8 +2244,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
         child: Column(
           children: [
             Text(value, style: TextStyle(color: color, fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 2),
-            Text(label, style: const TextStyle(color: Colors.white38, fontSize: 10), textAlign: TextAlign.center),
+            SizedBox(height: 2),
+            Text(label, style: TextStyle(color: Colors.white38, fontSize: 10), textAlign: TextAlign.center),
           ],
         ),
       ),
@@ -2289,16 +2289,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                   color: Colors.orangeAccent.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.cloud_done, color: Colors.orangeAccent, size: 24),
+                child: Icon(Icons.cloud_done, color: Colors.orangeAccent, size: 24),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Text(
                 AppLocalization.isArabicNotifier.value ? 'استهلاك حصة Firebase المجانية (اليوم)' : 'Firebase Quota Usage (Today)',
-                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           _buildQuotaProgressRow(
             AppLocalization.isArabicNotifier.value ? 'قراءة (Reads)' : 'Reads', 
             _todayDatabaseReads, 
@@ -2306,7 +2306,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
             readPercentage, 
             Colors.blueAccent
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           _buildQuotaProgressRow(
             AppLocalization.isArabicNotifier.value ? 'كتابة (Writes)' : 'Writes', 
             _todayDatabaseWrites, 
@@ -2326,11 +2326,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: const TextStyle(color: Colors.white70, fontSize: 14)),
-            Text('$current / $max (${(percentage * 100).toStringAsFixed(1)}%)', style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+            Text(label, style: TextStyle(color: Colors.white70, fontSize: 14)),
+            Text('$current / $max (${(percentage * 100).toStringAsFixed(1)}%)', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         ClipRRect(
           borderRadius: BorderRadius.circular(4),
           child: LinearProgressIndicator(
@@ -2365,7 +2365,7 @@ class _SessionsSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.7),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppTheme.darkBackground,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -2384,17 +2384,17 @@ class _SessionsSheet extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                const Icon(Icons.devices, color: AppTheme.primaryCyan),
-                const SizedBox(width: 12),
-                Text('جلسات $username', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                Icon(Icons.devices, color: AppTheme.primaryCyan),
+                SizedBox(width: 12),
+                Text('جلسات $username', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
               ],
             ),
           ),
-          const Divider(color: Colors.white12, height: 1),
+          Divider(color: Colors.white12, height: 1),
           // Sessions list
           Flexible(
             child: sessions.isEmpty
-                ? const Padding(
+                ? Padding(
                     padding: EdgeInsets.all(40),
                     child: Text('لا توجد جلسات نشطة', style: TextStyle(color: Colors.white54)),
                   )
@@ -2431,42 +2431,42 @@ class _SessionsSheet extends StatelessWidget {
                             Row(
                               children: [
                                 Icon(deviceIcon, color: AppTheme.primaryCyan, size: 20),
-                                const SizedBox(width: 10),
+                                SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
                                     deviceName.toString().length > 40 
                                         ? '${deviceName.toString().substring(0, 40)}...' 
                                         : deviceName.toString(),
-                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
                                   ),
                                 ),
                               ],
                             ),
                             if (ip.toString().isNotEmpty) ...[
-                              const SizedBox(height: 6),
-                              Text('IP: $ip', style: const TextStyle(color: Colors.white38, fontSize: 11)),
+                              SizedBox(height: 6),
+                              Text('IP: $ip', style: TextStyle(color: Colors.white38, fontSize: 11)),
                             ],
                             if (deviceId != null) ...[
-                              const SizedBox(height: 2),
-                              Text('Device: ${deviceId.toString().substring(0, (deviceId.toString().length > 20 ? 20 : deviceId.toString().length))}...', style: const TextStyle(color: Colors.white24, fontSize: 10)),
+                              SizedBox(height: 2),
+                              Text('Device: ${deviceId.toString().substring(0, (deviceId.toString().length > 20 ? 20 : deviceId.toString().length))}...', style: TextStyle(color: Colors.white24, fontSize: 10)),
                             ],
-                            const SizedBox(height: 10),
+                            SizedBox(height: 10),
                             Row(
                               children: [
                                 Expanded(
                                   child: OutlinedButton.icon(
                                     style: OutlinedButton.styleFrom(
                                       foregroundColor: Colors.orange,
-                                      side: const BorderSide(color: Colors.orange),
+                                      side: BorderSide(color: Colors.orange),
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                       padding: const EdgeInsets.symmetric(vertical: 8),
                                     ),
-                                    icon: const Icon(Icons.logout, size: 16),
-                                    label: const Text('طرد', style: TextStyle(fontSize: 12)),
+                                    icon: Icon(Icons.logout, size: 16),
+                                    label: Text('طرد', style: TextStyle(fontSize: 12)),
                                     onPressed: () => onLogout(s['id']),
                                   ),
                                 ),
-                                const SizedBox(width: 8),
+                                SizedBox(width: 8),
                                 Expanded(
                                   child: ElevatedButton.icon(
                                     style: ElevatedButton.styleFrom(
@@ -2475,8 +2475,8 @@ class _SessionsSheet extends StatelessWidget {
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                       padding: const EdgeInsets.symmetric(vertical: 8),
                                     ),
-                                    icon: const Icon(Icons.block, size: 16),
-                                    label: const Text('حظر', style: TextStyle(fontSize: 12)),
+                                    icon: Icon(Icons.block, size: 16),
+                                    label: Text('حظر', style: TextStyle(fontSize: 12)),
                                     onPressed: () => onBan(deviceId?.toString(), ip.toString(), deviceName.toString()),
                                   ),
                                 ),

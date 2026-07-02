@@ -48,7 +48,7 @@ class _GlowingButtonState extends State<GlowingButton> {
         ),
         boxShadow: [
           if (!isDisabled && (_isHovered || _isPressed))
-            const BoxShadow(
+            BoxShadow(
               color: AppTheme.glowColor,
               blurRadius: 15,
               spreadRadius: 2,
@@ -58,7 +58,7 @@ class _GlowingButtonState extends State<GlowingButton> {
       ),
       child: Center(
         child: widget.isLoading
-            ? const SizedBox(
+            ? SizedBox(
                 width: 24,
                 height: 24,
                 child: CircularProgressIndicator(
@@ -67,7 +67,7 @@ class _GlowingButtonState extends State<GlowingButton> {
                 ),
               )
             : DefaultTextStyle(
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,

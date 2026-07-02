@@ -50,14 +50,14 @@ class ErrorHandler {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, color: Colors.red, size: 50),
-              const SizedBox(height: 10),
-              const Text('An unusual error occurred!', style: TextStyle(color: Colors.white, fontSize: 18)),
-              const SizedBox(height: 10),
+              Icon(Icons.error_outline, color: Colors.red, size: 50),
+              SizedBox(height: 10),
+              Text('An unusual error occurred!', style: TextStyle(color: Colors.white, fontSize: 18)),
+              SizedBox(height: 10),
               if (kDebugMode)
                  Padding(
                    padding: const EdgeInsets.all(16.0),
-                   child: Text(details.exceptionAsString(), style: const TextStyle(color: Colors.redAccent, fontSize: 12)),
+                   child: Text(details.exceptionAsString(), style: TextStyle(color: Colors.redAccent, fontSize: 12)),
                  ),
             ],
           )
@@ -267,20 +267,20 @@ class ErrorHandler {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               
               // Title
               Text(
                 title,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 0.5,
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               
               // Description Box (Glassmorphic)
               Container(
@@ -300,7 +300,7 @@ class ErrorHandler {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               
               // Action Button
               Container(
@@ -308,7 +308,7 @@ class ErrorHandler {
                 height: 55,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
-                  gradient: const LinearGradient(
+                  gradient: LinearGradient(
                     colors: [Color(0xFF00D2FF), Color(0xFF9B51E0)],
                   ),
                   boxShadow: [
@@ -334,7 +334,7 @@ class ErrorHandler {
                   },
                   child: Text(
                     actionText,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                 ),
               ),

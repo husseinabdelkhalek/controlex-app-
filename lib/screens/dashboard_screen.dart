@@ -195,7 +195,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildQuickScenes(List<dynamic> dashboardScenes) {
-    if (dashboardScenes.isEmpty) return const SizedBox.shrink();
+    if (dashboardScenes.isEmpty) return SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,7 +207,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               Text(
                 AppLocalization.get('quick_scenes'),
-                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
               ),
               GestureDetector(
                 onTap: () {
@@ -218,7 +218,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 },
                 child: Text(
                   AppLocalization.isArabicNotifier.value ? 'الكل >' : 'All >',
-                  style: const TextStyle(color: AppTheme.primaryCyan, fontSize: 13, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: AppTheme.primaryCyan, fontSize: 13, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -287,11 +287,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   )
                                 : Icon(iconData, color: color, size: 16),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               name,
-                              style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),
+                              style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),
                               maxLines: 2,
                             ),
                           ),
@@ -304,7 +304,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             },
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
       ],
     );
   }
@@ -391,12 +391,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final hasWidget = prefs.getBool('has_home_widget') ?? false;
 
     if (permanentlyHidden || hasWidget) return;
+    
+    if (_rawWidgets.isEmpty) return;
 
     int launchCount = prefs.getInt('widget_promo_launch_count') ?? 0;
     launchCount++;
     await prefs.setInt('widget_promo_launch_count', launchCount);
 
-    if (launchCount % 10 != 0 && launchCount != 1) return;
+    if (launchCount != 2) return;
 
     if (mounted) {
       Future.delayed(const Duration(seconds: 3), () {
@@ -413,21 +415,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.widgets, size: 60, color: AppTheme.primaryCyan),
-                  const SizedBox(height: 16),
+                  Icon(Icons.widgets, size: 60, color: AppTheme.primaryCyan),
+                  SizedBox(height: 16),
                   Text(
                     AppLocalization.isArabicNotifier.value ? 'جرب أدوات الشاشة الرئيسية!' : 'Try Home Screen Widgets!',
-                    style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   Text(
                     AppLocalization.isArabicNotifier.value 
                         ? 'يمكنك الآن إضافة أدوات التحكم الخاصة بك إلى شاشة هاتفك الرئيسية للوصول السريع.' 
                         : 'You can now add your controls directly to your home screen for quick access.',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.white70, fontSize: 14),
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                   SizedBox(
                     width: double.infinity,
                     child: GlowingButton(
@@ -441,7 +443,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       },
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   TextButton(
                     onPressed: () async {
                       await prefs.setBool('has_seen_promo_permanently', true);
@@ -449,7 +451,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     },
                     child: Text(
                       AppLocalization.isArabicNotifier.value ? 'لا تظهر هذه الرسالة مرة أخرى' : 'Do not show again',
-                      style: const TextStyle(color: Colors.white54, decoration: TextDecoration.underline),
+                      style: TextStyle(color: Colors.white54, decoration: TextDecoration.underline),
                     ),
                   )
                 ],
@@ -873,7 +875,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         list.add(GridItemData(
             id: id,
             x: pos['x']!, y: pos['y']!, w: pos['w']!, h: pos['h']!,
-            child: const SizedBox()
+            child: SizedBox()
         ));
       } else {
         var gs = w['gs'] ?? w['configuration']?['gs'];
@@ -884,7 +886,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         
         list.add(GridItemData(
             id: id, x: x, y: y, w: width, h: height,
-            child: const SizedBox()
+            child: SizedBox()
         ));
         
         _localPositions[id] = {'x': x, 'y': y, 'w': width, 'h': height};
@@ -986,12 +988,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Text(
                 AppLocalization.isArabicNotifier.value ? 'نقل الأداة إلى صفحة' : 'Move Widget to Page',
-                style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               // "All / No page" option
               ListTile(
                 contentPadding: EdgeInsets.zero,
@@ -1001,11 +1003,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     shape: BoxShape.circle,
                     color: AppTheme.primaryCyan.withValues(alpha: 0.15),
                   ),
-                  child: const Icon(Icons.dashboard, color: AppTheme.primaryCyan, size: 20),
+                  child: Icon(Icons.dashboard, color: AppTheme.primaryCyan, size: 20),
                 ),
                 title: Text(
                   AppLocalization.isArabicNotifier.value ? 'الكل (بدون صفحة)' : 'All (no page)',
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.white),
                 ),
                 onTap: () async {
                   Navigator.pop(ctx);
@@ -1022,7 +1024,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   }
                 },
               ),
-              const Divider(color: Colors.white12),
+              Divider(color: Colors.white12),
               ..._pages.map((p) {
                 return ListTile(
                   contentPadding: EdgeInsets.zero,
@@ -1032,9 +1034,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       shape: BoxShape.circle,
                       color: const Color(0xFFBB86FC).withValues(alpha: 0.15),
                     ),
-                    child: const Icon(Icons.layers, color: Color(0xFFBB86FC), size: 20),
+                    child: Icon(Icons.layers, color: Color(0xFFBB86FC), size: 20),
                   ),
-                  title: Text(p['name'], style: const TextStyle(color: Colors.white)),
+                  title: Text(p['name'], style: TextStyle(color: Colors.white)),
                   onTap: () async {
                     Navigator.pop(ctx);
                     try {
@@ -1052,7 +1054,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   },
                 );
               }),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
             ],
           ),
         );
@@ -1112,7 +1114,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     
     return GlassCard(
       baseColor: AppTheme.cardBaseColor,
-      child: Center(child: Text(name, style: const TextStyle(color: Colors.white)))
+      child: Center(child: Text(name, style: TextStyle(color: Colors.white)))
     );
   }
 
@@ -1138,7 +1140,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           builder: (context) {
             return IconButton(
               key: _drawerKey,
-              icon: const Icon(Icons.menu),
+              icon: Icon(Icons.menu),
               onPressed: () => Scaffold.of(context).openDrawer(),
             );
           }
@@ -1149,7 +1151,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             alignment: Alignment.center,
             children: [
               IconButton(
-                icon: const Icon(Icons.notifications, color: Colors.white),
+                icon: Icon(Icons.notifications, color: Colors.white),
                 onPressed: _showNotifications,
               ),
               if (_unreadCount > 0)
@@ -1163,13 +1165,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-                    child: Text('$_unreadCount', style: const TextStyle(color: Colors.white, fontSize: 10), textAlign: TextAlign.center),
+                    child: Text('$_unreadCount', style: TextStyle(color: Colors.white, fontSize: 10), textAlign: TextAlign.center),
                   ),
                 )
             ],
           ),
           IconButton(
-            icon: const Icon(Icons.settings, color: AppTheme.primaryCyan),
+            icon: Icon(Icons.settings, color: AppTheme.primaryCyan),
             onPressed: () async {
               final updatedPages = await showDialog<List<dynamic>>(
                 context: context,
@@ -1247,20 +1249,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                              shape: BoxShape.circle,
                              color: AppTheme.primaryCyan.withValues(alpha: 0.1),
                            ),
-                           child: const Icon(Icons.account_circle, size: 48, color: AppTheme.primaryCyan),
+                           child: Icon(Icons.account_circle, size: 48, color: AppTheme.primaryCyan),
                          ),
-                       const SizedBox(height: 12),
+                       SizedBox(height: 12),
                        Text(_userProfile?['username'] ?? 'ControlEx User', 
-                         style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)
+                         style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)
                        ),
                        if (_userProfile?['email'] != null)
                          Text(_userProfile?['email'] as String, 
-                           style: const TextStyle(color: Colors.white38, fontSize: 11)
+                           style: TextStyle(color: Colors.white38, fontSize: 11)
                          ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 _buildDrawerTile(
                   icon: Icons.dashboard,
                   iconColor: AppTheme.primaryCyan,
@@ -1353,7 +1355,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
       body: Stack(
         children: [
-          const SizedBox.expand(),
+          SizedBox.expand(),
           // Vibrant Neon Background Mesh
           Positioned(
             top: -150,
@@ -1398,22 +1400,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const CircularProgressIndicator(color: AppTheme.primaryCyan),
+                  CircularProgressIndicator(color: AppTheme.primaryCyan),
                   if (_serverStatusMessage != null) ...[
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 32),
                       child: Column(
                         children: [
                           Text(
                             _serverStatusMessage!,
-                            style: const TextStyle(color: Colors.white70, fontSize: 14),
+                            style: TextStyle(color: Colors.white70, fontSize: 14),
                             textAlign: TextAlign.center,
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           Text(
                             AppLocalization.get('free_hosting_hint'),
-                            style: const TextStyle(color: Colors.white38, fontSize: 12),
+                            style: TextStyle(color: Colors.white38, fontSize: 12),
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -1462,36 +1464,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     [
                                       Text(
                                         _serverStatusMessage!,
-                                        style: const TextStyle(color: Colors.white54),
+                                        style: TextStyle(color: Colors.white54),
                                         textAlign: TextAlign.center,
                                       ),
-                                      const SizedBox(height: 16),
+                                      SizedBox(height: 16),
                                       TextButton.icon(
-                                        icon: const Icon(Icons.refresh, color: AppTheme.primaryCyan),
-                                        label: Text(AppLocalization.get('retry'), style: const TextStyle(color: AppTheme.primaryCyan)),
+                                        icon: Icon(Icons.refresh, color: AppTheme.primaryCyan),
+                                        label: Text(AppLocalization.get('retry'), style: TextStyle(color: AppTheme.primaryCyan)),
                                         onPressed: () => _loadWidgets(),
                                       ),
                                     ]
                                   else ...
                                     [
                                       Icon(Icons.widgets_outlined, size: 64, color: AppTheme.primaryCyan.withValues(alpha: 0.3)),
-                                      const SizedBox(height: 16),
+                                      SizedBox(height: 16),
                                       Text(
                                         AppLocalization.get('no_widgets'),
-                                        style: const TextStyle(color: Colors.white54, fontSize: 16),
+                                        style: TextStyle(color: Colors.white54, fontSize: 16),
                                         textAlign: TextAlign.center,
                                       ),
-                                      const SizedBox(height: 24),
+                                      SizedBox(height: 24),
                                       ElevatedButton.icon(
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: AppTheme.primaryViolet,
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                                         ),
-                                        icon: const Icon(Icons.add, color: Colors.white),
+                                        icon: Icon(Icons.add, color: Colors.white),
                                         label: Text(
                                           AppLocalization.isArabicNotifier.value ? 'أنشئ أول أداة لك!' : 'Create your first widget!',
-                                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                                         ),
                                         onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())).then((_) => _loadWidgets()),
                                       ),
@@ -1643,7 +1645,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             colors: [AppTheme.primaryCyan, AppTheme.primaryViolet],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -1656,7 +1658,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ],
         ),
-        child: const Icon(Icons.mic, color: Colors.black, size: 22),
+        child: Icon(Icons.mic, color: Colors.black, size: 22),
       ),
     );
   }
@@ -1687,11 +1689,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const SizedBox(width: 48), // balance space
-                      Text(AppLocalization.isArabicNotifier.value ? 'الإشعارات' : 'Notifications', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                      SizedBox(width: 48), // balance space
+                      Text(AppLocalization.isArabicNotifier.value ? 'الإشعارات' : 'Notifications', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                       _notifications.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.delete_sweep, color: Colors.redAccent, size: 24),
+                            icon: Icon(Icons.delete_sweep, color: Colors.redAccent, size: 24),
                             onPressed: () async {
                               // Optimistic UI clear
                               setState(() {
@@ -1712,13 +1714,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               }
                             },
                           )
-                        : const SizedBox(width: 48),
+                        : SizedBox(width: 48),
                     ],
                   ),
-                  const Divider(color: Colors.white12),
+                  Divider(color: Colors.white12),
                   Expanded(
                     child: _notifications.isEmpty
-                      ? Center(child: Text(AppLocalization.isArabicNotifier.value ? 'لا توجد إشعارات بعد' : 'No notifications yet', style: const TextStyle(color: Colors.white38)))
+                      ? Center(child: Text(AppLocalization.isArabicNotifier.value ? 'لا توجد إشعارات بعد' : 'No notifications yet', style: TextStyle(color: Colors.white38)))
                       : ListView.builder(
                           itemCount: _notifications.length,
                           itemBuilder: (ctx, i) {
@@ -1735,20 +1737,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                                  leading: CircleAvatar(
                                    backgroundColor: AppTheme.neonBlue.withValues(alpha: 0.15),
-                                   child: const Icon(Icons.notifications_active, color: AppTheme.neonBlue, size: 20),
+                                   child: Icon(Icons.notifications_active, color: AppTheme.neonBlue, size: 20),
                                  ),
                                  title: Text(
                                    n['title'] ?? '', 
-                                   style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
                                  ),
                                  subtitle: Text(
                                    n['message'] ?? '', 
-                                   style: const TextStyle(color: Colors.white70, fontSize: 12),
+                                   style: TextStyle(color: Colors.white70, fontSize: 12),
                                  ),
                                  trailing: ts != null 
                                    ? Text(
                                        _formatNotifTime(ts), 
-                                       style: const TextStyle(color: Colors.white38, fontSize: 10),
+                                       style: TextStyle(color: Colors.white38, fontSize: 10),
                                      )
                                    : null,
                                ),
@@ -1847,7 +1849,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                          textAlign: TextAlign.center,
                        ),
                        if (showUnit) ...[
-                         const SizedBox(width: 4),
+                         SizedBox(width: 4),
                          Padding(
                            padding: const EdgeInsets.only(bottom: 2),
                            child: Text(unit, style: TextStyle(color: color.withValues(alpha: 0.7), fontSize: size * 0.08)),
@@ -1915,7 +1917,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(child: Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis)),
+                Expanded(child: Text(title, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis)),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -1923,7 +1925,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     if (unit != null && unit.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(left: 2),
-                        child: Text(unit, style: const TextStyle(color: Colors.white54, fontSize: 9)),
+                        child: Text(unit, style: TextStyle(color: Colors.white54, fontSize: 9)),
                       ),
                   ],
                 ),
@@ -2011,8 +2013,8 @@ onChangeEnd: (v) async {
         ),
         child: Icon(icon, color: iconColor, size: 20),
       ),
-      title: Text(title, style: const TextStyle(color: Colors.white, fontSize: 14)),
-      subtitle: subtitle != null ? Text(subtitle, style: const TextStyle(color: Colors.white38, fontSize: 11)) : null,
+      title: Text(title, style: TextStyle(color: Colors.white, fontSize: 14)),
+      subtitle: subtitle != null ? Text(subtitle, style: TextStyle(color: Colors.white38, fontSize: 11)) : null,
       onTap: onTap,
     );
   }
@@ -2084,9 +2086,9 @@ onChangeEnd: (v) async {
                                 height: 4,
                                 decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(10)),
                               ),
-                              const SizedBox(height: 24),
-                              Text(title, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                              const SizedBox(height: 24),
+                              SizedBox(height: 24),
+                              Text(title, style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                              SizedBox(height: 24),
                               ColorPicker(
                                 pickerColor: pickerColor,
                                 onColorChanged: (Color color) {
@@ -2111,7 +2113,7 @@ onChangeEnd: (v) async {
                                 displayThumbColor: true,
                                 paletteType: PaletteType.hsvWithHue,
                               ),
-                              const SizedBox(height: 20),
+                              SizedBox(height: 20),
                               // Quick Swatches
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -2153,7 +2155,7 @@ onChangeEnd: (v) async {
                                    }),
                                 ]
                               ),
-                              const SizedBox(height: 30),
+                              SizedBox(height: 30),
                             ],
                           ),
                         ),
@@ -2169,8 +2171,8 @@ onChangeEnd: (v) async {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.color_lens, color: currentColor, size: 36),
-                  const SizedBox(height: 8),
-                  Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  SizedBox(height: 8),
+                  Text(title, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
                 ],
               ),
             ),

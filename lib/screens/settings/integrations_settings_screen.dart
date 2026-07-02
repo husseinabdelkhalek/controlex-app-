@@ -106,22 +106,22 @@ class _IntegrationsSettingsScreenState extends State<IntegrationsSettingsScreen>
     return TextField(
       controller: controller,
       obscureText: isPassword,
-      style: const TextStyle(color: Colors.white),
+      style: TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: Colors.white54),
+        labelStyle: TextStyle(color: Colors.white54),
         prefixIcon: Icon(icon, color: AppTheme.primaryCyan),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppTheme.glassBorder),
+          borderSide: BorderSide(color: AppTheme.glassBorder),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppTheme.glassBorder),
+          borderSide: BorderSide(color: AppTheme.glassBorder),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppTheme.primaryCyan, width: 2),
+          borderSide: BorderSide(color: AppTheme.primaryCyan, width: 2),
         ),
         filled: true,
         fillColor: AppTheme.cardBaseColor.withValues(alpha: 0.3),
@@ -164,9 +164,9 @@ class _IntegrationsSettingsScreenState extends State<IntegrationsSettingsScreen>
                               color: AppTheme.primaryViolet.withValues(alpha: 0.2),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.cloud_sync, color: AppTheme.primaryViolet),
+                            child: Icon(Icons.cloud_sync, color: AppTheme.primaryViolet),
                           ),
-                          const SizedBox(width: 16),
+                          SizedBox(width: 16),
                           const Expanded(
                             child: Text(
                               'Adafruit IO',
@@ -175,11 +175,11 @@ class _IntegrationsSettingsScreenState extends State<IntegrationsSettingsScreen>
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
                       _buildTextField('Adafruit Username', _aioUserCtrl, Icons.cloud_circle_outlined),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       _buildTextField('Adafruit API Key', _aioKeyCtrl, Icons.vpn_key_outlined, isPassword: true),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppTheme.primaryViolet,
@@ -188,12 +188,12 @@ class _IntegrationsSettingsScreenState extends State<IntegrationsSettingsScreen>
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         onPressed: _isLoading ? null : _updateAdafruit,
-                        child: const Text('Save Adafruit Keys', style: TextStyle(fontWeight: FontWeight.bold)),
+                        child: Text('Save Adafruit Keys', style: TextStyle(fontWeight: FontWeight.bold)),
                       )
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
@@ -212,9 +212,9 @@ class _IntegrationsSettingsScreenState extends State<IntegrationsSettingsScreen>
                               color: Colors.orangeAccent.withValues(alpha: 0.2),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.storage, color: Colors.orangeAccent),
+                            child: Icon(Icons.storage, color: Colors.orangeAccent),
                           ),
-                          const SizedBox(width: 16),
+                          SizedBox(width: 16),
                           const Expanded(
                             child: Text(
                               'Firebase RTDB',
@@ -223,11 +223,11 @@ class _IntegrationsSettingsScreenState extends State<IntegrationsSettingsScreen>
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
                       _buildTextField('Firebase Database URL', _firebaseUrlCtrl, Icons.link),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       _buildTextField('Firebase Database Secret', _firebaseSecretCtrl, Icons.security, isPassword: true),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.orangeAccent,
@@ -236,7 +236,7 @@ class _IntegrationsSettingsScreenState extends State<IntegrationsSettingsScreen>
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         onPressed: _isLoading ? null : _updateFirebase,
-                        child: const Text('Save Firebase Config', style: TextStyle(fontWeight: FontWeight.bold)),
+                        child: Text('Save Firebase Config', style: TextStyle(fontWeight: FontWeight.bold)),
                       )
                     ],
                   ),
@@ -247,7 +247,7 @@ class _IntegrationsSettingsScreenState extends State<IntegrationsSettingsScreen>
           if (_isLoading)
             Container(
               color: Colors.black54,
-              child: const Center(
+              child: Center(
                 child: CircularProgressIndicator(color: AppTheme.primaryCyan),
               ),
             ),

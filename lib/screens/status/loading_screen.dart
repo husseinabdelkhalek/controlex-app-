@@ -169,7 +169,7 @@ class _ServerLoadingScreenState extends State<ServerLoadingScreen>
                         strokeWidth: 2,
                       ),
                     ),
-                    const SizedBox(
+                    SizedBox(
                       width: 70,
                       height: 70,
                       child: CircularProgressIndicator(
@@ -177,7 +177,7 @@ class _ServerLoadingScreenState extends State<ServerLoadingScreen>
                         strokeWidth: 4,
                       ),
                     ),
-                    const SizedBox(
+                    SizedBox(
                       width: 40,
                       height: 40,
                       child: CircularProgressIndicator(
@@ -188,7 +188,7 @@ class _ServerLoadingScreenState extends State<ServerLoadingScreen>
                   ],
                 ),
                 
-                const SizedBox(height: 60),
+                SizedBox(height: 60),
 
                 // Dynamic Text with AnimatedSwitcher
                 SizedBox(
@@ -226,7 +226,7 @@ class _ServerLoadingScreenState extends State<ServerLoadingScreen>
                   ),
                 ),
                 if (_showTroubleshoot) ...[
-                  const SizedBox(height: 30),
+                  SizedBox(height: 30),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Text(

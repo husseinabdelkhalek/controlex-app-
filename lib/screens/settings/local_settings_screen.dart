@@ -162,11 +162,11 @@ class _LocalSettingsScreenState extends State<LocalSettingsScreen> {
         title: Text(_editingWidgetId == null ? AppLocalization.get('local_control') : AppLocalization.get('edit_widget')),
         actions: [
            if (_editingWidgetId != null)
-             IconButton(icon: const Icon(Icons.close, color: Colors.white), onPressed: () {
+             IconButton(icon: Icon(Icons.close, color: Colors.white), onPressed: () {
                 setState(() { _editingWidgetId = null; _requireBiometric = false; });
                 _nameCtrl.clear(); _commandPathCtrl.clear();
              }),
-           IconButton(icon: const Icon(Icons.check, color: AppTheme.primaryCyan, size: 30), onPressed: _saveWidget)
+           IconButton(icon: Icon(Icons.check, color: AppTheme.primaryCyan, size: 30), onPressed: _saveWidget)
         ],
       ),
       body: SingleChildScrollView(
@@ -179,7 +179,7 @@ class _LocalSettingsScreenState extends State<LocalSettingsScreen> {
                Row(
                  children: [
                    Expanded(child: _buildTextField('IP Address (e.g. 192.168.1.100)', _ipCtrl, Icons.wifi)),
-                   const SizedBox(width: 8),
+                   SizedBox(width: 8),
                    ElevatedButton(
                      style: ElevatedButton.styleFrom(
                        backgroundColor: AppTheme.primaryCyan,
@@ -188,16 +188,16 @@ class _LocalSettingsScreenState extends State<LocalSettingsScreen> {
                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                      ),
                      onPressed: _saveIp,
-                     child: const Text('حفظ', style: TextStyle(fontWeight: FontWeight.bold)),
+                     child: Text('حفظ', style: TextStyle(fontWeight: FontWeight.bold)),
                    ),
                  ],
                ),
-               const SizedBox(height: 8),
+               SizedBox(height: 8),
                FutureBuilder<bool>(
                  future: LocalService.checkConnection(),
                  builder: (ctx, snap) {
                    if (snap.connectionState == ConnectionState.waiting) {
-                     return const Row(children: [
+                     return Row(children: [
                        SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primaryCyan)),
                        SizedBox(width: 8),
                        Text('جاري فحص الاتصال...', style: TextStyle(color: Colors.white54, fontSize: 12)),
@@ -206,45 +206,45 @@ class _LocalSettingsScreenState extends State<LocalSettingsScreen> {
                    final connected = snap.data ?? false;
                    return Row(children: [
                      Icon(connected ? Icons.check_circle : Icons.error, color: connected ? Colors.greenAccent : Colors.redAccent, size: 18),
-                     const SizedBox(width: 6),
+                     SizedBox(width: 6),
                      Text(connected ? AppLocalization.get('device_connected') : AppLocalization.get('device_disconnected'), style: TextStyle(color: connected ? Colors.greenAccent : Colors.redAccent, fontSize: 12, fontWeight: FontWeight.bold)),
                    ]);
                  },
                )
             ]),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
             // Widget Details
             _buildGlassSection(AppLocalization.get('widget_details'), [
                _buildTextField(AppLocalization.get('widget_name'), _nameCtrl, Icons.widgets),
-               const SizedBox(height: 12),
+               SizedBox(height: 12),
                _buildTextField(AppLocalization.get('command_path'), _commandPathCtrl, Icons.terminal, hint: 'مثل: led, motor, relay'),
-               const SizedBox(height: 12),
+               SizedBox(height: 12),
                 Theme(
                   data: Theme.of(context).copyWith(canvasColor: const Color(0xFF1A1F26)),
                   child: DropdownButtonFormField<String>(
                     value: _selectedType,
-                    style: const TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold, fontSize: 16),
-                    icon: const Icon(Icons.arrow_drop_down_circle, color: AppTheme.primaryCyan),
+                    style: TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold, fontSize: 16),
+                    icon: Icon(Icons.arrow_drop_down_circle, color: AppTheme.primaryCyan),
                     decoration: InputDecoration(
                         labelText: AppLocalization.get('widget_type'),
-                        labelStyle: const TextStyle(color: AppTheme.primaryCyan, fontSize: 18, fontWeight: FontWeight.bold),
-                        prefixIcon: const Icon(Icons.category, color: AppTheme.primaryCyan),
+                        labelStyle: TextStyle(color: AppTheme.primaryCyan, fontSize: 18, fontWeight: FontWeight.bold),
+                        prefixIcon: Icon(Icons.category, color: AppTheme.primaryCyan),
                         filled: true, fillColor: Colors.black26,
-                        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: AppTheme.primaryCyan, width: 1.5)),
-                        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: AppTheme.primaryCyan, width: 2.5)),
+                        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide(color: AppTheme.primaryCyan, width: 1.5)),
+                        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide(color: AppTheme.primaryCyan, width: 2.5)),
                     ),
-                    items: _types.map((type) => DropdownMenuItem(value: type, child: Text(type, style: const TextStyle(color: Colors.white, fontSize: 16)))).toList(),
+                    items: _types.map((type) => DropdownMenuItem(value: type, child: Text(type, style: TextStyle(color: Colors.white, fontSize: 16)))).toList(),
                     onChanged: (val) => setState(() => _selectedType = val!),
                   ),
                 )
              ]),
             
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             if (_selectedType == 'Toggle' || _selectedType == 'Push')
                _buildGlassSection(AppLocalization.get('commands'), [
                   _buildTextField(AppLocalization.get('on_command'), _onCmdCtrl, Icons.power),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   if (_selectedType == 'Toggle')
                     _buildTextField('أمر الإيقاف (OFF Command)', _offCmdCtrl, Icons.power_off),
                ]),
@@ -252,17 +252,17 @@ class _LocalSettingsScreenState extends State<LocalSettingsScreen> {
             if (_selectedType == 'Slider')
                _buildGlassSection(AppLocalization.get('configuration'), [
                  _buildTextField(AppLocalization.get('min_value'), _minCtrl, Icons.arrow_downward, isNumber: true),
-                 const SizedBox(height: 12),
+                 SizedBox(height: 12),
                  _buildTextField(AppLocalization.get('max_value'), _maxCtrl, Icons.arrow_upward, isNumber: true),
                ]),
                
             if (_selectedType != 'Slider' && _selectedType != 'ColorPicker') ...[
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               _buildGlassSection(
                 AppLocalization.isArabicNotifier.value ? 'إعدادات الحماية (البصمة/الوجه)' : 'Security (Biometrics/Face ID)',
                 [
                   SwitchListTile(
-                    title: Text(AppLocalization.isArabicNotifier.value ? 'طلب المصادقة قبل الإرسال' : 'Require Authentication before send', style: const TextStyle(color: Colors.white, fontSize: 13)),
+                    title: Text(AppLocalization.isArabicNotifier.value ? 'طلب المصادقة قبل الإرسال' : 'Require Authentication before send', style: TextStyle(color: Colors.white, fontSize: 13)),
                     activeColor: AppTheme.primaryCyan,
                     value: _requireBiometric,
                     contentPadding: EdgeInsets.zero,
@@ -272,34 +272,34 @@ class _LocalSettingsScreenState extends State<LocalSettingsScreen> {
               ),
             ],
                
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             _buildGlassSection(AppLocalization.get('appearance'), [
-               Text(AppLocalization.get('primary_color'), style: const TextStyle(color: Colors.white)),
-               const SizedBox(height: 8),
+               Text(AppLocalization.get('primary_color'), style: TextStyle(color: Colors.white)),
+               SizedBox(height: 8),
                Row(
                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                  children: _swatches.map((color) => GestureDetector(
                     onTap: () => setState(() => _selectedPrimary = color),
                     child: CircleAvatar(
                        backgroundColor: color, radius: 20,
-                       child: _selectedPrimary == color ? const Icon(Icons.check, color: Colors.black) : null,
+                       child: _selectedPrimary == color ? Icon(Icons.check, color: Colors.black) : null,
                     ),
                  )).toList()
                )
             ]),
             
-            const SizedBox(height: 32),
-            Text(AppLocalization.get('existing_widgets'), style: const TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold, fontSize: 16)),
-            const Divider(color: Colors.white24),
+            SizedBox(height: 32),
+            Text(AppLocalization.get('existing_widgets'), style: TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold, fontSize: 16)),
+            Divider(color: Colors.white24),
             _isLoadingList 
-               ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan))
+               ? Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan))
                : _existingWidgets.isEmpty 
-                  ? Padding(padding: const EdgeInsets.all(16), child: Text(AppLocalization.get('no_widgets_yet'), style: const TextStyle(color: Colors.white54)))
+                  ? Padding(padding: const EdgeInsets.all(16), child: Text(AppLocalization.get('no_widgets_yet'), style: TextStyle(color: Colors.white54)))
                   : ListView.separated(
                        shrinkWrap: true,
                        physics: const NeverScrollableScrollPhysics(),
                        itemCount: _existingWidgets.length,
-                       separatorBuilder: (_, __) => const Divider(color: Colors.white10),
+                       separatorBuilder: (_, __) => Divider(color: Colors.white10),
                        itemBuilder: (context, index) {
                           final w = _existingWidgets[index];
                           final color = _hexToColor(w['appearance']?['primaryColor']);
@@ -314,14 +314,14 @@ class _LocalSettingsScreenState extends State<LocalSettingsScreen> {
                                    decoration: BoxDecoration(color: color.withValues(alpha: 0.1), shape: BoxShape.circle),
                                    child: Icon(Icons.widgets, color: color, size: 20),
                                 ),
-                                title: Text(w['name'] ?? '', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                title: Text(w['name'] ?? '', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                                 subtitle: Text('${(w["type"] ?? "").toString().toUpperCase()} | /${w["feedName"] ?? ""}', 
-                                   style: const TextStyle(color: Colors.white38, fontSize: 11)),
+                                   style: TextStyle(color: Colors.white38, fontSize: 11)),
                                 trailing: Row(
                                    mainAxisSize: MainAxisSize.min,
                                    children: [
-                                      IconButton(icon: const Icon(Icons.edit_note, color: AppTheme.primaryCyan), onPressed: () => _fillFormForEditing(w)),
-                                      IconButton(icon: const Icon(Icons.delete_sweep, color: Colors.redAccent), onPressed: () => _deleteWidget(w['id'])),
+                                      IconButton(icon: Icon(Icons.edit_note, color: AppTheme.primaryCyan), onPressed: () => _fillFormForEditing(w)),
+                                      IconButton(icon: Icon(Icons.delete_sweep, color: Colors.redAccent), onPressed: () => _deleteWidget(w['id'])),
                                    ],
                                 ),
                              ),
@@ -349,8 +349,8 @@ class _LocalSettingsScreenState extends State<LocalSettingsScreen> {
         child: Column(
            crossAxisAlignment: CrossAxisAlignment.start,
            children: [
-              Text(title, style: const TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
+              Text(title, style: TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold)),
+              SizedBox(height: 16),
               ...children
            ],
         ),
@@ -361,15 +361,15 @@ class _LocalSettingsScreenState extends State<LocalSettingsScreen> {
      return TextField(
         controller: ctrl,
         keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-        style: const TextStyle(color: Colors.white),
+        style: TextStyle(color: Colors.white),
         decoration: InputDecoration(
            labelText: label,
            hintText: hint,
-           hintStyle: const TextStyle(color: Colors.white24, fontSize: 12),
-           labelStyle: const TextStyle(color: Colors.white54),
+           hintStyle: TextStyle(color: Colors.white24, fontSize: 12),
+           labelStyle: TextStyle(color: Colors.white54),
            prefixIcon: Icon(icon, color: Colors.white54),
-           enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.white24)),
-           focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppTheme.primaryCyan)),
+           enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white24)),
+           focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppTheme.primaryCyan)),
         ),
      );
   }

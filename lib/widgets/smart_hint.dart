@@ -108,7 +108,7 @@ class _SmartHintState extends State<SmartHint> with SingleTickerProviderStateMix
                     ),
                     child: Text(
                       widget.message!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,

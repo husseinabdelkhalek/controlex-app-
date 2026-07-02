@@ -49,28 +49,28 @@ class PromoDialogWidget extends StatelessWidget {
                 // Title
                 Text(
                   isArabic ? 'اكتشف الميزات الجديدة! 🚀' : 'Discover New Features! 🚀',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 
                 // Description
                 Text(
                   isArabic 
                     ? 'لقد أضفنا للتو "اختصارات التطبيق"! يمكنك الآن الضغط مطولاً على أيقونة التطبيق من الشاشة الرئيسية للوصول السريع إلى الأتمتة والمشاهد والتحكم المحلي.\n\nوقريباً جداً، سنوفر "ودجات الشاشة الرئيسية" بتصميم زجاجي رائع كما بالصورة للتحكم بأجهزتك دون الحاجة لفتح التطبيق.'
                     : 'We just added "App Quick Actions"! Long-press the app icon to quickly jump into Automations, Scenes, or Local Control.\n\nComing very soon: "Home Screen Widgets" with a stunning glassmorphic design to control your devices instantly without opening the app.',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white70,
                     fontSize: 14,
                     height: 1.5,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 
                 // Mockup Image
                 Container(
@@ -96,14 +96,14 @@ class PromoDialogWidget extends StatelessWidget {
                       errorBuilder: (context, error, stackTrace) => Container(
                         height: 200,
                         color: Colors.black26,
-                        child: const Center(
+                        child: Center(
                           child: Icon(Icons.image_not_supported, color: Colors.white24, size: 40),
                         ),
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
                 
                 // Action Button
                 GlowingButton(
@@ -121,14 +121,14 @@ class PromoDialogWidget extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.check_circle_outline, color: Colors.white),
-                      const SizedBox(width: 8),
+                      Icon(Icons.check_circle_outline, color: Colors.white),
+                      SizedBox(width: 8),
                       Text(isArabic ? 'رائع، سأجربها!' : 'Awesome, I will try it!'),
                     ],
                   ),
                 ),
                 
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 
                 // Do not show again
                 TextButton(
@@ -139,7 +139,7 @@ class PromoDialogWidget extends StatelessWidget {
                   },
                   child: Text(
                     isArabic ? 'لا تظهر هذه الرسالة مرة أخرى' : 'Do not show again',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white54,
                       decoration: TextDecoration.underline,
                       decorationColor: Colors.white54,

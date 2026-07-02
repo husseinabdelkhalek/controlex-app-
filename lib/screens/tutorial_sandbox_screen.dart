@@ -41,13 +41,13 @@ class _TutorialSandboxScreenState extends State<TutorialSandboxScreen> {
         children: [
           Row(
             children: [
-              const Icon(Icons.school, color: AppTheme.primaryViolet, size: 28),
-              const SizedBox(width: 12),
-              Expanded(child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold))),
+              Icon(Icons.school, color: AppTheme.primaryViolet, size: 28),
+              SizedBox(width: 12),
+              Expanded(child: Text(text, style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold))),
             ],
           ),
           if (_step == 4) ...[
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primaryCyan,
@@ -57,7 +57,7 @@ class _TutorialSandboxScreenState extends State<TutorialSandboxScreen> {
               onPressed: () {
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LocalDashboardScreen(startTour: true)));
               },
-              child: Text(AppLocalization.get('sandbox_finish_btn'), style: const TextStyle(fontWeight: FontWeight.bold)),
+              child: Text(AppLocalization.get('sandbox_finish_btn'), style: TextStyle(fontWeight: FontWeight.bold)),
             )
           ]
         ],
@@ -72,13 +72,13 @@ class _TutorialSandboxScreenState extends State<TutorialSandboxScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: Text(AppLocalization.isArabicNotifier.value ? 'إنشاء أداة تجريبية' : 'Create Dummy Widget', style: const TextStyle(color: AppTheme.primaryCyan)),
+        title: Text(AppLocalization.isArabicNotifier.value ? 'إنشاء أداة تجريبية' : 'Create Dummy Widget', style: TextStyle(color: AppTheme.primaryCyan)),
         content: TextField(
           controller: ctrl,
-          style: const TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white),
           decoration: InputDecoration(
             hintText: AppLocalization.isArabicNotifier.value ? 'مثال: إضاءة الغرفة' : 'e.g. Room Light',
-            hintStyle: const TextStyle(color: Colors.white54),
+            hintStyle: TextStyle(color: Colors.white54),
             enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white24)),
             focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppTheme.primaryCyan)),
           ),
@@ -100,9 +100,9 @@ class _TutorialSandboxScreenState extends State<TutorialSandboxScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.lightbulb, color: AppTheme.primaryCyan, size: 32),
-                          const SizedBox(height: 8),
-                          Text(_widgetName, style: const TextStyle(color: Colors.white)),
+                          Icon(Icons.lightbulb, color: AppTheme.primaryCyan, size: 32),
+                          SizedBox(height: 8),
+                          Text(_widgetName, style: TextStyle(color: Colors.white)),
                         ],
                       ),
                     ),
@@ -167,7 +167,7 @@ class _TutorialSandboxScreenState extends State<TutorialSandboxScreen> {
       ),
       floatingActionButton: (_step == 0 || _step == 1) ? FloatingActionButton(
         backgroundColor: AppTheme.primaryViolet,
-        child: const Icon(Icons.add, color: Colors.white),
+        child: Icon(Icons.add, color: Colors.white),
         onPressed: () {
           if (_step == 0) {
             _showDummyForm();

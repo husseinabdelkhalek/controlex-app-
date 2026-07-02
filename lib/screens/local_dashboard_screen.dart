@@ -172,7 +172,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
   }
 
   Widget _buildQuickScenes(List<dynamic> dashboardScenes) {
-    if (dashboardScenes.isEmpty) return const SizedBox.shrink();
+    if (dashboardScenes.isEmpty) return SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,7 +184,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
             children: [
               Text(
                 AppLocalization.get('quick_scenes'),
-                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
               ),
               GestureDetector(
                 onTap: () {
@@ -195,7 +195,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                 },
                 child: Text(
                   AppLocalization.isArabicNotifier.value ? 'الكل >' : 'All >',
-                  style: const TextStyle(color: AppTheme.primaryCyan, fontSize: 13, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: AppTheme.primaryCyan, fontSize: 13, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -264,11 +264,11 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                                   )
                                 : Icon(iconData, color: color, size: 16),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               name,
-                              style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),
+                              style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),
                               maxLines: 2,
                             ),
                           ),
@@ -281,7 +281,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
             },
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
       ],
     );
   }
@@ -376,7 +376,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
           
           if (_localPositions.containsKey(id)) {
             final pos = _localPositions[id]!;
-            list.add(GridItemData(id: id, x: pos['x']!, y: pos['y']!, w: pos['w']!, h: pos['h']!, child: const SizedBox()));
+            list.add(GridItemData(id: id, x: pos['x']!, y: pos['y']!, w: pos['w']!, h: pos['h']!, child: SizedBox()));
           } else {
             var gs = w['gs'];
             int x = gs != null ? (gs['x'] ?? 0) : 0;
@@ -384,7 +384,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
             int width = gs != null ? (gs['w'] ?? 1) : 1;
             int height = gs != null ? (gs['h'] ?? 1) : 1;
             
-            list.add(GridItemData(id: id, x: x, y: y, w: width, h: height, child: const SizedBox()));
+            list.add(GridItemData(id: id, x: x, y: y, w: width, h: height, child: SizedBox()));
             _localPositions[id] = {'x': x, 'y': y, 'w': width, 'h': height};
           }
        }
@@ -470,7 +470,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
     
     return GlassCard(
       baseColor: AppTheme.cardBaseColor,
-      child: Center(child: Text(name, style: const TextStyle(color: Colors.white)))
+      child: Center(child: Text(name, style: TextStyle(color: Colors.white)))
     );
   }
 
@@ -575,7 +575,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                          textAlign: TextAlign.center,
                        ),
                        if (showUnit) ...[
-                         const SizedBox(width: 4),
+                         SizedBox(width: 4),
                          Padding(
                            padding: const EdgeInsets.only(bottom: 2),
                            child: Text(unit, style: TextStyle(color: color.withValues(alpha: 0.7), fontSize: size * 0.08)),
@@ -615,7 +615,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(child: Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis)),
+                Expanded(child: Text(title, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis)),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -623,7 +623,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                     if (unit != null && unit.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(left: 2),
-                        child: Text(unit, style: const TextStyle(color: Colors.white54, fontSize: 9)),
+                        child: Text(unit, style: TextStyle(color: Colors.white54, fontSize: 9)),
                       ),
                   ],
                 ),
@@ -757,9 +757,9 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                                 height: 4,
                                 decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(10)),
                               ),
-                              const SizedBox(height: 24),
-                              Text(title, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                              const SizedBox(height: 24),
+                              SizedBox(height: 24),
+                              Text(title, style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                              SizedBox(height: 24),
                               ColorPicker(
                                 pickerColor: pickerColor,
                                 onColorChanged: (Color color) {
@@ -783,7 +783,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                                 displayThumbColor: true,
                                 paletteType: PaletteType.hsvWithHue,
                               ),
-                              const SizedBox(height: 20),
+                              SizedBox(height: 20),
                               // Quick Swatches
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -820,7 +820,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                                    }),
                                 ]
                               ),
-                              const SizedBox(height: 30),
+                              SizedBox(height: 30),
                             ],
                           ),
                         ),
@@ -836,8 +836,8 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.color_lens, color: currentColor, size: 36),
-                  const SizedBox(height: 8),
-                  Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  SizedBox(height: 8),
+                  Text(title, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
                 ],
               ),
             ),
@@ -886,7 +886,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             colors: [AppTheme.primaryCyan, AppTheme.primaryViolet],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -899,7 +899,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
             ),
           ],
         ),
-        child: const Icon(Icons.mic, color: Colors.black, size: 22),
+        child: Icon(Icons.mic, color: Colors.black, size: 22),
       ),
     );
   }
@@ -926,14 +926,14 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
           children: [
             Text(
               AppLocalization.get('local_control'),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
             ),
-            const SizedBox(height: 2),
+            SizedBox(height: 2),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(_isConnected ? Icons.wifi : Icons.wifi_off, size: 10, color: _isConnected ? Colors.greenAccent : Colors.redAccent),
-                const SizedBox(width: 4),
+                SizedBox(width: 4),
                 Text(
                   LocalService.deviceIp.isEmpty ? AppLocalization.get('no_ip_selected') : LocalService.deviceIp,
                   style: TextStyle(fontSize: 10, color: _isConnected ? Colors.greenAccent : Colors.white38),
@@ -953,7 +953,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
       ),
       body: Stack(
         children: [
-          const SizedBox.expand(),
+          SizedBox.expand(),
           Positioned(
             top: -150,
             right: -100,
@@ -994,7 +994,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
             ),
           ),
           _isLoading
-              ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan))
+              ? Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan))
               : RefreshIndicator(
                   color: AppTheme.primaryCyan,
                   backgroundColor: AppTheme.cardBaseColor,
@@ -1019,19 +1019,19 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          const Icon(Icons.wifi_tethering_outlined, size: 64, color: AppTheme.primaryCyan),
-                                          const SizedBox(height: 16),
+                                          Icon(Icons.wifi_tethering_outlined, size: 64, color: AppTheme.primaryCyan),
+                                          SizedBox(height: 16),
                                           Text(
                                             AppLocalization.get('no_widgets'),
-                                            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                                            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                                           ),
-                                          const SizedBox(height: 8),
+                                          SizedBox(height: 8),
                                           Text(
                                             AppLocalization.get('add_ip_hint'),
-                                            style: const TextStyle(color: Colors.white38, fontSize: 13),
+                                            style: TextStyle(color: Colors.white38, fontSize: 13),
                                             textAlign: TextAlign.center,
                                           ),
-                                          const SizedBox(height: 24),
+                                          SizedBox(height: 24),
                                           GlowingButton(
                                             width: double.infinity,
                                             onPressed: () => Navigator.push(

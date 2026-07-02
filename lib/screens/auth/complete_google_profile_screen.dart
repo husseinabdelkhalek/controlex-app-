@@ -60,7 +60,7 @@ class _CompleteGoogleProfileScreenState extends State<CompleteGoogleProfileScree
     return Scaffold(
       backgroundColor: const Color(0xFF0B0C10),
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -73,7 +73,7 @@ class _CompleteGoogleProfileScreenState extends State<CompleteGoogleProfileScree
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 40),
+                SizedBox(height: 40),
                 // Welcome icon
                 Container(
                   width: 80, height: 80,
@@ -83,21 +83,21 @@ class _CompleteGoogleProfileScreenState extends State<CompleteGoogleProfileScree
                     color: const Color(0xFF00FFCC).withValues(alpha: 0.15),
                     border: Border.all(color: const Color(0xFF00FFCC), width: 2),
                   ),
-                  child: const Icon(Icons.waving_hand, color: Color(0xFF00FFCC), size: 40),
+                  child: Icon(Icons.waving_hand, color: Color(0xFF00FFCC), size: 40),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 Text(
                   'أهلاً ${widget.username}! 👋',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 8),
-                const Text(
+                SizedBox(height: 8),
+                Text(
                   'تم إنشاء حسابك بنجاح عبر جوجل.\nأضف بيانات Adafruit للتحكم في أجهزتك.',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.white54, fontSize: 14, height: 1.6),
                 ),
-                const SizedBox(height: 40),
+                SizedBox(height: 40),
 
                 // Adafruit section
                 Container(
@@ -112,53 +112,53 @@ class _CompleteGoogleProfileScreenState extends State<CompleteGoogleProfileScree
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.cloud_sync, color: Color(0xFF00FFCC), size: 20),
-                          const SizedBox(width: 8),
-                          const Text('Adafruit IO', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                          Icon(Icons.cloud_sync, color: Color(0xFF00FFCC), size: 20),
+                          SizedBox(width: 8),
+                          Text('Adafruit IO', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
                           const Spacer(),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(color: Colors.white12, borderRadius: BorderRadius.circular(20)),
-                            child: const Text('اختياري', style: TextStyle(color: Colors.white38, fontSize: 10)),
+                            child: Text('اختياري', style: TextStyle(color: Colors.white38, fontSize: 10)),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 4),
-                      const Text('للتحكم في لوحات Arduino/ESP عبر الإنترنت', style: TextStyle(color: Colors.white38, fontSize: 11)),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 4),
+                      Text('للتحكم في لوحات Arduino/ESP عبر الإنترنت', style: TextStyle(color: Colors.white38, fontSize: 11)),
+                      SizedBox(height: 16),
                       TextField(
                         controller: _aioUserCtrl,
-                        style: const TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                           labelText: 'اسم مستخدم Adafruit',
-                          labelStyle: const TextStyle(color: Colors.white54),
+                          labelStyle: TextStyle(color: Colors.white54),
                           hintText: 'اسم المستخدم في Adafruit IO',
-                          hintStyle: const TextStyle(color: Colors.white24, fontSize: 13),
-                          prefixIcon: const Icon(Icons.cloud_circle_outlined, color: Colors.white54),
-                          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.white24)),
-                          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF00FFCC))),
+                          hintStyle: TextStyle(color: Colors.white24, fontSize: 13),
+                          prefixIcon: Icon(Icons.cloud_circle_outlined, color: Colors.white54),
+                          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white24)),
+                          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Color(0xFF00FFCC))),
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
                       TextField(
                         controller: _aioKeyCtrl,
                         obscureText: true,
-                        style: const TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                           labelText: 'مفتاح Adafruit API',
-                          labelStyle: const TextStyle(color: Colors.white54),
+                          labelStyle: TextStyle(color: Colors.white54),
                           hintText: 'مفتاح API من لوحة تحكم Adafruit',
-                          hintStyle: const TextStyle(color: Colors.white24, fontSize: 13),
-                          prefixIcon: const Icon(Icons.vpn_key_outlined, color: Colors.white54),
-                          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.white24)),
-                          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF00FFCC))),
+                          hintStyle: TextStyle(color: Colors.white24, fontSize: 13),
+                          prefixIcon: Icon(Icons.vpn_key_outlined, color: Colors.white54),
+                          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white24)),
+                          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Color(0xFF00FFCC))),
                         ),
                       ),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
                 SizedBox(
                   height: 55,
                   child: ElevatedButton(
@@ -171,16 +171,16 @@ class _CompleteGoogleProfileScreenState extends State<CompleteGoogleProfileScree
                     ),
                     onPressed: _isLoading ? null : _save,
                     child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.black)
-                        : const Text('حفظ والمتابعة', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        ? CircularProgressIndicator(color: Colors.black)
+                        : Text('حفظ والمتابعة', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextButton(
                   onPressed: _skip,
-                  child: const Text('تخطي الآن، سأضيفها لاحقاً', style: TextStyle(color: Colors.white38, fontSize: 13)),
+                  child: Text('تخطي الآن، سأضيفها لاحقاً', style: TextStyle(color: Colors.white38, fontSize: 13)),
                 ),
-                const SizedBox(height: 40),
+                SizedBox(height: 40),
               ],
             ),
           ),

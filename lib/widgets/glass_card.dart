@@ -7,17 +7,17 @@ class GlassCard extends StatefulWidget {
   final double? width;
   final double? height;
   final double borderRadius;
-  final Color baseColor;
+  final Color? baseColor;
   final Color? borderColor;
   final bool isAnimated;
 
-  const GlassCard({
+  GlassCard({
     super.key,
     required this.child,
     this.width,
     this.height,
     this.borderRadius = 24.0,
-    this.baseColor = AppTheme.cardBaseColor,
+    this.baseColor,
     this.borderColor,
     this.isAnimated = true,
   });
@@ -44,8 +44,8 @@ class _GlassCardState extends State<GlassCard> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            widget.baseColor.withValues(alpha: 0.85),
-            widget.baseColor.withValues(alpha: 0.65),
+            (widget.baseColor ?? AppTheme.cardBaseColor).withValues(alpha: 0.85),
+            (widget.baseColor ?? AppTheme.cardBaseColor).withValues(alpha: 0.65),
           ],
         ),
         boxShadow: [
@@ -58,7 +58,7 @@ class _GlassCardState extends State<GlassCard> {
           ),
           // Neon Glow Effect on Press/Hover
           if (_isPressed)
-            const BoxShadow(
+            BoxShadow(
               color: AppTheme.violetGlow,
               blurRadius: 20,
               spreadRadius: 2,

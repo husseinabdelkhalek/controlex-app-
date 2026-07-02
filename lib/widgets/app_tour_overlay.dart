@@ -124,14 +124,18 @@ class _AppTourOverlayState extends State<AppTourOverlay> with TickerProviderStat
               duration: const Duration(milliseconds: 400),
               curve: Curves.easeInOut,
               alignment: 0.5,
-            );
+            ).then((_) {
+              if (mounted) setState(() {});
+            });
           } else {
             Scrollable.ensureVisible(
               context,
               duration: const Duration(milliseconds: 400),
               curve: Curves.easeInOut,
               alignment: 0.5,
-            );
+            ).then((_) {
+              if (mounted) setState(() {});
+            });
           }
         }
       }
@@ -223,7 +227,7 @@ class _AppTourOverlayState extends State<AppTourOverlay> with TickerProviderStat
                   }
                 }
               },
-              child: const SizedBox.shrink(),
+              child: SizedBox.shrink(),
             ),
           ),
           
@@ -303,7 +307,7 @@ class _AppTourOverlayState extends State<AppTourOverlay> with TickerProviderStat
                     Expanded(
                       child: Text(
                         title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -311,7 +315,7 @@ class _AppTourOverlayState extends State<AppTourOverlay> with TickerProviderStat
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
@@ -321,7 +325,7 @@ class _AppTourOverlayState extends State<AppTourOverlay> with TickerProviderStat
                       ),
                       child: Text(
                         '${_currentStepIndex + 1} / ${widget.steps.length}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Color(0xFFD070FF),
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -330,10 +334,10 @@ class _AppTourOverlayState extends State<AppTourOverlay> with TickerProviderStat
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Text(
                   desc,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white70,
                     fontSize: 14,
                     height: 1.5,
@@ -351,12 +355,12 @@ class _AppTourOverlayState extends State<AppTourOverlay> with TickerProviderStat
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.error_outline, color: Colors.redAccent, size: 20),
-                        const SizedBox(width: 8),
+                        Icon(Icons.error_outline, color: Colors.redAccent, size: 20),
+                        SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             AppLocalization.get('tour_interact_hint'),
-                            style: const TextStyle(color: Colors.redAccent, fontSize: 13),
+                            style: TextStyle(color: Colors.redAccent, fontSize: 13),
                           ),
                         ),
                       ],
@@ -377,7 +381,7 @@ class _AppTourOverlayState extends State<AppTourOverlay> with TickerProviderStat
                         ),
                       )
                     else
-                      const SizedBox.shrink(),
+                      SizedBox.shrink(),
                     Row(
                       children: [
                         if (_currentStepIndex > 0) ...[
@@ -395,10 +399,10 @@ class _AppTourOverlayState extends State<AppTourOverlay> with TickerProviderStat
                             ),
                             child: Text(
                               AppLocalization.get('tour_back'),
-                              style: const TextStyle(color: Colors.white, fontSize: 14),
+                              style: TextStyle(color: Colors.white, fontSize: 14),
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                         ],
                         if (!step.requireInteraction || !step.advanceOnTap)
                           ElevatedButton(
@@ -425,7 +429,7 @@ class _AppTourOverlayState extends State<AppTourOverlay> with TickerProviderStat
                               _currentStepIndex < widget.steps.length - 1
                                   ? AppLocalization.get('tour_next')
                                   : AppLocalization.get('tour_finish'),
-                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                             ),
                           ),
                         if (step.requireInteraction && step.advanceOnTap)
@@ -438,7 +442,7 @@ class _AppTourOverlayState extends State<AppTourOverlay> with TickerProviderStat
                             ),
                             child: Text(
                               AppLocalization.get('tour_tap_to_continue'),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Color(0xFF00F1FF),
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
@@ -600,7 +604,7 @@ class RenderHoleInteractionBlocker extends RenderProxyBox {
 
   @override
   bool hitTest(BoxHitTestResult result, {required Offset position}) {
-    if (_hole != null && _hole!.contains(position)) {
+    if (_hole != null && _hole!.inflate(15.0).contains(position)) {
       result.add(BoxHitTestEntry(this, position));
       return false; 
     }
@@ -615,7 +619,7 @@ class RenderHoleInteractionBlocker extends RenderProxyBox {
   @override
   void handleEvent(PointerEvent event, HitTestEntry entry) {
     if (event is PointerDownEvent) {
-      if (_hole != null && _hole!.contains(event.position)) {
+      if (_hole != null && _hole!.inflate(15.0).contains(event.position)) {
         _onCorrectTap();
       } else {
         _onWrongTap();

@@ -28,7 +28,7 @@ class PremiumAppBar extends StatelessWidget implements PreferredSizeWidget {
     if (titleWidget == null && titleText != null) {
       // Build a premium gradient title
       titleWidget = ShaderMask(
-        shaderCallback: (bounds) => const LinearGradient(
+        shaderCallback: (bounds) => LinearGradient(
           colors: [AppTheme.primaryCyan, AppTheme.primaryViolet],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

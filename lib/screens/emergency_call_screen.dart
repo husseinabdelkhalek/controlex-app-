@@ -123,7 +123,7 @@ class _EmergencyCallScreenState extends State<EmergencyCallScreen> with SingleTi
                       color: Colors.red.withValues(alpha: 0.2),
                       border: Border.all(color: Colors.red, width: 4),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.warning_amber_rounded,
                       color: Colors.red,
                       size: 100,
@@ -131,12 +131,12 @@ class _EmergencyCallScreenState extends State<EmergencyCallScreen> with SingleTi
                   ),
                 ),
                 
-                const SizedBox(height: 40),
+                SizedBox(height: 40),
                 
                 // Title
                 Text(
                   widget.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -145,14 +145,14 @@ class _EmergencyCallScreenState extends State<EmergencyCallScreen> with SingleTi
                   textAlign: TextAlign.center,
                 ),
                 
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 
                 // Body/Message
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 32),
                   child: Text(
                     widget.body,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white70,
                       fontSize: 20,
                     ),
@@ -213,7 +213,7 @@ class _EmergencyCallScreenState extends State<EmergencyCallScreen> with SingleTi
             ),
             child: Icon(icon, color: color, size: 40),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(
             label,
             style: TextStyle(

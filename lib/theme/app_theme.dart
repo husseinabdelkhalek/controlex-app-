@@ -2,42 +2,61 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
+  static final ValueNotifier<String> themeNotifier = ValueNotifier<String>('dark');
+
   // --- Semantic Colors (Psychological Meaning) ---
-  static const Color semanticSuccess = Color(0xFF10B981); // Emerald Green
-  static const Color semanticError = Color(0xFFEF4444);   // Soft Red
-  static const Color semanticWarning = Color(0xFFF59E0B); // Amber
-  static const Color semanticInfo = Color(0xFF3B82F6);    // Blue
+  static Color semanticSuccess = const Color(0xFF10B981); // Emerald Green
+  static Color semanticError = const Color(0xFFEF4444);   // Soft Red
+  static Color semanticWarning = const Color(0xFFF59E0B); // Amber
+  static Color semanticInfo = const Color(0xFF3B82F6);    // Blue
 
   // --- Premium Brand Colors (Website Match) ---
-  static const Color primaryBrand = Color(0xFF8A2BE2); // Primary Violet
-  static const Color secondaryBrand = Color(0xFF00E5FF); // Primary Cyan
+  static Color primaryBrand = const Color(0xFF8A2BE2); // Primary Violet
+  static Color secondaryBrand = const Color(0xFF00E5FF); // Primary Cyan
 
   // --- Backgrounds & Surfaces (Website Match) ---
-  static const Color backgroundBase = Color(0xFF0D0C1D); 
-  static const Color darkBackground = Color(0xFF0D0C1D); 
+  static Color backgroundBase = const Color(0xFF0D0C1D); 
+  static Color darkBackground = const Color(0xFF0D0C1D); 
   
   // Vibrant Neon Accents (Aliases for backward compatibility)
-  static const Color primaryCyan = secondaryBrand; 
-  static const Color darkCyan = Color(0xFF00ACC1); 
-  static const Color primaryViolet = primaryBrand; 
-  static const Color darkViolet = Color(0xFF6A1B9A); 
+  static Color primaryCyan = secondaryBrand; 
+  static Color darkCyan = const Color(0xFF00ACC1); 
+  static Color primaryViolet = primaryBrand; 
+  static Color darkViolet = const Color(0xFF6A1B9A); 
   
   // Legacy Accents
-  static const Color accentNeon = semanticError; 
-  static const Color neonBlue = primaryBrand;   
+  static Color accentNeon = semanticError; 
+  static Color neonBlue = primaryBrand;   
   
   // Glassmorphism enhancements
-  static const Color cardBaseColor = Color(0xD915132C); // #15132c with 85% opacity
-  static const Color cardLightColor = Color(0xFFE2E8F0); 
+  static Color cardBaseColor = const Color(0xD915132C); // #15132c with 85% opacity
+  static Color cardLightColor = const Color(0xFFE2E8F0); 
   
   // Glows and Borders
-  static const Color glassBorder = Color(0x4D8A2BE2); // 30% Violet
-  static const Color glowColor = Color(0x6600E5FF); // Cyan Glow
-  static const Color violetGlow = Color(0x808A2BE2); // Violet Glow
+  static Color glassBorder = const Color(0x4D8A2BE2); // 30% Violet
+  static Color glowColor = const Color(0x6600E5FF); // Cyan Glow
+  static Color violetGlow = const Color(0x808A2BE2); // Violet Glow
   
   // Texts
-  static const Color textPrimary = Color(0xFFF0F8FF); // Snow white
-  static const Color textSecondary = Color(0xFFA9A2C8); // Faded violet
+  static Color textPrimary = const Color(0xFFF0F8FF); // Snow white
+  static Color textSecondary = const Color(0xFFA9A2C8); // Faded violet
+
+  static void switchTheme(String themeName) {
+    if (themeName == 'glass') {
+      backgroundBase = const Color(0x800D0C1D); 
+      darkBackground = const Color(0x800D0C1D);
+      cardBaseColor = const Color(0x3315132C); 
+      glassBorder = const Color(0x998A2BE2);
+      glowColor = const Color(0x9900E5FF);
+    } else {
+      backgroundBase = const Color(0xFF0D0C1D); 
+      darkBackground = const Color(0xFF0D0C1D);
+      cardBaseColor = const Color(0xD915132C); 
+      glassBorder = const Color(0x4D8A2BE2);
+      glowColor = const Color(0x6600E5FF);
+    }
+    themeNotifier.value = themeName;
+  }
 
   static BoxDecoration glassDecoration({
     BorderRadiusGeometry? borderRadius,
@@ -75,7 +94,7 @@ class AppTheme {
         backgroundColor: cardBaseColor.withValues(alpha: 0.65),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(28),
-          side: const BorderSide(color: glassBorder, width: 1.5),
+          side: BorderSide(color: glassBorder, width: 1.5),
         ),
       ),
       bottomSheetTheme: const BottomSheetThemeData(
@@ -88,7 +107,7 @@ class AppTheme {
         elevation: 0,
         centerTitle: true,
         scrolledUnderElevation: 0,
-        iconTheme: const IconThemeData(color: primaryCyan, size: 22),
+        iconTheme: IconThemeData(color: primaryCyan, size: 22),
         titleTextStyle: GoogleFonts.tajawal(
           color: textPrimary,
           fontSize: 20,

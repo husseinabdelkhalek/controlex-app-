@@ -67,21 +67,21 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppTheme.cardBaseColor,
-        title: Text(AppLocalization.isArabicNotifier.value ? 'تأكيد الحذف' : 'Confirm Delete', style: const TextStyle(color: Colors.redAccent)),
+        title: Text(AppLocalization.isArabicNotifier.value ? 'تأكيد الحذف' : 'Confirm Delete', style: TextStyle(color: Colors.redAccent)),
         content: Text(
           AppLocalization.isArabicNotifier.value 
             ? 'هل أنت متأكد من حذف هذا الحساب نهائياً؟ لا يمكن التراجع عن هذا الإجراء وسيتم حذف جميع بياناته.'
             : 'Are you sure you want to permanently delete this account? This action cannot be undone and all data will be lost.',
-          style: const TextStyle(color: Colors.white70),
+          style: TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(AppLocalization.isArabicNotifier.value ? 'إلغاء' : 'Cancel', style: const TextStyle(color: Colors.white54)),
+            child: Text(AppLocalization.isArabicNotifier.value ? 'إلغاء' : 'Cancel', style: TextStyle(color: Colors.white54)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text(AppLocalization.isArabicNotifier.value ? 'حذف' : 'Delete', style: const TextStyle(color: Colors.redAccent)),
+            child: Text(AppLocalization.isArabicNotifier.value ? 'حذف' : 'Delete', style: TextStyle(color: Colors.redAccent)),
           ),
         ],
       ),
@@ -131,7 +131,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
       appBar: AppBar(
-        title: Text(user['username'] ?? 'User Details', style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(user['username'] ?? 'User Details', style: TextStyle(fontWeight: FontWeight.bold)),
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -151,10 +151,10 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
               child: CircleAvatar(
                 radius: 50,
                 backgroundColor: AppTheme.primaryCyan.withValues(alpha: 0.2),
-                child: const Icon(Icons.person, size: 60, color: AppTheme.primaryCyan),
+                child: Icon(Icons.person, size: 60, color: AppTheme.primaryCyan),
               ),
             ),
-            const SizedBox(height: 30),
+            SizedBox(height: 30),
             _buildDetailItem(
               AppLocalization.isArabicNotifier.value ? 'المنصة (موقع/تطبيق)' : 'Platform',
               platformStr,
@@ -204,10 +204,10 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
               '${user['widgetCount'] ?? 0}',
               Icons.widgets,
             ),
-            const SizedBox(height: 40),
+            SizedBox(height: 40),
             
             if (_isDeleting)
-              const Center(child: CircularProgressIndicator(color: Colors.redAccent))
+              Center(child: CircularProgressIndicator(color: Colors.redAccent))
             else
               ElevatedButton.icon(
                 onPressed: _deleteUser,
@@ -217,13 +217,13 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
-                    side: const BorderSide(color: Colors.redAccent, width: 1.5),
+                    side: BorderSide(color: Colors.redAccent, width: 1.5),
                   ),
                 ),
-                icon: const Icon(Icons.delete_forever),
+                icon: Icon(Icons.delete_forever),
                 label: Text(
                   AppLocalization.isArabicNotifier.value ? 'حذف الحساب نهائياً' : 'Delete Account Permanently',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),
           ],
@@ -251,14 +251,14 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
             ),
             child: Icon(icon, color: AppTheme.primaryCyan, size: 24),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: const TextStyle(color: Colors.white54, fontSize: 13)),
-                const SizedBox(height: 4),
-                Text(value, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(label, style: TextStyle(color: Colors.white54, fontSize: 13)),
+                SizedBox(height: 4),
+                Text(value, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
               ],
             ),
           ),

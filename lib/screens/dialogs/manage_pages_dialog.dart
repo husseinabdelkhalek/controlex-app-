@@ -59,35 +59,35 @@ class _ManagePagesDialogState extends State<ManagePagesDialog> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(AppLocalization.isArabicNotifier.value ? 'إضافة صفحة' : 'Add Page', 
-                     style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 20),
+                     style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                SizedBox(height: 20),
                 TextField(
                   controller: _nameCtrl,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     hintText: AppLocalization.isArabicNotifier.value ? 'اسم الصفحة' : 'Page Name',
-                    hintStyle: const TextStyle(color: Colors.white54),
+                    hintStyle: TextStyle(color: Colors.white54),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppTheme.primaryCyan),
+                      borderSide: BorderSide(color: AppTheme.primaryCyan),
                     ),
                     filled: true,
                     fillColor: Colors.black.withValues(alpha: 0.2),
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(ctx),
-                      child: Text(AppLocalization.get('cancel'), style: const TextStyle(color: Colors.white54)),
+                      child: Text(AppLocalization.get('cancel'), style: TextStyle(color: Colors.white54)),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryCyan,
@@ -106,7 +106,7 @@ class _ManagePagesDialogState extends State<ManagePagesDialog> {
                         }
                       },
                       child: Text(AppLocalization.isArabicNotifier.value ? 'إضافة' : 'Add', 
-                                  style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),
@@ -133,35 +133,35 @@ class _ManagePagesDialogState extends State<ManagePagesDialog> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(AppLocalization.isArabicNotifier.value ? 'تعديل الصفحة' : 'Edit Page', 
-                     style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 20),
+                     style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                SizedBox(height: 20),
                 TextField(
                   controller: _nameCtrl,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     hintText: AppLocalization.isArabicNotifier.value ? 'اسم الصفحة' : 'Page Name',
-                    hintStyle: const TextStyle(color: Colors.white54),
+                    hintStyle: TextStyle(color: Colors.white54),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppTheme.primaryCyan),
+                      borderSide: BorderSide(color: AppTheme.primaryCyan),
                     ),
                     filled: true,
                     fillColor: Colors.black.withValues(alpha: 0.2),
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(ctx),
-                      child: Text(AppLocalization.get('cancel'), style: const TextStyle(color: Colors.white54)),
+                      child: Text(AppLocalization.get('cancel'), style: TextStyle(color: Colors.white54)),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryCyan,
@@ -177,7 +177,7 @@ class _ManagePagesDialogState extends State<ManagePagesDialog> {
                         }
                       },
                       child: Text(AppLocalization.isArabicNotifier.value ? 'حفظ' : 'Save', 
-                                  style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),
@@ -220,12 +220,12 @@ class _ManagePagesDialogState extends State<ManagePagesDialog> {
               ),
               Text(
                 AppLocalization.isArabicNotifier.value ? 'إدارة الصفحات' : 'Manage Pages', 
-                style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)
+                style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               Expanded(
                 child: _pages.isEmpty
-                    ? Center(child: Text(AppLocalization.isArabicNotifier.value ? 'لا توجد صفحات' : 'No Pages', style: const TextStyle(color: Colors.white54)))
+                    ? Center(child: Text(AppLocalization.isArabicNotifier.value ? 'لا توجد صفحات' : 'No Pages', style: TextStyle(color: Colors.white54)))
                     : ListView.builder(
                         physics: const BouncingScrollPhysics(),
                         itemCount: _pages.length,
@@ -239,12 +239,12 @@ class _ManagePagesDialogState extends State<ManagePagesDialog> {
                             ),
                             child: ListTile(
                               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                              title: Text(_pages[index]['name'], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                              title: Text(_pages[index]['name'], style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  IconButton(icon: const Icon(Icons.edit, color: AppTheme.primaryCyan), onPressed: () => _editPage(index)),
-                                  IconButton(icon: const Icon(Icons.delete, color: Colors.redAccent), onPressed: () => _deletePage(index)),
+                                  IconButton(icon: Icon(Icons.edit, color: AppTheme.primaryCyan), onPressed: () => _editPage(index)),
+                                  IconButton(icon: Icon(Icons.delete, color: Colors.redAccent), onPressed: () => _deletePage(index)),
                                 ],
                               ),
                             ),
@@ -252,7 +252,7 @@ class _ManagePagesDialogState extends State<ManagePagesDialog> {
                         },
                       ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -264,11 +264,11 @@ class _ManagePagesDialogState extends State<ManagePagesDialog> {
                       elevation: 0,
                     ),
                     onPressed: _addPage,
-                    icon: const Icon(Icons.add, color: AppTheme.primaryCyan),
-                    label: Text(AppLocalization.isArabicNotifier.value ? 'إضافة' : 'Add', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    icon: Icon(Icons.add, color: AppTheme.primaryCyan),
+                    label: Text(AppLocalization.isArabicNotifier.value ? 'إضافة' : 'Add', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                   ),
                   _isLoading
-                      ? const CircularProgressIndicator(color: AppTheme.primaryCyan)
+                      ? CircularProgressIndicator(color: AppTheme.primaryCyan)
                       : ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.primaryCyan,
@@ -276,8 +276,8 @@ class _ManagePagesDialogState extends State<ManagePagesDialog> {
                             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                           ),
                           onPressed: _savePages,
-                          icon: const Icon(Icons.check, color: Colors.black),
-                          label: Text(AppLocalization.get('save'), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                          icon: Icon(Icons.check, color: Colors.black),
+                          label: Text(AppLocalization.get('save'), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                         ),
                 ],
               )
