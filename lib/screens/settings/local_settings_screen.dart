@@ -106,8 +106,8 @@ class _LocalSettingsScreenState extends State<LocalSettingsScreen> {
     try {
        Map<String, dynamic> existingConfig = {};
        if (_editingWidgetId != null) {
-          final w = _existingWidgets.firstWhere((e) => e['id'] == _editingWidgetId, orElse: () => null);
-          if (w != null && w['configuration'] != null) {
+          final w = _existingWidgets.firstWhere((e) => e['id'] == _editingWidgetId, orElse: () => <String, dynamic>{});
+          if (w.isNotEmpty && w['configuration'] != null) {
              existingConfig = Map<String, dynamic>.from(w['configuration']);
           }
        }

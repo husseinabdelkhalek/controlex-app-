@@ -14,6 +14,7 @@ import '../sub_admin_dashboard_screen.dart';
 import '../settings/profile_settings_screen.dart';
 import '../settings/integrations_settings_screen.dart';
 import '../settings/security_settings_screen.dart';
+import '../settings/device_setup_screen.dart';
 
 class AccountScreen extends StatefulWidget {
   final bool startTour;
@@ -372,6 +373,19 @@ class _AccountScreenState extends State<AccountScreen> {
               onTap: () async {
                 final result = await Navigator.push(context, MaterialPageRoute(builder: (_) => IntegrationsSettingsScreen(initialData: {'adafruitUsername': _aioUserCtrl.text, 'adafruitApiKey': _aioKeyCtrl.text, 'firebaseUrl': _firebaseUrlCtrl.text, 'firebaseSecret': _firebaseSecretCtrl.text})));
                 if (result == true) _fetchData();
+              },
+            ),
+            SizedBox(height: 12),
+            _buildGlassButton(
+              icon: Icons.developer_board,
+              title: AppLocalization.get('ready_device_setup'),
+              subtitle: AppLocalization.isArabicNotifier.value ? 'إدخال وتفعيل كود إعداد الجهاز' : 'Enter ready-made device setup code',
+              color: Colors.orangeAccent,
+              onTap: () async {
+                final result = await Navigator.push(context, MaterialPageRoute(builder: (_) => const DeviceSetupScreen()));
+                if (result == true) {
+                  _fetchData();
+                }
               },
             ),
             SizedBox(height: 12),

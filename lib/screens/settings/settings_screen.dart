@@ -286,8 +286,6 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
          'automations': _enableAutomation && _automationValueCtrl.text.isNotEmpty ? [
             { 'conditionValue': _automationValueCtrl.text.trim(), 'message': _automationMsgCtrl.text.trim() }
          ] : []
-       };rim() }
-         ] : []
        };
        
        if (_editingWidgetId != null) {

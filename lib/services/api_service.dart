@@ -582,6 +582,32 @@ class ApiService {
     return await _handleResponse(response);
   }
 
+  static Future<List<dynamic>> getSetupCodes() async {
+    final response = await http.get(
+      Uri.parse('${ApiConstants.baseUrl}/api/admin/setup-codes'),
+      headers: await _getHeaders(),
+    );
+    if (response.statusCode == 200) return json.decode(response.body);
+    return [];
+  }
+
+  static Future<Map<String, dynamic>> generateSetupCode(Map<String, dynamic> data) async {
+    final response = await http.post(
+      Uri.parse('${ApiConstants.baseUrl}/api/admin/generate-setup-code'),
+      headers: await _getHeaders(),
+      body: json.encode(data),
+    );
+    return await _handleResponse(response);
+  }
+
+  static Future<Map<String, dynamic>> deleteSetupCode(String id) async {
+    final response = await http.delete(
+      Uri.parse('${ApiConstants.baseUrl}/api/admin/setup-codes/$id'),
+      headers: await _getHeaders(),
+    );
+    return await _handleResponse(response);
+  }
+
   // ==================== FCM Token Management ====================
 
   static Future<Map<String, dynamic>> saveFCMToken(String fcmToken) async {

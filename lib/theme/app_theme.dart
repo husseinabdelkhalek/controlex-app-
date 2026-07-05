@@ -89,6 +89,58 @@ class AppTheme {
       primaryColor: primaryCyan,
       scaffoldBackgroundColor: darkBackground,
       fontFamily: GoogleFonts.tajawal().fontFamily,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: primaryCyan,
+        brightness: Brightness.dark,
+        primary: primaryCyan,
+        secondary: primaryViolet,
+        surface: cardBaseColor,
+        background: darkBackground,
+      ),
+      splashFactory: NoSplash.splashFactory,
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+      focusColor: Colors.transparent,
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+        ).copyWith(
+          overlayColor: WidgetStateProperty.all(Colors.transparent),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+        ).copyWith(
+          overlayColor: WidgetStateProperty.all(Colors.transparent),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+        ).copyWith(
+          overlayColor: WidgetStateProperty.all(Colors.transparent),
+        ),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+        ).copyWith(
+          overlayColor: WidgetStateProperty.all(Colors.transparent),
+        ),
+      ),
+      tabBarTheme: TabBarTheme(
+        overlayColor: WidgetStateProperty.all(Colors.transparent),
+      ),
       dialogTheme: DialogTheme(
         surfaceTintColor: Colors.transparent,
         backgroundColor: cardBaseColor.withValues(alpha: 0.65),

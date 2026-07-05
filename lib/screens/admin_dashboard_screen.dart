@@ -42,6 +42,18 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
   bool _isKeysLoading = false;
   bool _hasFetchedKeys = false;
 
+  // Pre-configured Device Setups State
+  List<dynamic> _setupCodes = [];
+  bool _isSetupsLoading = false;
+  bool _isCreatingSetup = false;
+  bool _hasFetchedSetupCodes = false;
+  String _setupConnectionMode = 'database'; // 'database' or 'local'
+  final _setupAioUserCtrl = TextEditingController();
+  final _setupAioKeyCtrl = TextEditingController();
+  final _setupFirebaseUrlCtrl = TextEditingController();
+  final _setupFirebaseSecretCtrl = TextEditingController();
+  List<Map<String, dynamic>> _newSetupWidgets = [];
+
   String _formatDate(dynamic dateVal) {
     if (dateVal == null) return AppLocalization.isArabicNotifier.value ? 'غير معروف' : 'N/A';
     try {
@@ -110,6 +122,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
     _notifTitleCtrl.dispose();
     _notifBodyCtrl.dispose();
     _subAdminKeyCtrl.dispose();
+    _setupAioUserCtrl.dispose();
+    _setupAioKeyCtrl.dispose();
+    _setupFirebaseUrlCtrl.dispose();
+    _setupFirebaseSecretCtrl.dispose();
     super.dispose();
   }
 
@@ -169,6 +185,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
 
   @override
   Widget build(BuildContext context) {
+    final email = _prefs?.getString('current_user_email') ?? '';
+    final isMainAdmin = email.toLowerCase() == 'hussianabdk577@gmail.com';
+
     String title = AppLocalization.get('admin_panel');
     if (_selectedViewIndex == 1) title = AppLocalization.get('users') ?? 'المستخدمين';
     if (_selectedViewIndex == 2) title = AppLocalization.get('logs') ?? 'سجلات النظام';
@@ -177,6 +196,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
     if (_selectedViewIndex == 5) title = AppLocalization.get('banned_users') ?? 'الأجهزة المحظورة';
     if (_selectedViewIndex == 6) title = AppLocalization.get('admin_automations') ?? 'الأتمتة وتوفير الطاقة';
     if (_selectedViewIndex == 7) title = AppLocalization.isArabicNotifier.value ? 'أكواد الموزعين والشركاء' : 'Sub-Admin Promo Keys';
+    if (_selectedViewIndex == 8) title = AppLocalization.get('admin_generate_device') ?? 'إعداد الأجهزة الجاهزة';
 
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
@@ -200,11 +220,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
         actions: [
           IconButton(
             icon: Icon(Icons.refresh, color: AppTheme.primaryCyan),
-            onPressed: _loadAllData,
+            onPressed: () {
+              if (_selectedViewIndex == 8) {
+                _loadSetupCodes();
+              } else {
+                _loadAllData();
+              }
+            },
           ),
         ],
       ),
-      body: _isLoading
+      body: (_isLoading && _selectedViewIndex != 8)
           ? Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan))
           : _selectedViewIndex == 0
               ? _buildAdminHomeHub()
@@ -213,6 +239,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
   }
 
   Widget _buildActiveView() {
+    final email = _prefs?.getString('current_user_email') ?? '';
+    final isMainAdmin = email.toLowerCase() == 'hussianabdk577@gmail.com';
+
     switch (_selectedViewIndex) {
       case 1:
         return _buildUsersTab();
@@ -228,6 +257,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
         return _buildAutomationsAdminTab();
       case 7:
         return _buildSubAdminKeysTab();
+      case 8:
+        if (!isMainAdmin) return _buildAdminHomeHub();
+        return _buildPreConfigureDeviceTab();
       default:
         return _buildAdminHomeHub();
     }
@@ -427,6 +459,32 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
               ),
             ],
           ),
+          // Main Admin Only: Pre-configured Devices
+          Builder(builder: (ctx) {
+            final email = _prefs?.getString('current_user_email') ?? '';
+            final isMainAdmin = email.toLowerCase() == 'hussianabdk577@gmail.com';
+            if (!isMainAdmin) return SizedBox.shrink();
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 24),
+                Text(
+                  AppLocalization.isArabicNotifier.value ? '📦 الأجهزة المعدّة مسبقاً' : '📦 Pre-configured Devices',
+                  style: TextStyle(color: Colors.white54, fontSize: 13, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 12),
+                _buildOperationTile(
+                  index: 8,
+                  title: AppLocalization.isArabicNotifier.value ? 'إعداد وتوليد أجهزة جاهزة' : 'Generate Pre-built Devices',
+                  subtitle: AppLocalization.isArabicNotifier.value
+                      ? 'إنشاء أجهزة كاملة بإعدادات وأدوات جاهزة وتوليد كود تفعيل لها.'
+                      : 'Create full device setups with widgets and generate activation codes.',
+                  icon: Icons.devices_other,
+                  color: const Color(0xFF7C4DFF),
+                ),
+              ],
+            );
+          }),
           SizedBox(height: 40),
         ],
       ),
@@ -2341,6 +2399,732 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
           ),
         ),
       ],
+    );
+  }
+
+  // ========== Pre-configured Device Methods ==========
+
+  Future<void> _loadSetupCodes() async {
+    setState(() => _isSetupsLoading = true);
+    try {
+      final codes = await ApiService.getSetupCodes();
+      if (mounted) {
+        setState(() {
+          _setupCodes = codes;
+          _isSetupsLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isSetupsLoading = false);
+        _showToast(AppLocalization.isArabicNotifier.value ? 'فشل تحميل أكواد الأجهزة: $e' : 'Failed to load setup codes: $e');
+      }
+    }
+  }
+
+  Future<void> _generateSetupCode() async {
+    final isAr = AppLocalization.isArabicNotifier.value;
+    final payload = <String, dynamic>{
+      'widgets': _newSetupWidgets,
+      'connectionMode': _setupConnectionMode,
+    };
+    if (_setupConnectionMode == 'database') {
+      payload['adafruitUsername'] = _setupAioUserCtrl.text.trim();
+      payload['adafruitApiKey'] = _setupAioKeyCtrl.text.trim();
+      payload['firebaseUrl'] = _setupFirebaseUrlCtrl.text.trim();
+      payload['firebaseSecret'] = _setupFirebaseSecretCtrl.text.trim();
+    }
+    setState(() => _isSetupsLoading = true);
+    try {
+      final result = await ApiService.generateSetupCode(payload);
+      setState(() {
+        _isSetupsLoading = false;
+        _isCreatingSetup = false;
+      });
+      _newSetupWidgets.clear();
+      _setupAioUserCtrl.clear();
+      _setupAioKeyCtrl.clear();
+      _setupFirebaseUrlCtrl.clear();
+      _setupFirebaseSecretCtrl.clear();
+      if (mounted) {
+        final code = result['code'] ?? '';
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            backgroundColor: AppTheme.cardBaseColor,
+            title: Text(isAr ? '✅ تم توليد الكود' : '✅ Setup Code Generated',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(isAr ? 'كود التفعيل الخاص بالجهاز:' : 'Device activation code:',
+                    style: TextStyle(color: Colors.white70)),
+                SizedBox(height: 16),
+                GestureDetector(
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: code));
+                    _showToast(isAr ? 'تم نسخ الكود!' : 'Code copied!');
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryCyan.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppTheme.primaryCyan.withValues(alpha: 0.4)),
+                      boxShadow: [BoxShadow(color: AppTheme.primaryCyan.withValues(alpha: 0.15), blurRadius: 18)],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(code, style: TextStyle(color: AppTheme.primaryCyan, fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: 2)),
+                        SizedBox(width: 12),
+                        Icon(Icons.copy, color: AppTheme.primaryCyan),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(isAr ? 'اضغط للنسخ' : 'Tap to copy', style: TextStyle(color: Colors.white38, fontSize: 11)),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () { Navigator.pop(context); _loadSetupCodes(); },
+                child: Text(isAr ? 'حسناً' : 'OK', style: TextStyle(color: AppTheme.primaryCyan)),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() => _isSetupsLoading = false);
+      if (mounted) {
+        _showToast(isAr ? 'فشل توليد كود التفعيل: $e' : 'Failed to generate setup code: $e');
+      }
+    }
+  }
+
+  Future<void> _deleteSetupCode(String id) async {
+    final isAr = AppLocalization.isArabicNotifier.value;
+    setState(() => _isSetupsLoading = true);
+    try {
+      await ApiService.deleteSetupCode(id);
+      _showToast(isAr ? 'تم حذف كود التفعيل بنجاح' : 'Setup code deleted successfully');
+      _loadSetupCodes();
+    } catch (e) {
+      setState(() => _isSetupsLoading = false);
+      _showToast(isAr ? 'فشل حذف كود التفعيل: $e' : 'Failed to delete setup code: $e');
+    }
+  }
+
+  void _showAddWidgetDialog() {
+    final isAr = AppLocalization.isArabicNotifier.value;
+
+    // Local state controllers mirroring SettingsScreen
+    final nameCtrl    = TextEditingController();
+    final feedCtrl    = TextEditingController();
+    final onCmdCtrl   = TextEditingController(text: 'ON');
+    final offCmdCtrl  = TextEditingController(text: 'OFF');
+    final unitCtrl    = TextEditingController();
+    final minCtrl     = TextEditingController(text: '0');
+    final maxCtrl     = TextEditingController(text: '100');
+    final autoMsgCtrl = TextEditingController();
+
+    String selType       = 'Toggle';
+    String selProvider   = 'adafruit';
+    Color  selColor      = AppTheme.primaryCyan;
+    bool   enableAuto    = false;
+    String autoTrigVal   = 'ON';
+
+    final types    = ['Toggle', 'Push', 'Sensor', 'Slider', 'Joystick', 'Terminal', 'ColorPicker', 'Chart'];
+    final swatches = [AppTheme.primaryCyan, AppTheme.primaryViolet, Colors.greenAccent, Colors.orangeAccent, Colors.pinkAccent];
+
+    // Helper: input field with unified style
+    Widget field(String label, TextEditingController ctrl, IconData icon, {bool isNumber = false}) {
+      return TextField(
+        controller: ctrl,
+        style: TextStyle(color: Colors.white),
+        keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(color: Colors.white54, fontSize: 13),
+          prefixIcon: Icon(icon, color: AppTheme.primaryCyan, size: 18),
+          filled: true,
+          fillColor: Colors.white.withValues(alpha: 0.05),
+          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white12)),
+          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppTheme.primaryCyan)),
+          contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        ),
+      );
+    }
+
+    // Helper: section card
+    Widget section(String title, List<Widget> children) {
+      return Container(
+        margin: EdgeInsets.only(bottom: 14),
+        padding: EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.04),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.white10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold, fontSize: 12)),
+            SizedBox(height: 10),
+            ...children,
+          ],
+        ),
+      );
+    }
+
+    showDialog(
+      context: context,
+      builder: (_) => StatefulBuilder(
+        builder: (ctx, setS) {
+          return Dialog(
+            backgroundColor: AppTheme.cardBaseColor,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            insetPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(colors: [AppTheme.primaryCyan.withValues(alpha: 0.15), AppTheme.primaryViolet.withValues(alpha: 0.1)]),
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                  ),
+                  child: Row(children: [
+                    Icon(Icons.widgets, color: AppTheme.primaryCyan),
+                    SizedBox(width: 10),
+                    Text(isAr ? 'إضافة أداة' : 'Add Widget',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                    Spacer(),
+                    IconButton(icon: Icon(Icons.close, color: Colors.white54), onPressed: () => Navigator.pop(ctx)),
+                  ]),
+                ),
+
+                // Scrollable form body
+                Flexible(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+
+                        // ── Core Settings ──────────────────────────────
+                        section(isAr ? 'بيانات الأداة الأساسية' : 'Core Widget Settings', [
+                          field(isAr ? 'اسم الأداة' : 'Widget Name', nameCtrl, Icons.widgets),
+                          SizedBox(height: 12),
+
+                          // Provider
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.05),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.white12),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                isExpanded: true,
+                                dropdownColor: AppTheme.darkBackground,
+                                value: selProvider,
+                                icon: Icon(Icons.arrow_drop_down, color: Colors.white54),
+                                items: [
+                                  DropdownMenuItem(value: 'adafruit', child: Row(children: [Icon(Icons.cloud_sync, color: AppTheme.primaryCyan, size: 16), SizedBox(width: 8), Text('Adafruit IO', style: TextStyle(color: Colors.white))])),
+                                  DropdownMenuItem(value: 'firebase', child: Row(children: [Icon(Icons.local_fire_department, color: Colors.orangeAccent, size: 16), SizedBox(width: 8), Text('Firebase RTDB', style: TextStyle(color: Colors.white))])),
+                                ],
+                                onChanged: (v) => setS(() => selProvider = v!),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 12),
+
+                          // Feed
+                          field(isAr ? 'اسم الفيد (Feed/Path)' : 'Feed / Firebase Path', feedCtrl, Icons.rss_feed),
+                          SizedBox(height: 12),
+
+                          // Widget Type
+                          Theme(
+                            data: Theme.of(ctx).copyWith(canvasColor: AppTheme.darkBackground),
+                            child: DropdownButtonFormField<String>(
+                              value: selType,
+                              style: TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold),
+                              icon: Icon(Icons.arrow_drop_down_circle, color: AppTheme.primaryCyan),
+                              dropdownColor: AppTheme.darkBackground,
+                              decoration: InputDecoration(
+                                labelText: isAr ? 'نوع الأداة' : 'Widget Type',
+                                labelStyle: TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold),
+                                prefixIcon: Icon(Icons.category, color: AppTheme.primaryCyan),
+                                filled: true, fillColor: Colors.black26,
+                                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppTheme.primaryCyan)),
+                                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppTheme.primaryCyan, width: 2)),
+                              ),
+                              items: types.map((t) => DropdownMenuItem(value: t, child: Text(t, style: TextStyle(color: Colors.white)))).toList(),
+                              onChanged: (v) => setS(() => selType = v!),
+                            ),
+                          ),
+                        ]),
+
+                        // ── Control Properties ─────────────────────────
+                        if (['Toggle','Push','Joystick','Sensor','Slider','Chart'].contains(selType))
+                          section(isAr ? 'خصائص التشغيل والتحكم' : 'Control Properties', [
+                            if (selType == 'Toggle' || selType == 'Push') ...[
+                              field('ON Command', onCmdCtrl, Icons.power),
+                              if (selType == 'Toggle') ...[SizedBox(height: 10), field('OFF Command', offCmdCtrl, Icons.power_off)],
+                            ],
+                            if (selType == 'Sensor' || selType == 'Chart')
+                              field(isAr ? 'الوحدة (مثل: °C، %)' : 'Unit (e.g. °C, %)', unitCtrl, Icons.square_foot),
+                            if (selType == 'Slider' || selType == 'Chart') ...[
+                              field(isAr ? 'الحد الأدنى' : 'Min Value', minCtrl, Icons.arrow_downward, isNumber: true),
+                              SizedBox(height: 10),
+                              field(isAr ? 'الحد الأقصى' : 'Max Value', maxCtrl, Icons.arrow_upward, isNumber: true),
+                            ],
+                          ]),
+
+                        // ── Automations ────────────────────────────────
+                        if (['Toggle','Push','Slider'].contains(selType))
+                          section(isAr ? 'الإشعارات التلقائية (Automations)' : 'Automations & Alerts', [
+                            SwitchListTile(
+                              title: Text(isAr ? 'تفعيل الإشعار عند تغير القيمة' : 'Enable notification on change',
+                                  style: TextStyle(color: Colors.white, fontSize: 13)),
+                              activeColor: AppTheme.primaryCyan,
+                              value: enableAuto,
+                              contentPadding: EdgeInsets.zero,
+                              onChanged: (v) => setS(() => enableAuto = v),
+                            ),
+                            if (enableAuto) ...[
+                              SizedBox(height: 10),
+                              if (selType == 'Toggle' || selType == 'Push')
+                                Theme(
+                                  data: Theme.of(ctx).copyWith(canvasColor: AppTheme.darkBackground),
+                                  child: DropdownButtonFormField<String>(
+                                    value: autoTrigVal,
+                                    style: TextStyle(color: Colors.white),
+                                    dropdownColor: AppTheme.darkBackground,
+                                    decoration: InputDecoration(
+                                      labelText: isAr ? 'عندما تصبح القيمة' : 'When value becomes',
+                                      labelStyle: TextStyle(color: Colors.white54),
+                                      prefixIcon: Icon(Icons.touch_app, color: Colors.white54),
+                                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white24)),
+                                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppTheme.primaryCyan)),
+                                    ),
+                                    items: [
+                                      DropdownMenuItem(value: 'ON', child: Text('On (${onCmdCtrl.text})')),
+                                      if (selType == 'Toggle') DropdownMenuItem(value: 'OFF', child: Text('Off (${offCmdCtrl.text})')),
+                                    ],
+                                    onChanged: (v) => setS(() => autoTrigVal = v ?? 'ON'),
+                                  ),
+                                )
+                              else
+                                field(isAr ? 'عندما يصبح السلايدر بقيمة' : 'When slider value is', autoMsgCtrl, Icons.tune, isNumber: true),
+                              SizedBox(height: 10),
+                              field(isAr ? 'نص رسالة الإشعار' : 'Alert notification text', autoMsgCtrl, Icons.notifications_active),
+                            ],
+                          ]),
+
+                        // ── Appearance ─────────────────────────────────
+                        section(isAr ? 'المظهر والألوان' : 'Appearance & Color', [
+                          Text(isAr ? 'اللون الأساسي للأداة' : 'Widget Primary Color',
+                              style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold)),
+                          SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: swatches.map((c) => GestureDetector(
+                              onTap: () => setS(() => selColor = c),
+                              child: AnimatedContainer(
+                                duration: Duration(milliseconds: 200),
+                                width: selColor == c ? 48 : 40,
+                                height: selColor == c ? 48 : 40,
+                                decoration: BoxDecoration(
+                                  color: c,
+                                  shape: BoxShape.circle,
+                                  boxShadow: selColor == c ? [BoxShadow(color: c.withValues(alpha: 0.5), blurRadius: 12)] : [],
+                                  border: Border.all(color: selColor == c ? Colors.white : Colors.transparent, width: 2.5),
+                                ),
+                                child: selColor == c ? Icon(Icons.check, color: Colors.black, size: 20) : null,
+                              ),
+                            )).toList(),
+                          ),
+                        ]),
+
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Footer buttons
+                Padding(
+                  padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  child: Row(children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: Colors.white24),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          padding: EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        child: Text(isAr ? 'إلغاء' : 'Cancel', style: TextStyle(color: Colors.white54)),
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        icon: Icon(Icons.add_circle, color: Colors.black, size: 18),
+                        label: Text(isAr ? 'إضافة' : 'Add', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.primaryCyan,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          padding: EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        onPressed: () {
+                          if (nameCtrl.text.trim().isEmpty || feedCtrl.text.trim().isEmpty) return;
+                          final val = <String, dynamic>{
+                            'name'    : nameCtrl.text.trim(),
+                            'type'    : selType,
+                            'feed'    : feedCtrl.text.trim(),
+                            'provider': selProvider,
+                            'color'   : selColor.value.toRadixString(16),
+                            'onCmd'   : onCmdCtrl.text.trim(),
+                            'offCmd'  : offCmdCtrl.text.trim(),
+                            'unit'    : unitCtrl.text.trim(),
+                            'min'     : double.tryParse(minCtrl.text) ?? 0,
+                            'max'     : double.tryParse(maxCtrl.text) ?? 100,
+                            'automation': enableAuto ? {
+                              'enabled' : true,
+                              'trigger' : autoTrigVal,
+                              'message' : autoMsgCtrl.text.trim(),
+                            } : {'enabled': false},
+                          };
+                          Navigator.pop(ctx, val);
+                        },
+                      ),
+                    ),
+                  ]),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    ).then((val) {
+      if (val != null) {
+        setState(() { _newSetupWidgets.add(val as Map<String, dynamic>); });
+      }
+    });
+  }
+
+  Widget _buildPreConfigureDeviceTab() {
+    final isAr = AppLocalization.isArabicNotifier.value;
+    if (!_hasFetchedSetupCodes) {
+      _hasFetchedSetupCodes = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) => _loadSetupCodes());
+    }
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [const Color(0xFF7C4DFF).withValues(alpha: 0.2), AppTheme.primaryCyan.withValues(alpha: 0.05)],
+                begin: Alignment.topLeft, end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFF7C4DFF).withValues(alpha: 0.3)),
+            ),
+            child: Row(children: [
+              Icon(Icons.devices_other, color: const Color(0xFF7C4DFF), size: 34),
+              SizedBox(width: 12),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(isAr ? 'مولّد الأجهزة الجاهزة' : 'Pre-configured Device Generator',
+                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(isAr ? 'اصنع جهازاً كاملاً بإعدادات وأدوات جاهزة وأرسل الكود للعميل.' : 'Build a complete device setup and send the activation code to your client.',
+                    style: TextStyle(color: Colors.white60, fontSize: 11)),
+              ])),
+            ]),
+          ),
+          SizedBox(height: 24),
+
+          // Create Setup Panel
+          if (_isCreatingSetup) ...[
+            // Back / Cancel button
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              Text(isAr ? '🛠️ إنشاء جهاز جديد' : '🛠️ New Device Setup',
+                  style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
+              TextButton.icon(
+                icon: Icon(Icons.arrow_back, color: Colors.white54, size: 16),
+                label: Text(isAr ? 'إلغاء' : 'Cancel', style: TextStyle(color: Colors.white54, fontSize: 12)),
+                onPressed: () => setState(() => _isCreatingSetup = false),
+              ),
+            ]),
+            SizedBox(height: 12),
+
+            // Connection mode toggle
+            Row(children: [
+              Expanded(child: GestureDetector(
+                onTap: () => setState(() => _setupConnectionMode = 'database'),
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 200),
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: _setupConnectionMode == 'database' ? AppTheme.primaryCyan.withValues(alpha: 0.18) : AppTheme.cardBaseColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: _setupConnectionMode == 'database' ? AppTheme.primaryCyan : Colors.white12),
+                  ),
+                  child: Column(children: [
+                    Icon(Icons.cloud, color: _setupConnectionMode == 'database' ? AppTheme.primaryCyan : Colors.white38, size: 22),
+                    SizedBox(height: 4),
+                    Text(isAr ? 'قاعدة بيانات' : 'Database', style: TextStyle(color: _setupConnectionMode == 'database' ? AppTheme.primaryCyan : Colors.white38, fontSize: 12)),
+                  ]),
+                ),
+              )),
+              SizedBox(width: 12),
+              Expanded(child: GestureDetector(
+                onTap: () => setState(() => _setupConnectionMode = 'local'),
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 200),
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: _setupConnectionMode == 'local' ? Colors.greenAccent.withValues(alpha: 0.15) : AppTheme.cardBaseColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: _setupConnectionMode == 'local' ? Colors.greenAccent : Colors.white12),
+                  ),
+                  child: Column(children: [
+                    Icon(Icons.wifi_off, color: _setupConnectionMode == 'local' ? Colors.greenAccent : Colors.white38, size: 22),
+                    SizedBox(height: 4),
+                    Text(isAr ? 'تحكم محلي' : 'Local Control', style: TextStyle(color: _setupConnectionMode == 'local' ? Colors.greenAccent : Colors.white38, fontSize: 12)),
+                  ]),
+                ),
+              )),
+            ]),
+            SizedBox(height: 16),
+
+            // Database credentials
+            if (_setupConnectionMode == 'database') ...[
+              _buildSetupTextField(_setupAioUserCtrl, isAr ? 'مستخدم Adafruit IO' : 'Adafruit IO Username', Icons.person),
+              SizedBox(height: 10),
+              _buildSetupTextField(_setupAioKeyCtrl, isAr ? 'مفتاح Adafruit IO API' : 'Adafruit IO API Key', Icons.key),
+              SizedBox(height: 10),
+              _buildSetupTextField(_setupFirebaseUrlCtrl, isAr ? 'رابط Firebase RTDB' : 'Firebase RTDB URL', Icons.link),
+              SizedBox(height: 10),
+              _buildSetupTextField(_setupFirebaseSecretCtrl, isAr ? 'مفتاح Firebase' : 'Firebase Secret Key', Icons.lock),
+              SizedBox(height: 16),
+            ],
+
+            // Widgets list
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              Text(isAr ? 'الأدوات المضافة' : 'Added Widgets',
+                  style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
+              TextButton.icon(
+                icon: Icon(Icons.add, color: AppTheme.primaryCyan, size: 18),
+                label: Text(isAr ? 'إضافة أداة' : 'Add Widget', style: TextStyle(color: AppTheme.primaryCyan)),
+                onPressed: _showAddWidgetDialog,
+              ),
+            ]),
+            if (_newSetupWidgets.isEmpty) ...[
+              Container(
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(color: AppTheme.cardBaseColor, borderRadius: BorderRadius.circular(12)),
+                child: Center(child: Text(isAr ? 'لم تُضف أدوات بعد' : 'No widgets added yet',
+                    style: TextStyle(color: Colors.white38))),
+              ),
+            ] else
+              ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: _newSetupWidgets.length,
+                itemBuilder: (ctx, idx) {
+                  final w = _newSetupWidgets[idx];
+                  return Container(
+                    margin: EdgeInsets.only(bottom: 8),
+                    padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: AppTheme.cardBaseColor,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppTheme.primaryCyan.withValues(alpha: 0.2)),
+                    ),
+                    child: Row(children: [
+                      Icon(Icons.widgets, color: AppTheme.primaryCyan, size: 18),
+                      SizedBox(width: 10),
+                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text(w['name'] ?? '', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                        Text('${w['type']} • ${w['feed']}', style: TextStyle(color: Colors.white54, fontSize: 11)),
+                      ])),
+                      IconButton(
+                        icon: Icon(Icons.delete_outline, color: Colors.redAccent, size: 18),
+                        onPressed: () => setState(() { _newSetupWidgets.removeAt(idx); }),
+                        constraints: BoxConstraints(minWidth: 36, minHeight: 36),
+                        padding: EdgeInsets.zero,
+                      ),
+                    ]),
+                  );
+                },
+              ),
+            SizedBox(height: 20),
+
+            // Generate button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                icon: Icon(Icons.bolt, color: Colors.black),
+                label: _isSetupsLoading
+                    ? SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
+                    : Text(isAr ? 'توليد كود التفعيل' : 'Generate Activation Code', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _newSetupWidgets.isEmpty ? Colors.white12 : AppTheme.primaryCyan,
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                onPressed: _newSetupWidgets.isEmpty ? null : _generateSetupCode,
+              ),
+            ),
+            SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: () => setState(() => _isCreatingSetup = false),
+                style: OutlinedButton.styleFrom(side: BorderSide(color: Colors.white24), padding: EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+                child: Text(isAr ? 'إلغاء' : 'Cancel', style: TextStyle(color: Colors.white54)),
+              ),
+            ),
+            SizedBox(height: 30),
+          ] else ...[
+            // Start Creating button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                icon: Icon(Icons.add_box, color: Colors.black),
+                label: Text(isAr ? 'إنشاء جهاز جديد' : 'Create New Device', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF7C4DFF),
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                onPressed: () => setState(() {
+                  _isCreatingSetup = true;
+                  _newSetupWidgets.clear();
+                  _setupAioUserCtrl.clear();
+                  _setupAioKeyCtrl.clear();
+                  _setupFirebaseUrlCtrl.clear();
+                  _setupFirebaseSecretCtrl.clear();
+                }),
+              ),
+            ),
+          ],
+
+          SizedBox(height: 24),
+          Text(isAr ? '📋 الأجهزة المولّدة' : '📋 Generated Devices',
+              style: TextStyle(color: Colors.white54, fontSize: 13, fontWeight: FontWeight.bold)),
+          SizedBox(height: 12),
+
+          // Codes list
+          if (_isSetupsLoading) ...[
+            Center(child: CircularProgressIndicator(color: AppTheme.primaryCyan)),
+          ] else if (_setupCodes.isEmpty) ...[
+            Container(
+              padding: EdgeInsets.all(30),
+              decoration: BoxDecoration(color: AppTheme.cardBaseColor, borderRadius: BorderRadius.circular(16)),
+              child: Center(child: Text(isAr ? 'لا توجد أجهزة جاهزة بعد' : 'No pre-configured devices yet',
+                  style: TextStyle(color: Colors.white38))),
+            ),
+          ] else
+            ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: _setupCodes.length,
+              itemBuilder: (ctx, idx) {
+                final code = _setupCodes[idx];
+                final isClaimed = code['claimed'] == true;
+                return Container(
+                  margin: EdgeInsets.only(bottom: 12),
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppTheme.cardBaseColor,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: isClaimed ? Colors.greenAccent.withValues(alpha: 0.3) : AppTheme.primaryCyan.withValues(alpha: 0.2)),
+                  ),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Row(children: [
+                      Expanded(child: GestureDetector(
+                        onTap: () {
+                          Clipboard.setData(ClipboardData(text: code['code'] ?? ''));
+                          _showToast(isAr ? 'تم نسخ كود التفعيل: ${code['code']}' : 'Copied activation code: ${code['code']}');
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryCyan.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: AppTheme.primaryCyan.withValues(alpha: 0.3)),
+                          ),
+                          child: Row(children: [
+                            Text(code['code'] ?? '', style: TextStyle(color: AppTheme.primaryCyan, fontWeight: FontWeight.bold, fontSize: 15, letterSpacing: 1.5)),
+                            SizedBox(width: 8),
+                            Icon(Icons.copy, color: AppTheme.primaryCyan, size: 14),
+                          ]),
+                        ),
+                      )),
+                      SizedBox(width: 10),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: isClaimed ? Colors.greenAccent.withValues(alpha: 0.15) : Colors.orangeAccent.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(isClaimed ? (isAr ? 'مفعّل' : 'Claimed') : (isAr ? 'انتظار' : 'Pending'),
+                            style: TextStyle(color: isClaimed ? Colors.greenAccent : Colors.orangeAccent, fontSize: 11, fontWeight: FontWeight.bold)),
+                      ),
+                      SizedBox(width: 8),
+                      IconButton(
+                        icon: Icon(Icons.delete_outline, color: Colors.redAccent, size: 18),
+                        onPressed: () => _deleteSetupCode(code['_id'] ?? code['id'] ?? ''),
+                        constraints: BoxConstraints(minWidth: 32, minHeight: 32),
+                        padding: EdgeInsets.zero,
+                      ),
+                    ]),
+                    SizedBox(height: 8),
+                    Row(children: [
+                      Icon(Icons.widgets, color: Colors.white38, size: 13),
+                      SizedBox(width: 4),
+                      Text('${(code['widgets'] as List?)?.length ?? 0} ${isAr ? 'أداة' : 'widgets'}', style: TextStyle(color: Colors.white54, fontSize: 11)),
+                      SizedBox(width: 16),
+                      Icon(Icons.link, color: Colors.white38, size: 13),
+                      SizedBox(width: 4),
+                      Text(code['connectionMode'] ?? 'database', style: TextStyle(color: Colors.white54, fontSize: 11)),
+                    ]),
+                  ]),
+                );
+              },
+            ),
+          SizedBox(height: 40),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSetupTextField(TextEditingController ctrl, String label, IconData icon) {
+    return TextField(
+      controller: ctrl,
+      style: TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: Colors.white54),
+        prefixIcon: Icon(icon, color: Colors.white38, size: 18),
+        enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.primaryCyan.withValues(alpha: 0.3)), borderRadius: BorderRadius.circular(10)),
+        focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.primaryCyan), borderRadius: BorderRadius.circular(10)),
+        filled: true,
+        fillColor: AppTheme.cardBaseColor,
+      ),
     );
   }
 

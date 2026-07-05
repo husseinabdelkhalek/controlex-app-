@@ -945,8 +945,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _localPositions[item.id] = {'x': item.x, 'y': item.y, 'w': item.w, 'h': item.h};
     _saveLocalPositions();
     
-    // 2. Do not persist size/position modifications to the server/website.
-    // Keep them local to the application as requested.
+    // 2. Persist size/position modifications to the server/website to keep in sync.
+    try {
+      await ApiService.updateWidgetPosition(item.id, item.x, item.y, item.w, item.h);
+      // Update local raw widgets list to match the new coordinates
+      for (var i = 0; i < _rawWidgets.length; i++) {
+        if (_rawWidgets[i]['id'] == item.id) {
+          _rawWidgets[i]['gs'] = {'x': item.x, 'y': item.y, 'w': item.w, 'h': item.h};
+          break;
+        }
+      }
+    } catch (e) {
+      debugPrint('❌ Error syncing widget position to server: $e');
+    }
+
     if (showToast && mounted) {
        AppSnackbar.showSuccess(context, AppLocalization.get('layout_saved') ?? 'Layout Saved');
     }
@@ -959,7 +971,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
       final pId = w['configuration']?['pageId'] ?? w['pageId'];
       if (_activePageId != 'all' && pId?.toString() != _activePageId) continue;
       
-      if (_localPositions.containsKey(id)) {
+      // Prioritize the server/website layout (gs) to ensure synchronization
+      var gs = w['gs'] ?? w['configuration']?['gs'];
+      if (gs != null) {
+        int x = gs['x'] ?? 0;
+        int y = gs['y'] ?? 0;
+        int width = gs['w'] ?? 1;
+        int height = gs['h'] ?? 1;
+        
+        list.add(GridItemData(
+            id: id, x: x, y: y, w: width, h: height,
+            child: SizedBox()
+        ));
+        _localPositions[id] = {'x': x, 'y': y, 'w': width, 'h': height};
+      } else if (_localPositions.containsKey(id)) {
         final pos = _localPositions[id]!;
         list.add(GridItemData(
             id: id,
@@ -967,11 +992,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: SizedBox()
         ));
       } else {
-        var gs = w['gs'] ?? w['configuration']?['gs'];
-        int x = gs != null ? (gs['x'] ?? 0) : 0;
-        int y = gs != null ? (gs['y'] ?? 0) : 0;
-        int width = gs != null ? (gs['w'] ?? 1) : 1;
-        int height = gs != null ? (gs['h'] ?? 1) : 1;
+        int x = 0;
+        int y = 0;
+        int width = 1;
+        int height = 1;
         
         list.add(GridItemData(
             id: id, x: x, y: y, w: width, h: height,
@@ -1319,7 +1343,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                       if (_userProfile?['googleProfilePicture'] != null)
+                       if (_userProfile?['googleProfilePicture'] != null && (_userProfile?['googleProfilePicture'] as String).startsWith('http'))
                          Container(
                            decoration: BoxDecoration(
                              shape: BoxShape.circle,

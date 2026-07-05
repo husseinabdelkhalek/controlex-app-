@@ -306,6 +306,13 @@ class AppLocalization {
     'scene_executed': 'Scene Activated successfully!',
     'scene_executing': 'Activating scene...',
     'scene_execution_failed': 'Failed to activate scene',
+    'ready_device_setup': 'Ready Device Setup',
+    'device_activation_code': 'Device Activation Code',
+    'device_activation_code_desc': 'If you purchased a pre-configured device or obtained a setup code from the administrator, enter it here to automatically copy all control widgets and connection settings to your account.',
+    'setup_code_label': 'Setup Code (CX-XXXXXX)',
+    'setup_code_help': 'Enter the 9-character activation code provided with your device.',
+    'admin_generate_device': 'Configure Pre-made Devices',
+    'admin_generate_device_desc': 'Create, pre-configure, and manage device activation codes (widgets/settings) for your customers.',
   };
 
   static final Map<String, String> _ar = {
@@ -580,5 +587,12 @@ class AppLocalization {
     'scene_executed': 'تم تفعيل السيناريو بنجاح!',
     'scene_executing': 'جاري تفعيل السيناريو...',
     'scene_execution_failed': 'فشل تفعيل بعض أوامر السيناريو',
+    'ready_device_setup': 'إعداد جهاز جاهز',
+    'device_activation_code': 'كود تفعيل وإعداد الجهاز',
+    'device_activation_code_desc': 'إذا قمت بشراء جهاز مهيأ مسبقاً أو حصلت على كود إعداد من المسؤول، أدخله هنا لنسخ جميع أدوات التحكم وإعدادات الاتصال إلى حسابك تلقائياً.',
+    'setup_code_label': 'كود التفعيل (Setup Code)',
+    'setup_code_help': 'أدخل الكود المكون من بادئة CX- متبوعة بـ 6 رموز.',
+    'admin_generate_device': 'إعداد وتجهيز الأجهزة الجاهزة',
+    'admin_generate_device_desc': 'إنشاء وتجهيز أكواد إعداد وتفعيل الأجهزة مسبقاً للعملاء مع أدوات التحكم والإعدادات.',
   };
 }
