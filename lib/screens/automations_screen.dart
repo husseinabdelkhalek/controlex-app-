@@ -77,7 +77,7 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          backgroundColor: const Color(0xFF1A1A2E),
+          backgroundColor: AppTheme.cardBaseColor,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Row(children: [
             Icon(Icons.battery_saver, color: Colors.orangeAccent, size: 28),
@@ -116,7 +116,7 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
   void _deleteRule(int index) {
     final rule = _rules[index];
     showDialog(context: context, builder: (ctx) => AlertDialog(
-      backgroundColor: const Color(0xFF1A1A2E),
+      backgroundColor: AppTheme.cardBaseColor,
       title: Text(AppLocalization.get('delete_rule_confirm'), style: TextStyle(color: Colors.white)),
       actions: [
         TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalization.get('cancel'), style: TextStyle(color: Colors.white54))),
@@ -125,7 +125,7 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
           try {
             await ApiService.deleteAutomationRule(rule['id']);
             setState(() => _rules.removeAt(index));
-            if (mounted) AppSnackbar.showError(context, AppLocalization.get('rule_deleted'));
+            if (mounted) AppSnackbar.showSuccess(context, AppLocalization.get('rule_deleted'));
           } catch (e) {
             if (mounted) AppSnackbar.showError(context, e.toString());
           }
@@ -273,7 +273,7 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
                           showDialog(
                             context: ctx,
                             builder: (dialogCtx) => AlertDialog(
-                              backgroundColor: const Color(0xFF1A1A2E),
+                              backgroundColor: AppTheme.cardBaseColor,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                               title: Row(children: [
                                 Icon(Icons.warning_amber_rounded, color: Colors.orangeAccent, size: 28),
@@ -495,7 +495,7 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
               child: DropdownButton<T>(
                 value: (items.any((i) => i.value == value)) ? value : null,
                 hint: Text(label, style: TextStyle(color: Colors.white38)),
-                dropdownColor: const Color(0xFF1A1A2E), isExpanded: true, items: items, onChanged: onChanged,
+                dropdownColor: AppTheme.cardBaseColor, isExpanded: true, items: items, onChanged: onChanged,
               ),
             )),
           ]),

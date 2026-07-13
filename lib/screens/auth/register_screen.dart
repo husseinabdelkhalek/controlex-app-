@@ -10,6 +10,7 @@ import '../../widgets/glass_popups.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/premium_app_bar.dart';
 import '../../widgets/glowing_button.dart';
+import '../../widgets/cyber_grid_painter.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -202,27 +203,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
   bool _passVisible = false;
 
-  InputDecoration _inputDec(String label, String hint, IconData icon, {Widget? suffix}) {
-    return InputDecoration(
-      labelText: label,
-      labelStyle: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
-      hintText: hint,
-      hintStyle: TextStyle(color: Colors.white24, fontSize: 11),
-      prefixIcon: Icon(icon, color: AppTheme.primaryCyan, size: 20),
-      suffixIcon: suffix,
-      filled: true,
-      fillColor: Colors.white.withValues(alpha: 0.03),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: AppTheme.primaryViolet.withValues(alpha: 0.2), width: 1.2),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: AppTheme.primaryCyan, width: 1.5),
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-    );
-  }
+
 
   void _handleRegister() async {
     final email = _emailCtrl.text.trim();
@@ -443,7 +424,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       appBar: PremiumAppBar(
         titleText: titleText,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -476,232 +457,244 @@ class _RegisterScreenState extends State<RegisterScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Icon(Icons.person_add, size: 60, color: AppTheme.primaryCyan),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
                   AppLocalization.isArabicNotifier.value ? 'أنشئ حسابك الآن' : 'Create Your Account',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                  style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 Text(
                   AppLocalization.isArabicNotifier.value ? 'أدخل بياناتك للبدء في رحلتك الذكية' : 'Input your details to start your smart journey',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white54, fontSize: 13),
+                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
                 ),
+                const SizedBox(height: 24),
                 
+                // --- SECTION 1: PRIMARY INFORMATION CARD ---
                 _sectionHeader(AppLocalization.isArabicNotifier.value ? 'المعلومات الأساسية' : 'Primary Information'),
-                TextField(
-                  controller: _usernameCtrl,
-                  style: TextStyle(color: Colors.white),
-                  decoration: _inputDec(
-                    AppLocalization.isArabicNotifier.value ? 'اسم المستخدم' : 'Username',
-                    AppLocalization.isArabicNotifier.value ? 'أدخل اسم المستخدم الخاص بك' : 'Enter your username',
-                    Icons.person_outline,
-                  ),
-                ),
-                SizedBox(height: 12),
-                TextField(
-                  controller: _emailCtrl,
-                  keyboardType: TextInputType.emailAddress,
-                  style: TextStyle(color: Colors.white),
-                  decoration: _inputDec(
-                    AppLocalization.isArabicNotifier.value ? 'البريد الإلكتروني' : 'Email Address',
-                    AppLocalization.isArabicNotifier.value ? 'أدخل بريدك الإلكتروني' : 'Enter your email',
-                    Icons.email_outlined,
-                  ),
-                ),
-                SizedBox(height: 12),
-                
-                // Password input (with promo key check auto-trigger)
-                TextField(
-                  controller: _passCtrl,
-                  obscureText: !_isSubAdmin && !_passVisible,
-                  readOnly: _isSubAdmin,
-                  style: TextStyle(color: _isSubAdmin ? AppTheme.primaryCyan : Colors.white),
-                  decoration: _inputDec(
-                    _isSubAdmin
-                        ? (AppLocalization.isArabicNotifier.value ? 'كود الأدمن الجانبي المعتمد' : 'Verified Sub-Admin Promo Code')
-                        : (AppLocalization.isArabicNotifier.value ? 'كلمة المرور / كود الموزع' : 'Password / Activation Code'),
-                    AppLocalization.isArabicNotifier.value
-                        ? 'أدخل كلمة المرور (أو كود التاجر للتسجيل كأدمن)'
-                        : 'Enter password (or promo code to sign up as admin)',
-                    _isSubAdmin ? Icons.verified_user_rounded : Icons.lock_outline,
-                    suffix: _isSubAdmin
-                        ? IconButton(
-                            icon: Icon(Icons.edit, color: AppTheme.primaryCyan),
-                            onPressed: () {
-                              setState(() {
-                                _isSubAdmin = false;
-                                _subAdminPromoCode = null;
-                                _passCtrl.clear();
-                                _realPassCtrl.clear();
-                              });
-                            },
-                          )
-                        : IconButton(
-                            icon: Icon(_passVisible ? Icons.visibility : Icons.visibility_off, color: Colors.white54),
-                            onPressed: () => setState(() => _passVisible = !_passVisible),
-                          ),
-                  ),
-                ),
-                
-                // Sub-admin secondary real password (also shown when linking as merchant client)
-                if (_isSubAdmin || _isLinkedToSubAdmin) ...[
-                  SizedBox(height: 12),
-                  TextField(
-                    controller: _realPassCtrl,
-                    obscureText: !_realPassVisible,
-                    style: TextStyle(color: Colors.white),
-                    decoration: _inputDec(
-                      AppLocalization.isArabicNotifier.value
-                          ? (_isSubAdmin ? 'كلمة المرور الحقيقية للأدمن' : 'كلمة مرور الحساب الخاص بك')
-                          : (_isSubAdmin ? 'Set Your Real Password' : 'Set Your Account Password'),
-                      AppLocalization.isArabicNotifier.value ? 'عين كلمة مرور لتأمين حسابك' : 'Choose a secure password for your account',
-                      Icons.lock_outline,
-                      suffix: IconButton(
-                        icon: Icon(_realPassVisible ? Icons.visibility : Icons.visibility_off, color: Colors.white54),
-                        onPressed: () => setState(() => _realPassVisible = !_realPassVisible),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(28),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                    child: Container(
+                      padding: const EdgeInsets.all(20.0),
+                      decoration: AppTheme.glassDecoration(
+                        borderRadius: BorderRadius.circular(28),
                       ),
-                    ),
-                  ),
-  
-                ],
-  
-                // Setup code field (Optional)
-                if (!_isSubAdmin) ...[
-                  SizedBox(height: 12),
-                  TextField(
-                    controller: _setupCodeCtrl,
-                    style: TextStyle(color: Colors.white),
-                    decoration: _inputDec(
-                      AppLocalization.isArabicNotifier.value ? 'كود إعداد الجهاز (اختياري)' : 'Device Setup Code (Optional)',
-                      AppLocalization.isArabicNotifier.value ? 'أدخل كود CX-XXXXXX الممنوح لك' : 'Enter CX-XXXXXX setup code if you have one',
-                      Icons.developer_board,
-                    ),
-                    textCapitalization: TextCapitalization.characters,
-                  ),
-                  if (_isSetupCodeChecking)
-                    Padding(
-                      padding: EdgeInsets.only(top: 8.0, left: 4, right: 4),
-                      child: Row(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          SizedBox(
-                            width: 14,
-                            height: 14,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primaryCyan),
+                          TextField(
+                            controller: _usernameCtrl,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: AppTheme.inputDecoration(
+                              labelText: AppLocalization.isArabicNotifier.value ? 'اسم المستخدم' : 'Username',
+                              hintText: AppLocalization.isArabicNotifier.value ? 'أدخل اسم المستخدم الخاص بك' : 'Enter your username',
+                              prefixIcon: Icons.person_outline,
+                            ),
                           ),
-                          SizedBox(width: 8),
-                          Text('جاري التحقق...', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                        ],
-                      ),
-                    )
-                  else if (_isSetupCodeValid != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0, left: 4, right: 4),
-                      child: Text(
-                        _isSetupCodeValid!
-                            ? (AppLocalization.isArabicNotifier.value 
-                                ? 'كود تفعيل صالح — يحتوي على $_setupCodeWidgetsCount من الأدوات' 
-                                : 'Valid setup code — contains $_setupCodeWidgetsCount widgets')
-                            : (AppLocalization.isArabicNotifier.value 
-                                ? 'كود تفعيل غير صالح أو مستخدم' 
-                                : 'Invalid or used setup code'),
-                        style: TextStyle(
-                          color: _isSetupCodeValid! ? AppTheme.primaryCyan : Colors.redAccent,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                ],
-  
-                // Distributor linkage panel
-                if (!_isSubAdmin) _buildMerchantLinkStatusCard(),
-  
-                _sectionHeader('ADAFRUIT IO — ${AppLocalization.isArabicNotifier.value ? 'اختياري' : 'Optional'}'),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.03),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppTheme.glassBorder.withValues(alpha: 0.3)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        AppLocalization.isArabicNotifier.value
-                            ? 'للتحكم بالأجهزة واللمبات الذكية عبر Adafruit IO (يمكن إضافتها لاحقاً)'
-                            : 'To control smart devices via Adafruit IO (can be added later)',
-                        style: TextStyle(color: Colors.white38, fontSize: 11),
-                      ),
-                      SizedBox(height: 14),
-                      TextField(
-                        controller: _aioUserCtrl,
-                        style: TextStyle(color: Colors.white),
-                        decoration: _inputDec(
-                          AppLocalization.isArabicNotifier.value ? 'اسم مستخدم Adafruit' : 'Adafruit IO Username',
-                          'Adafruit IO username',
-                          Icons.cloud_circle_outlined,
-                        ),
-                      ),
-                      SizedBox(height: 12),
-                      TextField(
-                        controller: _aioKeyCtrl,
-                        obscureText: true,
-                        style: TextStyle(color: Colors.white),
-                        decoration: _inputDec(
-                          AppLocalization.isArabicNotifier.value ? 'مفتاح Adafruit API' : 'Adafruit IO AIO Key',
-                          'Adafruit AIO key',
-                          Icons.vpn_key_outlined,
-                        ),
-                      ),
-                      SizedBox(height: 24),
-                      _sectionHeader('FIREBASE RTDB - ${AppLocalization.isArabicNotifier.value ? 'اختياري' : 'Optional'}'),
-                      Container(
-                        margin: const EdgeInsets.only(top: 8, bottom: 16),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.05),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              AppLocalization.isArabicNotifier.value
-                                  ? 'للتحكم في الأجهزة الاحترافية عبر Firebase (يمكن إضافته لاحقاً)'
-                                  : 'To control smart devices via Firebase RTDB (can be added later)',
-                              style: TextStyle(color: Colors.white38, fontSize: 11),
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: _emailCtrl,
+                            keyboardType: TextInputType.emailAddress,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: AppTheme.inputDecoration(
+                              labelText: AppLocalization.isArabicNotifier.value ? 'البريد الإلكتروني' : 'Email Address',
+                              hintText: AppLocalization.isArabicNotifier.value ? 'أدخل بريدك الإلكتروني' : 'Enter your email',
+                              prefixIcon: Icons.email_outlined,
                             ),
-                            SizedBox(height: 14),
-                            TextField(
-                              controller: _firebaseUrlCtrl,
-                              style: TextStyle(color: Colors.white),
-                              decoration: _inputDec(
-                                AppLocalization.get('firebase_db_url'),
-                                'https://your-project.firebaseio.com/',
-                                Icons.link,
-                              ),
+                          ),
+                          const SizedBox(height: 16),
+                          
+                          // Password input (with promo key check auto-trigger)
+                          TextField(
+                            controller: _passCtrl,
+                            obscureText: !_isSubAdmin && !_passVisible,
+                            readOnly: _isSubAdmin,
+                            style: TextStyle(color: _isSubAdmin ? AppTheme.primaryCyan : Colors.white),
+                            decoration: AppTheme.inputDecoration(
+                              labelText: _isSubAdmin
+                                  ? (AppLocalization.isArabicNotifier.value ? 'كود الأدمن الجانبي المعتمد' : 'Verified Sub-Admin Promo Code')
+                                  : (AppLocalization.isArabicNotifier.value ? 'كلمة المرور / كود الموزع' : 'Password / Activation Code'),
+                              hintText: AppLocalization.isArabicNotifier.value
+                                  ? 'أدخل كلمة المرور (أو كود التاجر للتسجيل كأدمن)'
+                                  : 'Enter password (or promo code to sign up as admin)',
+                              prefixIcon: _isSubAdmin ? Icons.verified_user_rounded : Icons.lock_outline,
+                              suffixIcon: _isSubAdmin
+                                  ? IconButton(
+                                      icon: Icon(Icons.edit, color: AppTheme.primaryCyan),
+                                      onPressed: () {
+                                        setState(() {
+                                          _isSubAdmin = false;
+                                          _subAdminPromoCode = null;
+                                          _passCtrl.clear();
+                                          _realPassCtrl.clear();
+                                        });
+                                      },
+                                    )
+                                  : IconButton(
+                                      icon: Icon(_passVisible ? Icons.visibility : Icons.visibility_off, color: Colors.white54),
+                                      onPressed: () => setState(() => _passVisible = !_passVisible),
+                                    ),
                             ),
-                            SizedBox(height: 12),
+                          ),
+                          
+                          // Sub-admin secondary real password
+                          if (_isSubAdmin || _isLinkedToSubAdmin) ...[
+                            const SizedBox(height: 16),
                             TextField(
-                              controller: _firebaseSecretCtrl,
-                              obscureText: true,
-                              style: TextStyle(color: Colors.white),
-                              decoration: _inputDec(
-                                AppLocalization.get('firebase_secret'),
-                                'Firebase Secret Key',
-                                Icons.security,
+                              controller: _realPassCtrl,
+                              obscureText: !_realPassVisible,
+                              style: const TextStyle(color: Colors.white),
+                              decoration: AppTheme.inputDecoration(
+                                labelText: AppLocalization.isArabicNotifier.value
+                                    ? (_isSubAdmin ? 'كلمة المرور الحقيقية للأدمن' : 'كلمة مرور الحساب الخاص بك')
+                                    : (_isSubAdmin ? 'Set Your Real Password' : 'Set Your Account Password'),
+                                hintText: AppLocalization.isArabicNotifier.value ? 'عين كلمة مرور لتأمين حسابك' : 'Choose a secure password for your account',
+                                prefixIcon: Icons.lock_outline,
+                                suffixIcon: IconButton(
+                                  icon: Icon(_realPassVisible ? Icons.visibility : Icons.visibility_off, color: Colors.white54),
+                                  onPressed: () => setState(() => _realPassVisible = !_realPassVisible),
+                                ),
                               ),
                             ),
                           ],
-                        ),
+                          
+                          // Setup code field (Optional)
+                          if (!_isSubAdmin) ...[
+                            const SizedBox(height: 16),
+                            TextField(
+                              controller: _setupCodeCtrl,
+                              style: const TextStyle(color: Colors.white),
+                              decoration: AppTheme.inputDecoration(
+                                labelText: AppLocalization.isArabicNotifier.value ? 'كود إعداد الجهاز (اختياري)' : 'Device Setup Code (Optional)',
+                                hintText: AppLocalization.isArabicNotifier.value ? 'أدخل كود CX-XXXXXX الممنوح لك' : 'Enter CX-XXXXXX setup code if you have one',
+                                prefixIcon: Icons.developer_board,
+                              ),
+                              textCapitalization: TextCapitalization.characters,
+                            ),
+                            if (_isSetupCodeChecking)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8.0, left: 4, right: 4),
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 14,
+                                      height: 14,
+                                      child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primaryCyan),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    const Text('جاري التحقق...', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                                  ],
+                                ),
+                              )
+                            else if (_isSetupCodeValid != null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8.0, left: 4, right: 4),
+                                child: Text(
+                                  _isSetupCodeValid!
+                                      ? (AppLocalization.isArabicNotifier.value 
+                                          ? 'كود تفعيل صالح — يحتوي على $_setupCodeWidgetsCount من الأدوات' 
+                                          : 'Valid setup code — contains $_setupCodeWidgetsCount widgets')
+                                      : (AppLocalization.isArabicNotifier.value 
+                                          ? 'كود تفعيل غير صالح أو مستخدم' 
+                                          : 'Invalid or used setup code'),
+                                  style: TextStyle(
+                                    color: _isSetupCodeValid! ? AppTheme.primaryCyan : Colors.redAccent,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                          ],
+                          
+                          // Distributor linkage panel
+                          if (!_isSubAdmin) _buildMerchantLinkStatusCard(),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
-  
-                SizedBox(height: 32),
+                const SizedBox(height: 24),
+                
+                // --- SECTION 2: ADAFRUIT IO & FIREBASE CARD ---
+                _sectionHeader('ADAFRUIT IO & FIREBASE — ${AppLocalization.isArabicNotifier.value ? 'اختياري' : 'Optional'}'),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(28),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                    child: Container(
+                      padding: const EdgeInsets.all(20.0),
+                      decoration: AppTheme.glassDecoration(
+                        borderRadius: BorderRadius.circular(28),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            AppLocalization.isArabicNotifier.value
+                                ? 'للتحكم بالأجهزة واللمبات الذكية عبر Adafruit IO (يمكن إضافتها لاحقاً)'
+                                : 'To control smart devices via Adafruit IO (can be added later)',
+                            style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+                          ),
+                          const SizedBox(height: 14),
+                          TextField(
+                            controller: _aioUserCtrl,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: AppTheme.inputDecoration(
+                              labelText: AppLocalization.isArabicNotifier.value ? 'اسم مستخدم Adafruit' : 'Adafruit IO Username',
+                              hintText: 'Adafruit IO username',
+                              prefixIcon: Icons.cloud_circle_outlined,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: _aioKeyCtrl,
+                            obscureText: true,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: AppTheme.inputDecoration(
+                              labelText: AppLocalization.isArabicNotifier.value ? 'مفتاح Adafruit API' : 'Adafruit IO AIO Key',
+                              hintText: 'Adafruit AIO key',
+                              prefixIcon: Icons.vpn_key_outlined,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          const Divider(color: Colors.white10, height: 1),
+                          const SizedBox(height: 16),
+                          Text(
+                            AppLocalization.isArabicNotifier.value
+                                ? 'للتحكم في الأجهزة الاحترافية عبر Firebase (يمكن إضافته لاحقاً)'
+                                : 'To control smart devices via Firebase RTDB (can be added later)',
+                            style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+                          ),
+                          const SizedBox(height: 14),
+                          TextField(
+                            controller: _firebaseUrlCtrl,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: AppTheme.inputDecoration(
+                              labelText: AppLocalization.get('firebase_db_url'),
+                              hintText: 'https://your-project.firebaseio.com/',
+                              prefixIcon: Icons.link,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: _firebaseSecretCtrl,
+                            obscureText: true,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: AppTheme.inputDecoration(
+                              labelText: AppLocalization.get('firebase_secret'),
+                              hintText: 'Firebase Secret Key',
+                              prefixIcon: Icons.security,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                
+                const SizedBox(height: 32),
                 GlowingButton(
                   onPressed: _isLoading ? null : _handleRegister,
                   isLoading: _isLoading,
@@ -711,7 +704,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     AppLocalization.isArabicNotifier.value ? 'إنشاء الحساب' : 'Create Account',
                   ),
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
               ],
             ),
           ),
@@ -1216,35 +1209,4 @@ class _JoinSubAdminSheetState extends State<_JoinSubAdminSheet> with SingleTicke
   }
 }
 
-class CyberGridPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = AppTheme.primaryViolet.withValues(alpha: 0.06)
-      ..strokeWidth = 1.0;
 
-    const double step = 25.0;
-    for (double x = 0; x < size.width; x += step) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
-    }
-    for (double y = 0; y < size.height; y += step) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
-    }
-
-    // Add glowing diagonal lines
-    final neonPaint = Paint()
-      ..shader = LinearGradient(
-        colors: [
-          AppTheme.primaryCyan.withValues(alpha: 0.15),
-          Colors.transparent,
-        ],
-      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
-      ..strokeWidth = 1.5;
-
-    canvas.drawLine(const Offset(0, 0), Offset(size.width, size.height * 0.7), neonPaint);
-    canvas.drawLine(Offset(size.width, 0), Offset(0, size.height * 0.7), neonPaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}

@@ -24,6 +24,7 @@ class _EmergencyCallScreenState extends State<EmergencyCallScreen> with SingleTi
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
   Timer? _timeoutTimer;
+  bool _isMuted = false;
 
   @override
   void initState() {
@@ -58,6 +59,24 @@ class _EmergencyCallScreenState extends State<EmergencyCallScreen> with SingleTi
     } catch (e) {
       debugPrint('Error playing alarm audio: $e');
     }
+  }
+
+  void _muteAlarm() async {
+    try {
+      await _audioPlayer.stop();
+      setState(() {
+        _isMuted = true;
+      });
+    } catch (e) {
+      debugPrint('Error muting audio: $e');
+    }
+  }
+
+  void _unmuteAlarm() async {
+    await _playAlarm();
+    setState(() {
+      _isMuted = false;
+    });
   }
 
   void _stopAlarmAndClose() async {
@@ -176,10 +195,12 @@ class _EmergencyCallScreenState extends State<EmergencyCallScreen> with SingleTi
                     
                     // Mute / Ignore Button
                     _buildActionButton(
-                      icon: Icons.volume_off,
-                      label: isArabic ? 'تجاهل' : 'Mute',
-                      color: Colors.grey,
-                      onTap: _stopAlarmAndClose,
+                      icon: _isMuted ? Icons.volume_up : Icons.volume_off,
+                      label: _isMuted 
+                          ? (isArabic ? 'تشغيل الصوت' : 'Unmute') 
+                          : (isArabic ? 'كتم الصوت' : 'Mute'),
+                      color: _isMuted ? Colors.orange : Colors.grey,
+                      onTap: _isMuted ? _unmuteAlarm : _muteAlarm,
                     ),
                   ],
                 ),

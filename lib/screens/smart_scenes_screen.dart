@@ -215,7 +215,7 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1A2E),
+        backgroundColor: AppTheme.cardBaseColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(AppLocalization.get('delete_scene'), style: TextStyle(color: Colors.white)),
         actions: [

@@ -313,6 +313,16 @@ class AppLocalization {
     'setup_code_help': 'Enter the 9-character activation code provided with your device.',
     'admin_generate_device': 'Configure Pre-made Devices',
     'admin_generate_device_desc': 'Create, pre-configure, and manage device activation codes (widgets/settings) for your customers.',
+    // Auth validations and extras
+    'enter_email': 'Please enter your email',
+    'enter_valid_email': 'Please enter a valid email address',
+    'enter_password': 'Please enter your password',
+    'password_too_short': 'Password must be at least 6 characters',
+    'invalid_2fa': 'Invalid 2FA code',
+    'invalid_code': 'Invalid verification code',
+    'code_resent': 'Verification code resent successfully',
+    'resend_code': 'Resend Code',
+    'request_reset_failed': 'Failed to request reset.',
   };
 
   static final Map<String, String> _ar = {
@@ -594,5 +604,15 @@ class AppLocalization {
     'setup_code_help': 'أدخل الكود المكون من بادئة CX- متبوعة بـ 6 رموز.',
     'admin_generate_device': 'إعداد وتجهيز الأجهزة الجاهزة',
     'admin_generate_device_desc': 'إنشاء وتجهيز أكواد إعداد وتفعيل الأجهزة مسبقاً للعملاء مع أدوات التحكم والإعدادات.',
+    // Auth validations and extras
+    'enter_email': 'يرجى إدخال البريد الإلكتروني',
+    'enter_valid_email': 'يرجى إدخال بريد إلكتروني صحيح',
+    'enter_password': 'يرجى إدخال كلمة المرور',
+    'password_too_short': 'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل',
+    'invalid_2fa': 'رمز التحقق الثنائي غير صحيح',
+    'invalid_code': 'رمز التحقق غير صحيح',
+    'code_resent': 'تم إعادة إرسال رمز التحقق بنجاح',
+    'resend_code': 'إعادة إرسال الرمز',
+    'request_reset_failed': 'فشل طلب إعادة التعيين.',
   };
 }

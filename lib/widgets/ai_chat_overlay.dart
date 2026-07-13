@@ -5,7 +5,7 @@ import 'dart:ui';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/ai_service.dart';
 import '../services/api_service.dart';
-
+import '../core/localization.dart';
 class AiChatOverlay extends StatefulWidget {
   const AiChatOverlay({super.key});
 
@@ -34,11 +34,6 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
       vsync: this,
       duration: const Duration(milliseconds: 1400),
     )..repeat();
-
-    _chatHistory.add({
-      'role': 'model',
-      'parts': [{'text': 'أهلاً! أنا مساعدك الذكي ✨\nيمكنني التحكم في أدواتك، تشغيل المشاهد، والإجابة على أسئلتك. كيف أساعدك؟'}]
-    });
   }
 
   @override
@@ -353,38 +348,51 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
         builder: (context, child) {
           return Container(
             width: double.infinity,
-            height: MediaQuery.of(context).size.height * 0.8,
+            height: MediaQuery.of(context).size.height * 0.85,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFF0f0c24), Color(0xFF13112a), Color(0xFF0a0d1f)],
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFF5A4B5E), Color(0xFF3B2A40), Color(0xFF221826)],
               ),
-              borderRadius: BorderRadius.circular(28),
+              borderRadius: BorderRadius.circular(32),
               border: Border.all(
                 color: Color.lerp(
-                  const Color(0xFF8A2BE2).withValues(alpha: 0.3), 
-                  const Color(0xFF00E5FF).withValues(alpha: 0.6), 
+                  const Color(0xFFC7A5FF).withValues(alpha: 0.2), 
+                  const Color(0xFFE5D5FF).withValues(alpha: 0.4), 
                   _glowController.value
                 )!,
                 width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF8A2BE2).withValues(alpha: 0.15),
+                  color: const Color(0xFF3B2A40).withValues(alpha: 0.4),
                   blurRadius: 40,
                   spreadRadius: 5,
                 )
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(28),
+              borderRadius: BorderRadius.circular(32),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                 child: Column(
                   children: [
+                    // Handle line
+                    Container(
+                      margin: const EdgeInsets.only(top: 12),
+                      width: 40, height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
                     _buildHeader(),
-                    Expanded(child: _buildChatArea()),
+                    Expanded(
+                      child: _chatHistory.isEmpty 
+                          ? _buildEmptyState() 
+                          : _buildChatArea(),
+                    ),
                     if (_isTyping) _buildTypingIndicator(),
                     _buildInputArea(),
                   ],
@@ -398,121 +406,123 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
   }
 
   Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.06))),
-        gradient: LinearGradient(
-          colors: [
-            const Color(0xFF8A2BE2).withValues(alpha: 0.18),
-            const Color(0xFF00E5FF).withValues(alpha: 0.06),
-          ]
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      child: Stack(
+        alignment: Alignment.center,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                width: 38,
-                height: 38,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      const Color(0xFF8A2BE2).withValues(alpha: 0.3),
-                      const Color(0xFF00E5FF).withValues(alpha: 0.2),
-                    ]
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFF00E5FF).withValues(alpha: 0.3)),
-                  boxShadow: [
-                    BoxShadow(color: const Color(0xFF00E5FF).withValues(alpha: 0.2), blurRadius: 15)
-                  ]
-                ),
-                child: Icon(Icons.auto_awesome, color: Color(0xFF00E5FF), size: 20),
-              ),
-              SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        'المساعد الذكي',
-                        style: GoogleFonts.tajawal(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      SizedBox(width: 6),
-                      Container(
-                        width: 6, height: 6,
-                        decoration: BoxDecoration(
-                          color: Color(0xFF00e5a0),
-                          shape: BoxShape.circle,
-                          boxShadow: [BoxShadow(color: Color(0xFF00e5a0), blurRadius: 6)]
-                        ),
-                      )
-                    ],
-                  ),
-                  Text(
-                    'مدعوم بـ Gemini AI',
-                    style: GoogleFonts.tajawal(
-                      fontSize: 12,
-                      color: const Color(0xFF00E5FF).withValues(alpha: 0.7),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          Row(
-            children: [
+              // History button
               GestureDetector(
                 onTap: () {
-                  setState(() {
-                    _chatHistory.clear();
-                    _chatHistory.add({
-                      'role': 'model',
-                      'parts': [{'text': 'محادثة جديدة! كيف يمكنني مساعدتك؟ 🚀'}]
-                    });
-                  });
+                   setState(() {
+                     _chatHistory.clear();
+                   });
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  width: 36, height: 36,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.06),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                    color: Colors.black.withValues(alpha: 0.3),
+                    shape: BoxShape.circle,
                   ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.add, color: Colors.white54, size: 14),
-                      SizedBox(width: 4),
-                      Text('جديد', style: GoogleFonts.tajawal(color: Colors.white54, fontSize: 12)),
-                    ],
-                  ),
+                  child: const Icon(Icons.history_rounded, color: Colors.white70, size: 18),
                 ),
               ),
-              SizedBox(width: 8),
+              // Close button
               GestureDetector(
                 onTap: () => Navigator.pop(context),
                 child: Container(
-                  width: 32, height: 32,
+                  width: 36, height: 36,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.06),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                    color: Colors.black.withValues(alpha: 0.3),
+                    shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.close, color: Colors.white54, size: 18),
+                  child: const Icon(Icons.close_rounded, color: Colors.white70, size: 18),
                 ),
               ),
             ],
-          )
+          ),
+          // Center title
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'ControleX AI',
+                style: GoogleFonts.inter(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFC7A5FF).withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  'Beta',
+                  style: GoogleFonts.inter(
+                    color: const Color(0xFFE5D5FF),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              )
+            ],
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    final isAr = AppLocalization.isArabicNotifier.value;
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // Glowing icon
+        Container(
+          width: 80, height: 80,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: const RadialGradient(
+              colors: [
+                Color(0xFFE5D5FF),
+                Color(0xFFC7A5FF),
+              ],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFFC7A5FF).withValues(alpha: 0.4),
+                blurRadius: 40,
+                spreadRadius: 10,
+              )
+            ]
+          ),
+          child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 36),
+        ),
+        const SizedBox(height: 32),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Text(
+            isAr ? 'اسألني أي شيء عن النظام' : 'Ask me anything about ControleX',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.5,
+              height: 1.2,
+            ),
+          ),
+        ),
+        const SizedBox(height: 40),
+      ],
     );
   }
 
@@ -664,56 +674,52 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
   }
 
   Widget _buildInputArea() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.25),
-        border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.05))),
-      ),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: _isTyping ? null : _handleSend,
-            child: Container(
-              width: 48, height: 48,
-              margin: const EdgeInsets.only(right: 12),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF8A2BE2), Color(0xFF5e18b5), Color(0xFF00b4cc)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(color: const Color(0xFF8A2BE2).withValues(alpha: 0.45), blurRadius: 18, offset: const Offset(0, 4))
-                ]
-              ),
-              child: Icon(Icons.send_rounded, color: Colors.white, size: 20),
-            ),
-          ),
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-              ),
+    final isAr = AppLocalization.isArabicNotifier.value;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF1C1A27), // Dark grey pill
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.2),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            )
+          ]
+        ),
+        child: Row(
+          children: [
+            Expanded(
               child: TextField(
                 controller: _inputController,
-                textDirection: TextDirection.rtl,
-                style: GoogleFonts.tajawal(color: Colors.white, fontSize: 15),
+                textDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
+                style: GoogleFonts.inter(color: Colors.white, fontSize: 15),
                 decoration: InputDecoration(
-                  hintText: 'اكتب رسالتك...',
-                  hintTextDirection: TextDirection.rtl,
-                  hintStyle: GoogleFonts.tajawal(color: Colors.white.withValues(alpha: 0.3)),
+                  hintText: isAr ? 'كيف يمكنني مساعدتك اليوم؟' : 'How can I help you today?',
+                  hintTextDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
+                  hintStyle: GoogleFonts.inter(color: Colors.white.withValues(alpha: 0.5)),
                   border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 ),
                 onSubmitted: (_) => _handleSend(),
               ),
             ),
-          ),
-        ],
+            GestureDetector(
+              onTap: _isTyping ? null : _handleSend,
+              child: Container(
+                margin: const EdgeInsets.all(6),
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.arrow_upward_rounded, color: Colors.white, size: 20),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -2506,6 +2506,41 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
 
   Future<void> _deleteSetupCode(String id) async {
     final isAr = AppLocalization.isArabicNotifier.value;
+    
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.cardBaseColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          isAr ? 'تأكيد الحذف' : 'Confirm Delete',
+          style: const TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          isAr ? 'هل أنت متأكد من رغبتك في حذف كود التفعيل هذا؟' : 'Are you sure you want to delete this activation code?',
+          style: const TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              isAr ? 'إلغاء' : 'Cancel',
+              style: TextStyle(color: AppTheme.textSecondary),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              isAr ? 'حذف' : 'Delete',
+              style: const TextStyle(color: Colors.redAccent),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
     setState(() => _isSetupsLoading = true);
     try {
       await ApiService.deleteSetupCode(id);

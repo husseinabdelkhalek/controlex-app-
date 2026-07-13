@@ -328,6 +328,15 @@ class ApiService {
     return await _handleResponse(response);
   }
 
+  static Future<Map<String, dynamic>> resend2FaCode(String email) async {
+    final response = await http.post(
+      Uri.parse('${ApiConstants.baseUrl}/api/auth/resend-2fa'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'email': email}),
+    );
+    return await _handleResponse(response);
+  }
+
   static Future<Map<String, dynamic>> googleAuthMobile(String idToken) async {
     // Sends Firebase ID Token to server — server verifies it and returns JWT
     try {
@@ -346,6 +355,33 @@ class ApiService {
     } catch (e) {
       return {'msg': 'Connection error'};
     }
+  }
+
+  static Future<Map<String, dynamic>> completeGoogleSignup({
+    required String password,
+    String adafruitUsername = '',
+    String adafruitApiKey = '',
+    String firebaseUrl = '',
+    String firebaseSecret = '',
+    String? parentAdminCode,
+    String? subAdminPromoCode,
+    String? setupCode,
+  }) async {
+    final response = await http.post(
+      Uri.parse('${ApiConstants.baseUrl}/api/auth/complete-google-signup'),
+      headers: await _getHeaders(),
+      body: json.encode({
+        'password': password,
+        'adafruitUsername': adafruitUsername,
+        'adafruitApiKey': adafruitApiKey,
+        'firebaseUrl': firebaseUrl,
+        'firebaseSecret': firebaseSecret,
+        if (parentAdminCode != null && parentAdminCode.isNotEmpty) 'parentAdminCode': parentAdminCode,
+        if (subAdminPromoCode != null && subAdminPromoCode.isNotEmpty) 'subAdminPromoCode': subAdminPromoCode,
+        if (setupCode != null && setupCode.isNotEmpty) 'setupCode': setupCode,
+      }),
+    );
+    return json.decode(response.body);
   }
 
   static Future<Map<String, dynamic>> clearData() async {

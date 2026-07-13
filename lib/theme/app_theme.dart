@@ -11,49 +11,49 @@ class AppTheme {
   static Color semanticInfo = const Color(0xFF3B82F6);    // Blue
 
   // --- Premium Brand Colors (Website Match) ---
-  static Color primaryBrand = const Color(0xFF8A2BE2); // Primary Violet
-  static Color secondaryBrand = const Color(0xFF00E5FF); // Primary Cyan
+  static Color primaryBrand = const Color(0xFF6366F1); // Slate Indigo
+  static Color secondaryBrand = const Color(0xFF0EA5E9); // Sky Blue
 
-  // --- Backgrounds & Surfaces (Website Match) ---
-  static Color backgroundBase = const Color(0xFF0D0C1D); 
-  static Color darkBackground = const Color(0xFF0D0C1D); 
+  // --- Backgrounds & Surfaces (Touch of Purple) ---
+  static Color backgroundBase = const Color(0xFF161122); // Deep Purple Dark
+  static Color darkBackground = const Color(0xFF161122);
   
   // Vibrant Neon Accents (Aliases for backward compatibility)
   static Color primaryCyan = secondaryBrand; 
-  static Color darkCyan = const Color(0xFF00ACC1); 
+  static Color darkCyan = const Color(0xFF0284C7); 
   static Color primaryViolet = primaryBrand; 
-  static Color darkViolet = const Color(0xFF6A1B9A); 
+  static Color darkViolet = const Color(0xFF4338CA); 
   
   // Legacy Accents
   static Color accentNeon = semanticError; 
   static Color neonBlue = primaryBrand;   
   
   // Glassmorphism enhancements
-  static Color cardBaseColor = const Color(0xD915132C); // #15132c with 85% opacity
+  static Color cardBaseColor = const Color(0xD91F182B); // Premium deep purple surface with 85% opacity
   static Color cardLightColor = const Color(0xFFE2E8F0); 
   
   // Glows and Borders
-  static Color glassBorder = const Color(0x4D8A2BE2); // 30% Violet
-  static Color glowColor = const Color(0x6600E5FF); // Cyan Glow
-  static Color violetGlow = const Color(0x808A2BE2); // Violet Glow
+  static Color glassBorder = const Color(0x33C7A5FF); // Soft Klivvr Purple Border (20%)
+  static Color glowColor = const Color(0x2D0EA5E9); // Soft Sky Glow
+  static Color violetGlow = const Color(0x2DC7A5FF); // Soft Purple Glow
   
   // Texts
-  static Color textPrimary = const Color(0xFFF0F8FF); // Snow white
-  static Color textSecondary = const Color(0xFFA9A2C8); // Faded violet
+  static Color textPrimary = const Color(0xFFF8FAFC); // Slate 50
+  static Color textSecondary = const Color(0xFF94A3B8); // Slate 400
 
   static void switchTheme(String themeName) {
     if (themeName == 'glass') {
-      backgroundBase = const Color(0x800D0C1D); 
-      darkBackground = const Color(0x800D0C1D);
-      cardBaseColor = const Color(0x3315132C); 
-      glassBorder = const Color(0x998A2BE2);
-      glowColor = const Color(0x9900E5FF);
+      backgroundBase = const Color(0x80090A0F); 
+      darkBackground = const Color(0x80090A0F);
+      cardBaseColor = const Color(0x33131722); 
+      glassBorder = const Color(0x736366F1);
+      glowColor = const Color(0x660EA5E9);
     } else {
-      backgroundBase = const Color(0xFF0D0C1D); 
-      darkBackground = const Color(0xFF0D0C1D);
-      cardBaseColor = const Color(0xD915132C); 
-      glassBorder = const Color(0x4D8A2BE2);
-      glowColor = const Color(0x6600E5FF);
+      backgroundBase = const Color(0xFF090A0F); 
+      darkBackground = const Color(0xFF090A0F);
+      cardBaseColor = const Color(0xD9131722); 
+      glassBorder = const Color(0x336366F1);
+      glowColor = const Color(0x2D0EA5E9);
     }
     themeNotifier.value = themeName;
   }
@@ -69,8 +69,8 @@ class AppTheme {
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
-          resolvedColor.withValues(alpha: 0.75),
-          resolvedColor.withValues(alpha: 0.45),
+          resolvedColor.withValues(alpha: 0.85),
+          resolvedColor.withValues(alpha: 0.60),
         ],
       ),
       borderRadius: borderRadius ?? const BorderRadius.vertical(top: Radius.circular(24)),
@@ -81,9 +81,35 @@ class AppTheme {
     );
   }
 
+  // --- Centralized Premium Input Decoration ---
+  static InputDecoration inputDecoration({
+    required String labelText,
+    String? hintText,
+    required IconData prefixIcon,
+    Widget? suffixIcon,
+  }) {
+    return InputDecoration(
+      labelText: labelText,
+      labelStyle: TextStyle(color: textSecondary, fontSize: 13),
+      hintText: hintText,
+      hintStyle: const TextStyle(color: Colors.white30, fontSize: 12),
+      prefixIcon: Icon(prefixIcon, color: primaryCyan, size: 20),
+      suffixIcon: suffixIcon,
+      filled: true,
+      fillColor: cardBaseColor.withValues(alpha: 0.95), // Blocks the background grid completely!
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: glassBorder.withValues(alpha: 0.3), width: 1.2),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: primaryCyan, width: 1.5),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    );
+  }
+
   static ThemeData get darkTheme {
-    final tajawal = GoogleFonts.tajawalTextTheme();
-    
     return ThemeData(
       brightness: Brightness.dark,
       primaryColor: primaryCyan,
@@ -104,29 +130,46 @@ class AppTheme {
       focusColor: Colors.transparent,
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
+          backgroundColor: primaryBrand,
+          foregroundColor: Colors.white,
           elevation: 0,
           shadowColor: Colors.transparent,
           surfaceTintColor: Colors.transparent,
-        ).copyWith(
-          overlayColor: WidgetStateProperty.all(Colors.transparent),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          textStyle: GoogleFonts.tajawal(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
+          ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
+          foregroundColor: primaryCyan,
           elevation: 0,
           shadowColor: Colors.transparent,
           surfaceTintColor: Colors.transparent,
-        ).copyWith(
-          overlayColor: WidgetStateProperty.all(Colors.transparent),
+          side: BorderSide(color: glassBorder, width: 1.5),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          textStyle: GoogleFonts.tajawal(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
+          foregroundColor: primaryCyan,
           elevation: 0,
           shadowColor: Colors.transparent,
           surfaceTintColor: Colors.transparent,
-        ).copyWith(
-          overlayColor: WidgetStateProperty.all(Colors.transparent),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          textStyle: GoogleFonts.tajawal(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       iconButtonTheme: IconButtonThemeData(
@@ -134,16 +177,14 @@ class AppTheme {
           elevation: 0,
           shadowColor: Colors.transparent,
           surfaceTintColor: Colors.transparent,
-        ).copyWith(
-          overlayColor: WidgetStateProperty.all(Colors.transparent),
         ),
       ),
-      tabBarTheme: TabBarTheme(
-        overlayColor: WidgetStateProperty.all(Colors.transparent),
+      tabBarTheme: const TabBarTheme(
+        overlayColor: WidgetStatePropertyAll(Colors.transparent),
       ),
       dialogTheme: DialogTheme(
         surfaceTintColor: Colors.transparent,
-        backgroundColor: cardBaseColor.withValues(alpha: 0.65),
+        backgroundColor: cardBaseColor.withValues(alpha: 0.8),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(28),
           side: BorderSide(color: glassBorder, width: 1.5),
@@ -155,7 +196,7 @@ class AppTheme {
         modalBackgroundColor: Colors.transparent,
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: const Color(0x99080614), 
+        backgroundColor: const Color(0x9905070D), 
         elevation: 0,
         centerTitle: true,
         scrolledUnderElevation: 0,
@@ -173,9 +214,9 @@ class AppTheme {
             ),
           ],
         ),
-        shape: const Border(
+        shape: Border(
           bottom: BorderSide(
-            color: Color(0x1F00E5FF), 
+            color: glassBorder.withValues(alpha: 0.3), 
             width: 1.2,
           ),
         ),
