@@ -9,6 +9,8 @@ import '../services/local_service.dart';
 import '../widgets/glass_card.dart';
 import '../widgets/app_snackbar.dart';
 import '../widgets/smart_hint.dart';
+import '../widgets/expandable_assistant_fab.dart';
+import '../widgets/custom_bottom_nav.dart';
 import '../widgets/ai_floating_button.dart';
 import 'package:home_widget/home_widget.dart';
 
@@ -911,8 +913,8 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
     return Scaffold(
       backgroundColor: AppTheme.backgroundBase,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(AppLocalization.get('smart_scenes')),
-        leading: IconButton(icon: Icon(Icons.arrow_back_ios_new), onPressed: () => Navigator.pop(context)),
       ),
       body: Stack(
         children: [
@@ -985,6 +987,7 @@ class _SmartScenesScreenState extends State<SmartScenesScreen> with TickerProvid
                     condition: _scenes.isEmpty && !_isLoading,
                     message: AppLocalization.isArabicNotifier.value ? 'أنشئ أول مشهد لك!' : 'Create your first Scene!',
                     child: FloatingActionButton.extended(
+                      heroTag: 'createSceneFAB',
                       backgroundColor: AppTheme.primaryViolet,
                       icon: Icon(Icons.add, color: Colors.white),
                       label: Text(AppLocalization.get('create_scene'), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),

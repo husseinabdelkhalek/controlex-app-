@@ -4,6 +4,7 @@ import '../theme/app_theme.dart';
 import '../services/voice_parser.dart';
 import '../core/localization.dart';
 import 'glass_popups.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class VoiceCommandOverlay extends StatefulWidget {
   final List<dynamic> widgets;
@@ -36,7 +37,93 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay> {
   void initState() {
     super.initState();
     _speech = stt.SpeechToText();
+    _checkFirstTime();
     _startListening();
+  }
+
+  void _checkFirstTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    final hasSeenHelp = prefs.getBool('has_seen_voice_help_v2') ?? false;
+    if (!hasSeenHelp) {
+      await prefs.setBool('has_seen_voice_help_v2', true);
+      if (mounted) {
+        _stopListening();
+        _showHelp();
+      }
+    }
+  }
+
+  void _showHelp() {
+    final isAr = AppLocalization.isArabicNotifier.value;
+    showGlassDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Container(
+          width: double.maxFinite,
+          padding: const EdgeInsets.all(24),
+          decoration: AppTheme.glassDecoration(),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.help_outline, color: AppTheme.primaryCyan, size: 48),
+              SizedBox(height: 16),
+              Text(
+                isAr ? 'كيف تستخدم المساعد الصوتي؟' : 'How to use Voice Assistant?',
+                style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 16),
+              Text(
+                isAr 
+                  ? 'طريقة استخدام الأدوات بالصوت:\n\n'
+                    '🔘 أزرار التشغيل/الإيقاف (Toggle):\n'
+                    'قُل أمر (شغل، افتح، طفي، اقفل) + اسم الأداة.\n'
+                    'مثال: "شغل التكييف" - "طفي نور الصالة"\n\n'
+                    '👆 أزرار الضغط (Push):\n'
+                    'قُل اسم الأداة فقط أو أمر تشغيل.\n'
+                    'مثال: "جرس الباب" - "افتح بوابة الجراج"\n\n'
+                    '🎚️ شريط التحكم بالقيم (Slider):\n'
+                    'قُل اسم الأداة + القيمة الرقمية.\n'
+                    'مثال: "خلي المروحة 50" - "التكييف 22"\n\n'
+                    '🎨 أداة اختيار الألوان (Color Picker):\n'
+                    'قُل (تغيير لون) + اسم الأداة + اللون.\n'
+                    'مثال: "غير لون المكتب أحمر" - "أزرق للنجفة"\n\n'
+                    '💻 شاشات الأوامر (Terminal):\n'
+                    'قُل (ابعت، ارسل، قول) + الرسالة + للأداة.\n'
+                    'مثال: "ابعت رسالة ترحيب للترمنال"'
+                  : 'How to use tools with Voice:\n\n'
+                    '🔘 Toggle Buttons:\n'
+                    '[Turn On/Off] + [Name]. Ex: "Turn on AC"\n\n'
+                    '👆 Push Buttons:\n'
+                    'Just say the name. Ex: "Garage Door"\n\n'
+                    '🎚️ Sliders:\n'
+                    '[Name] + [Value]. Ex: "Set fan to 50"\n\n'
+                    '🎨 Color Picker:\n'
+                    '[Name] + [Color]. Ex: "Desk light to red"\n\n'
+                    '💻 Terminal:\n'
+                    '"Send" + [Message] + "to Terminal"',
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 13, height: 1.6),
+                textAlign: TextAlign.right,
+              ),
+              SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryBrand,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))
+                  ),
+                  child: Text(isAr ? 'حسناً، فهمت' : 'Got it', style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   void _startListening() async {
@@ -165,11 +252,26 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 40, height: 4,
-            decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(10)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(width: 40), // Spacer for balance
+              Container(
+                width: 40, height: 4,
+                margin: const EdgeInsets.only(top: 8),
+                decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(10)),
+              ),
+              IconButton(
+                icon: Icon(Icons.help_outline, color: Colors.white54),
+                onPressed: () {
+                  _stopListening();
+                  _showHelp();
+                },
+              ),
+            ],
           ),
-          SizedBox(height: 24),
+          SizedBox(height: 8),
           
           // Transcription Text
           Text(

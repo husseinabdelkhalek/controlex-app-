@@ -15,10 +15,14 @@ import '../settings/profile_settings_screen.dart';
 import '../settings/integrations_settings_screen.dart';
 import '../settings/security_settings_screen.dart';
 import '../settings/device_setup_screen.dart';
+import '../../widgets/custom_bottom_nav.dart';
+import '../../widgets/expandable_assistant_fab.dart';
+import '../../widgets/ai_floating_button.dart';
 
 class AccountScreen extends StatefulWidget {
   final bool startTour;
-  const AccountScreen({super.key, this.startTour = false});
+  final VoidCallback? onStartTour;
+  const AccountScreen({super.key, this.startTour = false, this.onStartTour});
 
   @override
   State<AccountScreen> createState() => _AccountScreenState();
@@ -226,6 +230,7 @@ class _AccountScreenState extends State<AccountScreen> {
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
@@ -523,7 +528,13 @@ class _AccountScreenState extends State<AccountScreen> {
                 icon: Icons.explore_rounded,
                 title: isAr ? 'جولة في التطبيق' : 'App Tour',
                 subtitle: isAr ? 'شرح تفاعلي لمميزات وأزرار لوحة التحكم' : 'Interactive showcase of features & buttons',
-                onTap: () => Navigator.pop(context, 'start_tour'),
+                onTap: () {
+                  if (widget.onStartTour != null) {
+                    widget.onStartTour!();
+                  } else {
+                    Navigator.pop(context, 'start_tour');
+                  }
+                },
                 inCard: true,
               ),
             ]),
@@ -602,6 +613,7 @@ class _AccountScreenState extends State<AccountScreen> {
           ],
         ),
       ),
+      floatingActionButton: const AiFloatingButton(),
     );
   }
 

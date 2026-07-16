@@ -231,11 +231,19 @@ class _AppSnackbarWidgetState extends State<_AppSnackbarWidget> with SingleTicke
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                    filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                       decoration: BoxDecoration(
-                        color: widget.bgColor.withValues(alpha: 0.85),
+                        gradient: LinearGradient(
+                          colors: [
+                            widget.bgColor.withValues(alpha: 0.98),
+                            widget.bgColor.withValues(alpha: 0.95),
+                            const Color(0xFF1E213A).withValues(alpha: 0.98),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: widget.glowColor.withValues(alpha: 0.35),
@@ -244,9 +252,15 @@ class _AppSnackbarWidgetState extends State<_AppSnackbarWidget> with SingleTicke
                         boxShadow: [
                           BoxShadow(
                             color: widget.glowColor.withValues(alpha: 0.15),
+                            blurRadius: 30,
+                            spreadRadius: 2,
+                            offset: const Offset(0, 8),
+                          ),
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.4),
                             blurRadius: 20,
-                            spreadRadius: 1,
-                            offset: const Offset(0, 4),
+                            spreadRadius: -2,
+                            offset: const Offset(0, 10),
                           ),
                         ],
                       ),

@@ -133,6 +133,7 @@ class _DeviceSetupScreenState extends State<DeviceSetupScreen> {
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(AppLocalization.get('ready_device_setup')),
         backgroundColor: Colors.transparent,
         flexibleSpace: Container(decoration: AppTheme.glassDecoration(borderRadius: BorderRadius.zero)),

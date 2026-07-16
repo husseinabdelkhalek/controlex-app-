@@ -7,6 +7,7 @@ import 'core/localization.dart';
 import 'core/error_handler.dart';
 import 'services/api_service.dart';
 import 'screens/dashboard_screen.dart';
+import 'screens/main_layout_screen.dart';
 import 'screens/status/loading_screen.dart';
 import 'services/notification_service.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -436,7 +437,7 @@ class _AppInitializerState extends State<AppInitializer> {
     }
 
     if (_token != null && _token!.isNotEmpty) {
-      return DashboardScreen(widgetSetupId: _widgetSetupId);
+      return MainLayoutScreen(widgetSetupId: _widgetSetupId);
     }
     return const LoginScreen();
   }

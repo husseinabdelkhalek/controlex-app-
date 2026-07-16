@@ -68,7 +68,7 @@ class _GlassCardState extends State<GlassCard> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(widget.borderRadius),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
+          filter: ImageFilter.blur(sigmaX: 24.0, sigmaY: 24.0),
           child: Container(
              decoration: BoxDecoration(
                gradient: RadialGradient(

@@ -5,7 +5,9 @@ import 'dart:ui';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/ai_service.dart';
 import '../services/api_service.dart';
+import '../services/chat_history_service.dart';
 import '../core/localization.dart';
+import '../screens/dialogs/code_diff_dialog.dart';
 class AiChatOverlay extends StatefulWidget {
   const AiChatOverlay({super.key});
 
@@ -17,7 +19,9 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
   final TextEditingController _inputController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   
-  final List<Map<String, dynamic>> _chatHistory = [];
+  List<Map<String, dynamic>> _chatHistory = [];
+  String? _currentSessionId;
+  bool _saveChatEnabled = true;
   bool _isTyping = false;
   late AnimationController _glowController;
   late AnimationController _typingController;
@@ -25,6 +29,8 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
   @override
   void initState() {
     super.initState();
+    ChatHistoryService.deleteOldSessions();
+    _loadSettings();
     _glowController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 4),
@@ -57,23 +63,56 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
     });
   }
 
-  Future<void> _handleSend() async {
-    final text = _inputController.text.trim();
-    if (text.isEmpty) return;
-
-    setState(() {
-      _chatHistory.add({
-        'role': 'user',
-        'parts': [{'text': text}]
+  void _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() {
+        _saveChatEnabled = prefs.getBool('ai_chat_save_enabled') ?? true;
       });
-      _inputController.clear();
-      _isTyping = true;
+    }
+  }
+
+  void _saveCurrentSession() {
+    if (!_saveChatEnabled || _chatHistory.isEmpty) return;
+    _currentSessionId ??= DateTime.now().millisecondsSinceEpoch.toString();
+    ChatHistoryService.saveSession(_currentSessionId!, _chatHistory);
+  }
+
+  void _toggleSaveChat() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _saveChatEnabled = !_saveChatEnabled;
     });
-    _scrollToBottom();
+    await prefs.setBool('ai_chat_save_enabled', _saveChatEnabled);
+  }
+
+  void _clearChat() {
+    setState(() {
+      _chatHistory.clear();
+      _currentSessionId = null;
+    });
+  }
+
+  int _aiLoopCount = 0;
+
+  Future<void> _processAICommandLoop(String userMessage, {bool isLoop = false}) async {
+    if (!isLoop) {
+      _aiLoopCount = 0;
+    }
+    if (_aiLoopCount > 4) {
+      return;
+    }
+
+    if (isLoop) {
+      setState(() {
+        _isTyping = true;
+      });
+      _scrollToBottom();
+    }
 
     try {
       final responseText = await AiService.processAICommand(
-        text, 
+        userMessage, 
         _chatHistory.where((m) => m['role'] != 'error').toList()
       );
       
@@ -101,11 +140,36 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
         }
       });
       _scrollToBottom();
+      _saveCurrentSession();
+
+      List<String> nextPrompts = [];
 
       if (aiData != null && aiData['commands'] is List) {
         for (var cmd in aiData['commands']) {
-          await _executeCommand(cmd);
+          final res = await _executeCommand(cmd);
+          if (res != null && res['reported'] == true && res['nextPrompt'] != null) {
+            nextPrompts.add(res['nextPrompt']);
+          }
         }
+      }
+
+      if (nextPrompts.isNotEmpty) {
+        final combinedPrompt = nextPrompts.join('\n\n');
+        
+        setState(() {
+          _chatHistory.add({
+            'role': 'model',
+            'parts': [{'text': json.encode(aiData)}]
+          });
+          _chatHistory.add({
+            'role': 'user',
+            'parts': [{'text': combinedPrompt}]
+          });
+        });
+        _saveCurrentSession();
+
+        _aiLoopCount++;
+        await _processAICommandLoop(combinedPrompt, isLoop: true);
       }
 
     } catch (e) {
@@ -118,14 +182,114 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
           });
         });
         _scrollToBottom();
+        _saveCurrentSession();
       }
     }
   }
 
-  Future<void> _executeCommand(Map<String, dynamic> cmd) async {
+  Future<void> _handleSend() async {
+    final text = _inputController.text.trim();
+    if (text.isEmpty) return;
+
+    setState(() {
+      _chatHistory.add({
+        'role': 'user',
+        'parts': [{'text': text}]
+      });
+      _inputController.clear();
+      _isTyping = true;
+    });
+    _scrollToBottom();
+    _saveCurrentSession();
+
+    await _processAICommandLoop(text);
+  }
+
+  Future<Map<String, dynamic>?> _executeCommand(Map<String, dynamic> cmd) async {
     final action = cmd['action'];
     try {
-      if (action == 'widget_command') {
+      if (action == 'search_code') {
+        setState(() {
+           _chatHistory.add({'role': 'model', 'parts': [{'text': 'جاري البحث عن الكود "${cmd['query']}"...'}]});
+        });
+        _scrollToBottom();
+        final res = await ApiService.executeGenericApiCall('POST', '/api/admin/search-code', {'query': cmd['query']});
+        final List<dynamic>? results = res['results'];
+        String resultText = (results != null && results.isNotEmpty)
+            ? results.map((r) => "${r['file']} (Line ${r['line']}): ${r['content']}").join("\n")
+            : "لم يتم العثور على أي نتائج.";
+        return {'reported': true, 'nextPrompt': '[نظام البحث التلقائي] نتائج البحث عن "${cmd['query']}":\n```\n$resultText\n```\nاستمر في التحليل.'};
+      } else if (action == 'list_dir') {
+        setState(() {
+           _chatHistory.add({'role': 'model', 'parts': [{'text': 'جاري استعراض المجلد ${cmd['path'] ?? "الرئيسي"}...'}]});
+        });
+        _scrollToBottom();
+        final res = await ApiService.executeGenericApiCall('POST', '/api/admin/list-dir', {'path': cmd['path'] ?? ''});
+        final List<dynamic>? files = res['files'];
+        return {'reported': true, 'nextPrompt': '[نظام استعراض الملفات] محتويات المجلد:\n${files?.join("\n") ?? "فارغ"}\nاستمر في التحليل.'};
+      } else if (action == 'read_file') {
+        setState(() {
+           _chatHistory.add({'role': 'model', 'parts': [{'text': 'جاري قراءة الملف ${cmd['path']}...'}]});
+        });
+        _scrollToBottom();
+        final res = await ApiService.executeGenericApiCall('POST', '/api/admin/read-file', {'path': cmd['path'], 'startLine': cmd['startLine'], 'endLine': cmd['endLine']});
+        return {'reported': true, 'nextPrompt': '[نظام القراءة التلقائي] محتوى الملف المطلوب (${cmd['path']}):\n```javascript\n${res['content']}\n```\n(إجمالي أسطر الملف: ${res['totalLines']})\nقم بتحليل هذا الكود واقترح التصحيح إن لزم الأمر.'};
+      } else if (action == 'git_sync') {
+        setState(() {
+           _chatHistory.add({'role': 'model', 'parts': [{'text': 'جاري مزامنة الملفات ورفعها إلى Github... ⏳'}]});
+        });
+        _scrollToBottom();
+        final res = await ApiService.executeGenericApiCall('POST', '/api/admin/git-sync', {});
+        return {'reported': true, 'nextPrompt': '[نظام المزامنة] تمت المزامنة بنجاح: ${res['msg']}'};
+      } else if (action == 'modify_code') {
+        final prefs = await SharedPreferences.getInstance();
+        final role = prefs.getString('role') ?? 'user';
+        if (role == 'admin') {
+           final oldCode = cmd['oldCode'] ?? '';
+           final newCode = cmd['newCode'] ?? '';
+           final actionDesc = cmd['actionDescription'] ?? 'تعديل برمجي / Code Modification';
+           
+           if (mounted) {
+             final approved = await showDialog<bool>(
+               context: context,
+               barrierDismissible: false,
+               builder: (ctx) => CodeDiffDialog(
+                 oldCode: oldCode,
+                 newCode: newCode,
+                 actionDescription: actionDesc,
+               ),
+             );
+             if (approved == true) {
+               setState(() {
+                 _chatHistory.add({
+                   'role': 'model',
+                   'parts': [{'text': 'تم الموافقة على تعديل الكود وتطبيقه بنجاح! / Code modification approved and applied successfully!'}],
+                 });
+               });
+               _scrollToBottom();
+               return {'reported': true, 'nextPrompt': '[نظام التعديل] تمت الموافقة على التعديل.'};
+             } else {
+               setState(() {
+                 _chatHistory.add({
+                   'role': 'model',
+                   'parts': [{'text': 'تم رفض تعديل الكود. / Code modification rejected.'}],
+                 });
+               });
+               _scrollToBottom();
+               return {'reported': true, 'nextPrompt': '[نظام التعديل] تم رفض التعديل من قبل المستخدم.'};
+             }
+           }
+        } else {
+            setState(() {
+              _chatHistory.add({
+                'role': 'model',
+                'parts': [{'text': 'عفواً، صلاحيات الإدمن مطلوبة لتنفيذ هذا الإجراء. / Sorry, admin privileges are required for this action.'}],
+              });
+            });
+            _scrollToBottom();
+            return {'reported': true, 'nextPrompt': '[نظام الحماية] فشل التعديل: المستخدم ليس مديراً.'};
+        }
+      } else if (action == 'widget_command') {
         await ApiService.sendCommand(cmd['widgetId'], cmd['command']);
       } else if (action == 'execute_scene') {
         await ApiService.executeScene(cmd['sceneId'], []);
@@ -157,6 +321,7 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
               _scrollToBottom();
             }
           }
+          return {'reported': true, 'nextPrompt': '[نظام الـ API] تم تنفيذ طلب الـ API بنجاح على المسار $url.'};
         }
       } else if (action == 'create_widget') {
         final widgetData = cmd['widgetData'];
@@ -171,8 +336,10 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
             });
             _scrollToBottom();
           }
+          return {'reported': true, 'nextPrompt': '[نظام الإنشاء] تم إنشاء الأداة بنجاح.'};
         }
       } else if (action == 'create_automation') {
+
         final automationData = cmd['automationData'];
         if (automationData != null) {
           await ApiService.createAutomationRule(Map<String, dynamic>.from(automationData));
@@ -294,6 +461,7 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
             });
             _scrollToBottom();
           }
+          return {'reported': true, 'nextPrompt': '[نظام الاستعادة] تم إرسال رابط إعادة تعيين كلمة المرور.'};
         }
       } else if (action == 'change_language') {
         final lang = cmd['lang'];
@@ -309,6 +477,7 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
             });
             _scrollToBottom();
           }
+          return {'reported': true, 'nextPrompt': '[نظام الإعدادات] تم تغيير اللغة بنجاح.'};
         }
       } else if (action == 'emergency_call') {
         final title = cmd['title'] ?? 'تنبيه طوارئ يدوي';
@@ -323,6 +492,7 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
           });
           _scrollToBottom();
         }
+        return {'reported': true, 'nextPrompt': '[نظام الطوارئ] تم إرسال نداء الاستغاثة بنجاح باسم: $title.'};
       }
     } catch (e) {
       debugPrint("AI Command Error: $e");
@@ -334,8 +504,12 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
           });
         });
         _scrollToBottom();
+        _saveCurrentSession();
       }
+      return {'reported': true, 'nextPrompt': '[خطأ في النظام] فشل تنفيذ الإجراء: $e'};
     }
+    _saveCurrentSession();
+    return null;
   }
 
   @override
@@ -414,21 +588,52 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // History button
-              GestureDetector(
-                onTap: () {
-                   setState(() {
-                     _chatHistory.clear();
-                   });
-                },
-                child: Container(
-                  width: 36, height: 36,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.3),
-                    shape: BoxShape.circle,
+              Row(
+                children: [
+                  // History button
+                  GestureDetector(
+                    onTap: _showHistoryBottomSheet,
+                    child: Container(
+                      width: 36, height: 36,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.3),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.history_rounded, color: Colors.white70, size: 18),
+                    ),
                   ),
-                  child: const Icon(Icons.history_rounded, color: Colors.white70, size: 18),
-                ),
+                  const SizedBox(width: 8),
+                  // Clear Chat button
+                  GestureDetector(
+                    onTap: _clearChat,
+                    child: Container(
+                      width: 36, height: 36,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.3),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.cleaning_services_rounded, color: Colors.white70, size: 18),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // Toggle Save Chat button
+                  GestureDetector(
+                    onTap: _toggleSaveChat,
+                    child: Container(
+                      width: 36, height: 36,
+                      decoration: BoxDecoration(
+                        color: _saveChatEnabled ? Colors.black.withValues(alpha: 0.3) : const Color(0xFFC7A5FF).withValues(alpha: 0.3),
+                        shape: BoxShape.circle,
+                        border: _saveChatEnabled ? null : Border.all(color: const Color(0xFFC7A5FF), width: 1.5),
+                      ),
+                      child: Icon(
+                        _saveChatEnabled ? Icons.bookmark_added_rounded : Icons.bookmark_remove_rounded,
+                        color: _saveChatEnabled ? Colors.white70 : const Color(0xFFE5D5FF),
+                        size: 18,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               // Close button
               GestureDetector(
@@ -477,6 +682,124 @@ class _AiChatOverlayState extends State<AiChatOverlay> with TickerProviderStateM
           ),
         ],
       ),
+    );
+  }
+
+  void _showHistoryBottomSheet() async {
+    final sessions = await ChatHistoryService.getSessions();
+    if (!mounted) return;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF221826),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setModalState) {
+            return Container(
+              padding: const EdgeInsets.all(16),
+              height: MediaQuery.of(context).size.height * 0.6,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        AppLocalization.isArabicNotifier.value ? 'المحادثات السابقة' : 'Past Chats',
+                        style: GoogleFonts.inter(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close, color: Colors.white70),
+                        onPressed: () => Navigator.pop(ctx),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFC7A5FF).withValues(alpha: 0.2),
+                      foregroundColor: const Color(0xFFE5D5FF),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    icon: const Icon(Icons.add_comment_rounded),
+                    label: Text(AppLocalization.isArabicNotifier.value ? 'بدء محادثة جديدة' : 'Start New Chat'),
+                    onPressed: () {
+                      setState(() {
+                        _chatHistory.clear();
+                        _currentSessionId = null;
+                      });
+                      Navigator.pop(ctx);
+                    },
+                  ),
+                  const Divider(color: Colors.white24, height: 32),
+                  if (sessions.isEmpty)
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          AppLocalization.isArabicNotifier.value ? 'لا توجد محادثات سابقة' : 'No past chats found',
+                          style: const TextStyle(color: Colors.white54),
+                        ),
+                      ),
+                    )
+                  else
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: sessions.length,
+                        itemBuilder: (context, index) {
+                          final session = sessions[index];
+                          final date = DateTime.fromMillisecondsSinceEpoch(session['lastUpdated']);
+                          final dateString = '${date.day}/${date.month} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+                          return Dismissible(
+                            key: Key(session['id']),
+                            direction: DismissDirection.endToStart,
+                            background: Container(
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(right: 20),
+                              decoration: BoxDecoration(
+                                color: Colors.red.withValues(alpha: 0.8),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(Icons.delete, color: Colors.white),
+                            ),
+                            onDismissed: (_) async {
+                              await ChatHistoryService.deleteSession(session['id']);
+                              if (_currentSessionId == session['id']) {
+                                setState(() {
+                                  _chatHistory.clear();
+                                  _currentSessionId = null;
+                                });
+                              }
+                              setModalState(() {
+                                sessions.removeAt(index);
+                              });
+                            },
+                            child: ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(session['title'], style: const TextStyle(color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis),
+                              subtitle: Text(dateString, style: const TextStyle(color: Colors.white54, fontSize: 12)),
+                              onTap: () {
+                                setState(() {
+                                  _currentSessionId = session['id'];
+                                  _chatHistory.clear();
+                                  _chatHistory.addAll(List<Map<String, dynamic>>.from(session['history']));
+                                });
+                                _scrollToBottom();
+                                Navigator.pop(ctx);
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            );
+          }
+        );
+      },
     );
   }
 

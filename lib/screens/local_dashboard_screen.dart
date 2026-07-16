@@ -847,62 +847,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
     );
   }
 
-  Widget _buildDockButton({
-    required Key? key,
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      key: key,
-      onTap: () {
-        HapticHelper.lightFeedback();
-        onTap();
-      },
-      borderRadius: BorderRadius.circular(24),
-      child: Padding(
-        padding: const EdgeInsets.all(4),
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: color.withValues(alpha: 0.12),
-            border: Border.all(color: color.withValues(alpha: 0.3), width: 1.2),
-          ),
-          child: Icon(icon, color: color, size: 18),
-        ),
-      ),
-    );
-  }
 
-  Widget _buildCenterVoiceButton() {
-    return InkWell(
-      onTap: () {
-        HapticHelper.lightFeedback();
-        _showVoiceOverlay();
-      },
-      borderRadius: BorderRadius.circular(30),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: LinearGradient(
-            colors: [AppTheme.primaryCyan, AppTheme.primaryViolet],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: AppTheme.primaryCyan.withValues(alpha: 0.4),
-              blurRadius: 10,
-              spreadRadius: 1,
-            ),
-          ],
-        ),
-        child: Icon(Icons.mic, color: Colors.black, size: 22),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -1074,91 +1019,7 @@ class _LocalDashboardScreenState extends State<LocalDashboardScreen> {
                         ),
                 ),
           
-          // Unified Horizontal Floating Glass Quick-Action Dock
-          Positioned(
-            bottom: 20,
-            left: 15,
-            right: 15,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(40),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8.5),
-                  decoration: BoxDecoration(
-                    color: AppTheme.cardBaseColor.withValues(alpha: 0.7),
-                    borderRadius: BorderRadius.circular(40),
-                    border: Border.all(
-                      color: AppTheme.primaryCyan.withValues(alpha: 0.3),
-                      width: 1.5,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.primaryCyan.withValues(alpha: 0.1),
-                        blurRadius: 20,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      // Logout / Exit Button
-                      _buildDockButton(
-                        key: null,
-                        icon: Icons.logout,
-                        color: Colors.redAccent,
-                        onTap: () => Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (_) => const LoginScreen()),
-                          (r) => false,
-                        ),
-                      ),
-                      
-                      // Local Settings Button
-                      _buildDockButton(
-                        key: null,
-                        icon: Icons.settings,
-                        color: AppTheme.primaryCyan,
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const LocalSettingsScreen()),
-                        ).then((_) => _init()),
-                      ),
-                      
-                      // Central Pulsing Mic / Voice Control Button
-                      _buildCenterVoiceButton(),
-                      
-                      // Smart Scenes Button
-                      _buildDockButton(
-                        key: null,
-                        icon: Icons.bolt,
-                        color: Colors.amberAccent,
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const SmartScenesScreen(isLocalMode: true)),
-                        ).then((_) => _loadScenes()),
-                      ),
-                      
-                      // AI Assistant Button
-                      _buildDockButton(
-                        key: _aiTourKey,
-                        icon: Icons.auto_awesome,
-                        color: Colors.purpleAccent,
-                        onTap: () {
-                          showGlassDialog(
-                            context: context,
-                            barrierColor: Colors.black.withValues(alpha: 0.5),
-                            builder: (context) => const AiChatOverlay(),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
+
         ],
       ),
     );

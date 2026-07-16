@@ -7,6 +7,7 @@ import '../core/localization.dart';
 import 'notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:home_widget/home_widget.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class ApiService {
   static const _storage = FlutterSecureStorage();
@@ -49,6 +50,10 @@ class ApiService {
     try {
       await HomeWidget.saveWidgetData('widget_auth_token', null);
       await HomeWidget.saveWidgetData('widget_current_user_email', null);
+    } catch (_) {}
+
+    try {
+      await GoogleSignIn().signOut();
     } catch (_) {}
   }
 

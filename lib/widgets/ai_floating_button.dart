@@ -11,7 +11,7 @@ class AiFloatingButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton(
       key: tourKey,
-      heroTag: 'aiAssistantFAB_global_${tourKey.hashCode}',
+      heroTag: UniqueKey(),
       backgroundColor: Colors.transparent,
       elevation: 0,
       onPressed: () {

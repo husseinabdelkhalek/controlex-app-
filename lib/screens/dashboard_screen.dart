@@ -38,6 +38,10 @@ import '../core/localization.dart';
 import '../widgets/ai_chat_overlay.dart';
 import '../widgets/dashboard/toggle_widget.dart';
 
+import '../widgets/custom_bottom_nav.dart';
+import '../widgets/expandable_assistant_fab.dart';
+
+import '../core/tour_keys.dart';
 
 class DashboardScreen extends StatefulWidget {
   final String? widgetSetupId;
@@ -77,15 +81,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   bool _hasProcessedWidgetSetup = false;
   StreamSubscription<Uri?>? _widgetClickedSubscription;
 
-
-  // GlobalKeys for App Tour highlights
-  final GlobalKey _drawerKey = GlobalKey();
-  final GlobalKey _notificationsKey = GlobalKey();
-  final GlobalKey _editKey = GlobalKey();
-  final GlobalKey _gridKey = GlobalKey();
-  final GlobalKey _micKey = GlobalKey();
-  final GlobalKey _aiTourKey = GlobalKey();
-  final GlobalKey _addKey = GlobalKey();
 
   void _onLangChange() => setState(() {});
 
@@ -520,93 +515,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
       final prefs = await SharedPreferences.getInstance();
       final hasSeen = prefs.getBool('has_completed_tour_v1') ?? false;
       if (!hasSeen && mounted) {
-        _startTour();
+        // ... (removed tour logic)
       }
     } catch (_) {}
   }
 
-  void _startTour() {
-    final List<TourStep> tourSteps = [
-      const TourStep(
-        titleKey: 'tour_welcome_title',
-        descKey: 'tour_welcome_desc',
-      ),
-      TourStep(
-        titleKey: 'tour_drawer_title',
-        descKey: 'tour_drawer_desc',
-        targetKey: _drawerKey,
-        isCircular: true,
-      ),
-      TourStep(
-        titleKey: 'tour_grid_title',
-        descKey: 'tour_grid_desc',
-        targetKey: _gridKey,
-      ),
-      TourStep(
-        titleKey: 'tour_notifications_title',
-        descKey: 'tour_notifications_desc',
-        targetKey: _notificationsKey,
-        isCircular: true,
-      ),
-      TourStep(
-        titleKey: 'tour_edit_title',
-        descKey: 'tour_edit_desc',
-        targetKey: _editKey,
-        isCircular: true,
-      ),
-      TourStep(
-        targetKey: _micKey,
-        titleKey: 'tour_mic_title',
-        descKey: 'tour_mic_desc',
-      ),
-      TourStep(
-        targetKey: _aiTourKey,
-        titleKey: 'المساعد الذكي (AI Assistant)',
-        descKey: 'يمكنك الاعتماد على المساعد الذكي لتنفيذ أوامرك، إنشاء القواعد، وإدارة منزلك ذكياً عبر المحادثة.',
-      ),
-      TourStep(
-        titleKey: 'tour_add_title',
-        descKey: 'tour_add_desc',
-        targetKey: _addKey,
-        isCircular: true,
-      ),
-      TourStep(
-        titleKey: 'tour_settings_transition_title',
-        descKey: 'tour_settings_transition_desc',
-        targetKey: _addKey,
-        isCircular: true,
-      ),
-    ];
-
-    AppTour.show(
-      context,
-      tourSteps,
-      onComplete: () async {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('has_completed_tour_v1', true);
-        if (mounted) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const SettingsScreen(startTour: true)),
-          ).then((result) {
-            if (result == 'start_tour') {
-              Future.delayed(const Duration(milliseconds: 300), () {
-                if (mounted) _startTour();
-              });
-            } else {
-              _loadWidgets();
-            }
-          });
-        }
-      },
-      onSkip: () async {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('has_completed_tour_v1', true);
-      },
-    );
-  }
-
-
+  // ── Helpers ────────────────────────────────────────────────────────
 
   Future<void> _setupSocket() async {
     try {
@@ -1252,19 +1166,44 @@ class _DashboardScreenState extends State<DashboardScreen> {
         leading: Builder(
           builder: (context) {
             return IconButton(
-              key: _drawerKey,
-              icon: Icon(Icons.menu),
-              onPressed: () => Scaffold.of(context).openDrawer(),
+              key: TourKeys.dashboardAdd,
+              icon: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white.withOpacity(0.15), width: 1.2),
+                  gradient: LinearGradient(
+                    colors: [
+                      const Color(0xFF1E213A).withOpacity(0.8),
+                      AppTheme.primaryCyan.withOpacity(0.3),
+                      const Color(0xFF281E3A).withOpacity(0.8),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.primaryCyan.withOpacity(0.2),
+                      blurRadius: 12,
+                      spreadRadius: -2,
+                    )
+                  ]
+                ),
+                padding: const EdgeInsets.all(6),
+                child: const Icon(Icons.add_rounded, color: Colors.white, size: 22),
+              ),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())).then((_) => _loadWidgets());
+              },
             );
           }
         ),
         actions: [
           Stack(
-            key: _notificationsKey,
             alignment: Alignment.center,
             children: [
               IconButton(
-                icon: Icon(Icons.notifications, color: Colors.white),
+                key: TourKeys.dashboardNotifications,
+                icon: const Icon(Icons.notifications_outlined, color: Colors.white, size: 28),
                 onPressed: _showNotifications,
               ),
               if (_unreadCount > 0)
@@ -1302,7 +1241,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             },
           ),
           IconButton(
-            key: _editKey,
+            key: TourKeys.dashboardEdit,
             icon: Icon(_isEditMode ? Icons.check_circle : Icons.edit, color: _isEditMode ? Colors.green : AppTheme.primaryCyan),
             onPressed: () {
               setState(() => _isEditMode = !_isEditMode);
@@ -1432,13 +1371,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Navigator.pop(context);
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const AccountScreen())).then((result) {
                       _loadPinState();
-                      if (result == 'start_tour') {
-                        Future.delayed(const Duration(milliseconds: 300), () {
-                          if (mounted) _startTour();
-                        });
-                      } else {
-                        _loadWidgets();
-                      }
+                      _loadWidgets();
                     });
                   },
                 ),
@@ -1465,7 +1398,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
       ),
-
       body: Stack(
         children: [
           SizedBox.expand(),
@@ -1558,7 +1490,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           }
                         },
                   child: SingleChildScrollView(
-                    key: _gridKey,
+                    key: TourKeys.dashboardGrid,
                     physics: _isScrollingLocked ? const NeverScrollableScrollPhysics() : const BouncingScrollPhysics(),
                     padding: const EdgeInsets.fromLTRB(4, 8, 4, 110),
                     child: Column(
@@ -1632,149 +1564,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               ),
 
-          // Unified Horizontal Floating Glass Quick-Action Dock
-          Positioned(
-            bottom: 20,
-            left: 15,
-            right: 15,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(40),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8.5),
-                  decoration: BoxDecoration(
-                    color: AppTheme.cardBaseColor.withValues(alpha: 0.7),
-                    borderRadius: BorderRadius.circular(40),
-                    border: Border.all(
-                      color: AppTheme.primaryCyan.withValues(alpha: 0.3),
-                      width: 1.5,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.primaryCyan.withValues(alpha: 0.1),
-                        blurRadius: 20,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      // AI Assistant Button
-                      _buildDockButton(
-                        tourKey: _aiTourKey,
-                        icon: Icons.auto_awesome,
-                        color: Colors.purpleAccent,
-                        onTap: () {
-                          showGlassDialog(
-                            context: context,
-                            barrierColor: Colors.black.withValues(alpha: 0.5),
-                            builder: (context) => const AiChatOverlay(),
-                          );
-                        },
-                      ),
 
-                      // Central Pulsing Mic / Voice Control Button
-                      _buildCenterVoiceButton(),
-
-                      // Create Widget Button
-                      _buildDockButton(
-                        tourKey: _addKey,
-                        icon: Icons.add_circle_outline,
-                        color: AppTheme.primaryViolet,
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const SettingsScreen()),
-                        ).then((_) => _loadWidgets()),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildDockButton({
-    required Key? tourKey,
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      key: tourKey,
-      onTap: () {
-        HapticHelper.lightFeedback();
-        onTap();
-      },
-      borderRadius: BorderRadius.circular(24),
-      child: Padding(
-        padding: const EdgeInsets.all(4),
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: color.withValues(alpha: 0.12),
-            border: Border.all(color: color.withValues(alpha: 0.3), width: 1.2),
-          ),
-          child: Icon(icon, color: color, size: 18),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCenterVoiceButton() {
-    return InkWell(
-      key: _micKey,
-      onTap: () {
-        HapticHelper.lightFeedback();
-        VoiceCommandOverlay.show(
-          context,
-          _rawWidgets,
-          onCommandExecuted: (id, type, value) {
-            if (mounted) {
-              setState(() {
-                if (type == 'toggle') {
-                  bool isTrue = (value == 'ON' || value == '1' || value == true);
-                  _localToggleStates[id] = isTrue;
-                } else if (type == 'slider') {
-                  double? val = double.tryParse(value.toString());
-                  if (val != null) {
-                    _sliderValues[id] = val;
-                    _lastSliderUpdate[id] = DateTime.now();
-                  }
-                }
-              });
-            }
-          },
-        );
-      },
-      borderRadius: BorderRadius.circular(30),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: LinearGradient(
-            colors: [AppTheme.primaryCyan, AppTheme.primaryViolet],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: AppTheme.primaryCyan.withValues(alpha: 0.4),
-              blurRadius: 10,
-              spreadRadius: 1,
-            ),
-          ],
-        ),
-        child: Icon(Icons.mic, color: Colors.black, size: 22),
-      ),
-    );
-  }
 
   String _formatNotifTime(dynamic ts) {
     if (ts == null) return '';

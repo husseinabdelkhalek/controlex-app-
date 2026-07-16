@@ -11,6 +11,8 @@ class TourStep {
   final bool requireInteraction;
   final bool advanceOnTap;
   final VoidCallback? onTargetTapped;
+  final VoidCallback? onStepEnter;
+  final VoidCallback? onStepLeave;
 
   const TourStep({
     required this.titleKey,
@@ -20,6 +22,8 @@ class TourStep {
     this.requireInteraction = false,
     this.advanceOnTap = true,
     this.onTargetTapped,
+    this.onStepEnter,
+    this.onStepLeave,
   });
 }
 
@@ -91,7 +95,20 @@ class _AppTourOverlayState extends State<AppTourOverlay> with TickerProviderStat
     );
     _shakeAnimation = Tween<double>(begin: 0, end: 10).chain(CurveTween(curve: Curves.elasticIn)).animate(_shakeController);
 
+    _triggerStepEnter();
     _scrollToTarget();
+  }
+
+  void _triggerStepEnter() {
+    if (_currentStepIndex < widget.steps.length) {
+      widget.steps[_currentStepIndex].onStepEnter?.call();
+    }
+  }
+
+  void _triggerStepLeave() {
+    if (_currentStepIndex < widget.steps.length) {
+      widget.steps[_currentStepIndex].onStepLeave?.call();
+    }
   }
 
   void _scrollToTarget() {
@@ -216,12 +233,15 @@ class _AppTourOverlayState extends State<AppTourOverlay> with TickerProviderStat
                   step.onTargetTapped?.call();
                   if (step.advanceOnTap) {
                     if (_currentStepIndex < widget.steps.length - 1) {
+                      _triggerStepLeave();
                       setState(() {
                         _showWrongTapMessage = false;
                         _currentStepIndex++;
+                        _triggerStepEnter();
                         _scrollToTarget();
                       });
                     } else {
+                      _triggerStepLeave();
                       widget.onClose();
                     }
                   }
@@ -243,217 +263,246 @@ class _AppTourOverlayState extends State<AppTourOverlay> with TickerProviderStat
     final title = AppLocalization.get(step.titleKey);
     final desc = AppLocalization.get(step.descKey);
 
-    double top;
-    double left = 16.0;
-    double right = 16.0;
-
     final mediaQuery = MediaQuery.of(context);
+    final isCentered = targetRect == null;
+    final isAtTop = targetRect != null && targetRect.center.dy >= screenHeight / 2;
 
-    if (targetRect == null) {
-      // Welcome or success steps (centered)
-      top = screenHeight * 0.3;
+    final Alignment alignment = isCentered
+        ? const Alignment(0, -0.2)
+        : (isAtTop ? Alignment.topCenter : Alignment.bottomCenter);
+
+    double paddingTop = 0.0;
+    double paddingBottom = 0.0;
+
+    if (isCentered) {
+      // centered step: no extra top/bottom padding besides standard margins
+    } else if (isAtTop) {
+      // Target is in bottom half, card goes to the top area of the screen
+      paddingTop = mediaQuery.padding.top + 60.0;
+      // Make sure the bottom of the card doesn't overlap the target
+      if (paddingTop + 240.0 > targetRect.top) {
+        paddingTop = targetRect.top - 240.0;
+        if (paddingTop < mediaQuery.padding.top + 16.0) {
+          paddingTop = mediaQuery.padding.top + 16.0;
+        }
+      }
     } else {
-      final targetCenterY = targetRect.center.dy;
-      if (targetCenterY < screenHeight / 2) {
-        // Target is at top half, card goes to the bottom area of the screen
-        top = screenHeight - 290.0;
-        if (top < targetRect.bottom + 20.0) {
-          top = targetRect.bottom + 20.0;
-        }
-      } else {
-        // Target is at bottom half, card goes to the top area of the screen
-        top = mediaQuery.padding.top + 60.0;
-        if (top + 220.0 > targetRect.top) {
-          top = targetRect.top - 240.0;
-          if (top < 80.0) top = 80.0;
-        }
+      // Target is in top half, card goes to the bottom area of the screen
+      paddingBottom = mediaQuery.padding.bottom + 16.0;
+      // Make sure the top of the card doesn't overlap the target
+      final maxPaddingBottom = screenHeight - targetRect.bottom - 260.0;
+      if (paddingBottom > maxPaddingBottom) {
+        paddingBottom = maxPaddingBottom;
+      }
+      if (paddingBottom < mediaQuery.padding.bottom + 16.0) {
+        paddingBottom = mediaQuery.padding.bottom + 16.0;
       }
     }
 
-    return AnimatedPositioned(
-      duration: const Duration(milliseconds: 350),
-      curve: Curves.easeInOutCubic,
-      top: top,
-      left: left,
-      right: right,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.07),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.12),
-                width: 1.5,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF00F1FF).withValues(alpha: 0.08),
-                  blurRadius: 30,
-                  spreadRadius: -10,
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Inter',
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFB026FF).withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFFB026FF).withValues(alpha: 0.4)),
-                      ),
-                      child: Text(
-                        '${_currentStepIndex + 1} / ${widget.steps.length}',
-                        style: TextStyle(
-                          color: Color(0xFFD070FF),
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+    return Positioned(
+      left: 16.0,
+      right: 16.0,
+      top: 0,
+      bottom: 0,
+      child: AnimatedAlign(
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeInOutCubic,
+        alignment: alignment,
+        child: AnimatedPadding(
+          duration: const Duration(milliseconds: 350),
+          curve: Curves.easeInOutCubic,
+          padding: EdgeInsets.only(top: paddingTop, bottom: paddingBottom),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.07),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.12),
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF00F1FF).withValues(alpha: 0.08),
+                      blurRadius: 30,
+                      spreadRadius: -10,
                     ),
                   ],
                 ),
-                SizedBox(height: 12),
-                Text(
-                  desc,
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                    height: 1.5,
-                    fontFamily: 'Inter',
-                  ),
-                ),
-                if (_showWrongTapMessage)
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.redAccent.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.redAccent.withValues(alpha: 0.5)),
-                    ),
-                    child: Row(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(Icons.error_outline, color: Colors.redAccent, size: 20),
-                        SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            AppLocalization.get('tour_interact_hint'),
-                            style: TextStyle(color: Colors.redAccent, fontSize: 13),
+                            title,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFB026FF).withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: const Color(0xFFB026FF).withValues(alpha: 0.4)),
+                          ),
+                          child: Text(
+                            '${_currentStepIndex + 1} / ${widget.steps.length}',
+                            style: TextStyle(
+                              color: Color(0xFFD070FF),
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
                     ),
-                  ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    if (_currentStepIndex < widget.steps.length - 1)
-                      TextButton(
-                        onPressed: widget.onSkip ?? widget.onClose,
-                        child: Text(
-                          AppLocalization.get('tour_skip'),
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.4),
-                            fontSize: 14,
-                          ),
+                    SizedBox(height: 12),
+                    Text(
+                      desc,
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                        height: 1.5,
+                        fontFamily: 'Inter',
+                      ),
+                    ),
+                    if (_showWrongTapMessage) ...[
+                      SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.redAccent.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.redAccent.withValues(alpha: 0.5)),
                         ),
-                      )
-                    else
-                      SizedBox.shrink(),
-                    Row(
-                      children: [
-                        if (_currentStepIndex > 0) ...[
-                          OutlinedButton(
-                            onPressed: () {
-                              setState(() {
-                                _currentStepIndex--;
-                                _scrollToTarget();
-                              });
-                            },
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                            ),
-                            child: Text(
-                              AppLocalization.get('tour_back'),
-                              style: TextStyle(color: Colors.white, fontSize: 14),
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                        ],
-                        if (!step.requireInteraction || !step.advanceOnTap)
-                          ElevatedButton(
-                            onPressed: () {
-                              if (_currentStepIndex < widget.steps.length - 1) {
-                                setState(() {
-                                  _showWrongTapMessage = false;
-                                  _currentStepIndex++;
-                                  _scrollToTarget();
-                                });
-                              } else {
-                                widget.onClose();
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF00F1FF),
-                              foregroundColor: Colors.black,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-                              elevation: 5,
-                              shadowColor: const Color(0xFF00F1FF).withValues(alpha: 0.4),
-                            ),
-                            child: Text(
-                              _currentStepIndex < widget.steps.length - 1
-                                  ? AppLocalization.get('tour_next')
-                                  : AppLocalization.get('tour_finish'),
-                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        if (step.requireInteraction && step.advanceOnTap)
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF00F1FF).withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: const Color(0xFF00F1FF).withValues(alpha: 0.5)),
-                            ),
-                            child: Text(
-                              AppLocalization.get('tour_tap_to_continue'),
-                              style: TextStyle(
-                                color: Color(0xFF00F1FF),
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
+                        child: Row(
+                          children: [
+                            Icon(Icons.error_outline, color: Colors.redAccent, size: 20),
+                            SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                AppLocalization.get('tour_interact_hint'),
+                                style: TextStyle(color: Colors.redAccent, fontSize: 13),
                               ),
                             ),
-                          ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (_currentStepIndex < widget.steps.length - 1)
+                          TextButton(
+                            onPressed: () {
+                              _triggerStepLeave();
+                              if (widget.onSkip != null) widget.onSkip!();
+                              else widget.onClose();
+                            },
+                            child: Text(
+                              AppLocalization.get('tour_skip'),
+                              style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.4),
+                                fontSize: 14,
+                              ),
+                            ),
+                          )
+                        else
+                          SizedBox.shrink(),
+                        Row(
+                          children: [
+                            if (_currentStepIndex > 0) ...[
+                              OutlinedButton(
+                                onPressed: () {
+                                  _triggerStepLeave();
+                                  setState(() {
+                                    _currentStepIndex--;
+                                    _triggerStepEnter();
+                                    _scrollToTarget();
+                                  });
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                ),
+                                child: Text(
+                                  AppLocalization.get('tour_back'),
+                                  style: TextStyle(color: Colors.white, fontSize: 14),
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                            ],
+                            if (!step.requireInteraction || !step.advanceOnTap)
+                              ElevatedButton(
+                                onPressed: () {
+                                  if (_currentStepIndex < widget.steps.length - 1) {
+                                    _triggerStepLeave();
+                                    setState(() {
+                                      _showWrongTapMessage = false;
+                                      _currentStepIndex++;
+                                      _triggerStepEnter();
+                                      _scrollToTarget();
+                                    });
+                                  } else {
+                                    _triggerStepLeave();
+                                    widget.onClose();
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF00F1FF),
+                                  foregroundColor: Colors.black,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                                  elevation: 5,
+                                  shadowColor: const Color(0xFF00F1FF).withValues(alpha: 0.4),
+                                ),
+                                child: Text(
+                                  _currentStepIndex < widget.steps.length - 1
+                                      ? AppLocalization.get('tour_next')
+                                      : AppLocalization.get('tour_finish'),
+                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            if (step.requireInteraction && step.advanceOnTap)
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF00F1FF).withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: const Color(0xFF00F1FF).withValues(alpha: 0.5)),
+                                ),
+                                child: Text(
+                                  AppLocalization.get('tour_tap_to_continue'),
+                                  style: TextStyle(
+                                    color: Color(0xFF00F1FF),
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                       ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
         ),

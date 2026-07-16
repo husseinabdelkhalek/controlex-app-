@@ -2,12 +2,14 @@ import '../widgets/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../theme/app_theme.dart';
-import '../core/localization.dart';
+import '../widgets/ai_floating_button.dart';
+import '../widgets/expandable_assistant_fab.dart';
+import '../widgets/custom_bottom_nav.dart';
 import '../services/api_service.dart';
-import '../widgets/glass_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/smart_hint.dart';
-import '../widgets/ai_floating_button.dart';
+import '../core/localization.dart';
+import '../widgets/glass_card.dart';
 
 class AutomationsScreen extends StatefulWidget {
   const AutomationsScreen({super.key});
@@ -69,6 +71,10 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
     if (visits % 3 == 0) {
       // Wait a moment for the screen to load
       await Future.delayed(const Duration(milliseconds: 800));
+      
+      if (!mounted) return;
+      if (_rules.length <= 1) return; // Only show if user has more than 1 automation
+
       Map<String, dynamic> psStatus = {};
       try { psStatus = await ApiService.getPowerSavingStatus(); } catch (_) {}
       if (psStatus['powerSaving'] == true) return; // Already on, no need to remind
@@ -662,8 +668,8 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
     return Scaffold(
       backgroundColor: AppTheme.backgroundBase,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(AppLocalization.get('automations')),
-        leading: IconButton(icon: Icon(Icons.arrow_back_ios_new), onPressed: () => Navigator.pop(context)),
         actions: [
           // Power Saving indicator (read-only — admin controls it)
           if (_powerSaving)
@@ -820,6 +826,7 @@ class _AutomationsScreenState extends State<AutomationsScreen> with TickerProvid
               condition: _rules.isEmpty && !_isLoading,
               message: AppLocalization.isArabicNotifier.value ? 'أنشئ أول أتمتة لك!' : 'Create your first Automation!',
               child: FloatingActionButton.extended(
+                heroTag: 'createRuleFAB',
                 backgroundColor: AppTheme.primaryViolet,
                 icon: Icon(Icons.add, color: Colors.white),
                 label: Text(AppLocalization.get('create_rule'), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),

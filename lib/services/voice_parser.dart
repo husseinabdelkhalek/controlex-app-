@@ -13,16 +13,17 @@ class VoiceParser {
   // Advanced English-to-Arabic synonym dictionary mapping for intuitive device discovery
   static const Map<String, List<String>> _synonyms = {
     'motor': ['موتور', 'ماتور', 'محرك', 'مطور', 'motor'],
-    'pump': ['مضخة', 'المضخة', 'طلمبة', 'مضخه', 'pump'],
-    'lamp': ['لمبة', 'لمبه', 'مصباح', 'اضاءة', 'ضوء', 'اللمبة', 'lamp'],
-    'light': ['لمبة', 'لمبه', 'مصباح', 'اضاءة', 'ضوء', 'اللمبة', 'light'],
-    'fan': ['مروحة', 'مروحه', 'المروحة', 'تهوية', 'fan'],
-    'ac': ['مكيف', 'المكيف', 'تكييف', 'التكييف', 'ac', 'air conditioner'],
-    'door': ['باب', 'الباب', 'بوابة', 'البوابة', 'door'],
-    'lock': ['قفل', 'القفل', 'قفل الباب', 'lock'],
-    'heater': ['سخان', 'السخان', 'سخان المياه', 'heater'],
-    'socket': ['فيشة', 'بريزة', 'كبس', 'مقبس', 'socket'],
-    'switch': ['زر', 'مفتاح', 'سويتش', 'switch'],
+    'pump': ['مضخة', 'المضخة', 'طلمبة', 'مضخه', 'pump', 'موتور مياه', 'موتور المايه'],
+    'lamp': ['لمبة', 'لمبه', 'مصباح', 'اضاءة', 'ضوء', 'اللمبة', 'lamp', 'نور', 'نواسه', 'نجفه', 'كشاف'],
+    'light': ['لمبة', 'لمبه', 'مصباح', 'اضاءة', 'ضوء', 'اللمبة', 'light', 'نور', 'نجفه', 'كشاف', 'انوار'],
+    'fan': ['مروحة', 'مروحه', 'المروحة', 'تهوية', 'fan', 'شفاط'],
+    'ac': ['مكيف', 'المكيف', 'تكييف', 'التكييف', 'ac', 'air conditioner', 'تكيف', 'تبريد', 'تكييفات'],
+    'door': ['باب', 'الباب', 'بوابة', 'البوابة', 'door', 'بوابه'],
+    'lock': ['قفل', 'القفل', 'قفل الباب', 'lock', 'كالون'],
+    'heater': ['سخان', 'السخان', 'سخان المياه', 'heater', 'دفايه', 'دفاية', 'دفاية مياه'],
+    'socket': ['فيشة', 'بريزة', 'كبس', 'مقبس', 'socket', 'فيشه', 'بريزه'],
+    'switch': ['زر', 'مفتاح', 'سويتش', 'switch', 'كوبس', 'زرار'],
+    'tv': ['تلفزيون', 'تلفاز', 'تي في', 'شاشة', 'شاشه', 'tv', 'television', 'تلفزيونات'],
   };
 
   // Normalizes Arabic and English inputs by stripping accents, prefix articles, and wake-words
@@ -200,6 +201,8 @@ class VoiceParser {
       if (actionIndex == -1) { actionIndex = processedText.indexOf('type'); offset = 4; }
       if (actionIndex == -1) { actionIndex = processedText.indexOf('ارسل'); offset = 4; }
       if (actionIndex == -1) { actionIndex = processedText.indexOf('اكتب'); offset = 4; }
+      if (actionIndex == -1) { actionIndex = processedText.indexOf('ابعت'); offset = 4; }
+      if (actionIndex == -1) { actionIndex = processedText.indexOf('قول'); offset = 3; }
       
       if (actionIndex == -1) {
         return VoiceParsingResult(
@@ -291,18 +294,63 @@ class VoiceParser {
         return VoiceParsingResult(false, '${isAr ? 'خطأ خادم: ' : 'Server error: '}${e.toString().replaceAll('Exception:', '').trim()}');
       }
     }
+    else if (type == 'colorpicker' || type == 'color') {
+      final Map<String, String> colors = {
+        'أحمر': '#FF0000', 'red': '#FF0000',
+        'أخضر': '#00FF00', 'green': '#00FF00',
+        'أزرق': '#0000FF', 'blue': '#0000FF',
+        'أصفر': '#FFFF00', 'yellow': '#FFFF00',
+        'برتقالي': '#FFA500', 'orange': '#FFA500',
+        'أورنج': '#FFA500', 
+        'بنفسجي': '#800080', 'purple': '#800080',
+        'وردي': '#FFC0CB', 'pink': '#FFC0CB',
+        'بينك': '#FFC0CB',
+        'أبيض': '#FFFFFF', 'white': '#FFFFFF',
+      };
+      
+      String? foundHex;
+      String? foundName;
+      for (var entry in colors.entries) {
+        if (processedText.contains(entry.key) || normalizedInput.contains(_normalizeArabic(entry.key))) {
+          foundHex = entry.value;
+          foundName = entry.key;
+          break;
+        }
+      }
+      
+      if (foundHex == null) {
+        return VoiceParsingResult(false, isAr ? 'لم أتمكن من التعرف على اللون المطلوب لـ [$matchedName]. (مثل: أحمر، أزرق، أخضر)' : 'Could not recognize the color for [$matchedName]. (e.g., red, blue, green)');
+      }
+      
+      try {
+        await _send(id, foundHex, isLocalMode: isLocalMode);
+        targetWidget['state'] ??= {};
+        targetWidget['state']['lastValue'] = foundHex;
+        if (onCommandExecuted != null) onCommandExecuted(id, type, foundHex);
+        return VoiceParsingResult(
+          true, 
+          isAr 
+            ? 'تم تغيير لون [$matchedName] إلى $foundName بنجاح.'
+            : 'Changed color of [$matchedName] to $foundName successfully.'
+        );
+      } catch (e) {
+        return VoiceParsingResult(false, '${isAr ? 'خطأ خادم: ' : 'Server error: '}${e.toString().replaceAll('Exception:', '').trim()}');
+      }
+    }
     else if (type == 'toggle') {
       String onOriginal = config['onCommand'] != null && config['onCommand'].toString().isNotEmpty ? config['onCommand'].toString() : 'ON';
       String offOriginal = config['offCommand'] != null && config['offCommand'].toString().isNotEmpty ? config['offCommand'].toString() : 'OFF';
       
       final onKeywords = [
         'on', 'turn on', 'open', 'run', 'start', 'activate', '1',
-        'شغل', 'شغلي', 'افتح', 'افتحي', 'تشغيل', 'شغال', 'اوبن', 'تيرن اون', 'تفعيل'
+        'شغل', 'شغلي', 'افتح', 'افتحي', 'تشغيل', 'شغال', 'اوبن', 'تيرن اون', 'تفعيل',
+        'ولع', 'ولعي', 'نور', 'نوري', 'يشتغل', 'شغله', 'قوم', 'ابدا', 'يلا'
       ];
       
       final offKeywords = [
         'off', 'turn off', 'close', 'stop', 'deactivate', '0',
-        'اطفي', 'اطفئ', 'أطفئ', 'سكر', 'قفل', 'أغلق', 'اقفل', 'توقيف', 'كلوز', 'تيرن اوف'
+        'اطفي', 'اطفئ', 'أطفئ', 'سكر', 'قفل', 'أغلق', 'اقفل', 'توقيف', 'كلوز', 'تيرن اوف',
+        'طفي', 'طفيه', 'بند', 'تبنيد', 'يوقف', 'وقف', 'طفيها', 'اطفيه'
       ];
 
       bool isOn = false;

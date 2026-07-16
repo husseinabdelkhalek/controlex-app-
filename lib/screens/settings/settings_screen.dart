@@ -786,119 +786,126 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
           if (_selectedType == 'Toggle' || _selectedType == 'Push' || _selectedType == 'Joystick' || _selectedType == 'Sensor' || _selectedType == 'Slider' || _selectedType == 'Chart')
             SizedBox(height: 16),
             
-          if (_selectedType == 'Toggle' || _selectedType == 'Push' || _selectedType == 'Slider') ...[
+          // ── ADVANCED OPTIONS ─────────────────────────────────────────────────
+          if (_selectedType == 'Toggle' || _selectedType == 'Push' || _selectedType == 'Slider' || _selectedType != 'Joystick' && _selectedType != 'ColorPicker') ...[
             _buildGlassSection(
-              isArabic ? 'الإشعارات التلقائية (Automations)' : 'Automations & Alerts',
+              isArabic ? 'خيارات متقدمة (Advanced Options)' : 'Advanced Options',
               [
-                SwitchListTile(
-                  title: Text(
-                    isArabic ? 'تفعيل الإشعار المخصص عند تغير القيمة' : 'Enable custom notification on change',
-                    style: TextStyle(color: Colors.white, fontSize: 13),
-                  ),
-                  activeColor: AppTheme.primaryCyan,
-                  value: _enableAutomation,
-                  contentPadding: EdgeInsets.zero,
-                  onChanged: (val) => setState(() {
-                    _enableAutomation = val;
-                    if (val && _automationValueCtrl.text.isEmpty && (_selectedType == 'Toggle' || _selectedType == 'Push')) {
-                      _automationValueCtrl.text = _onCmdCtrl.text;
-                    }
-                  }),
-                ),
-                if (_enableAutomation) ...[
-                  SizedBox(height: 12),
-                  if (_selectedType == 'Toggle' || _selectedType == 'Push')
-                    Theme(
-                      data: Theme.of(context).copyWith(canvasColor: const Color(0xFF1A1F26)),
-                      child: DropdownButtonFormField<String>(
-                        value: _automationValueCtrl.text.isEmpty ? _onCmdCtrl.text : _automationValueCtrl.text,
-                        style: TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          labelText: isArabic ? 'عندما تصبح القيمة' : 'When value becomes',
-                          labelStyle: TextStyle(color: Colors.white54),
-                          prefixIcon: Icon(Icons.touch_app, color: Colors.white54),
-                          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white24)),
-                          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppTheme.primaryCyan)),
+                Theme(
+                  data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                  child: ExpansionTile(
+                    tilePadding: EdgeInsets.zero,
+                    title: Text(isArabic ? 'خيارات إضافية' : 'More Options', style: TextStyle(color: Colors.white, fontSize: 14)),
+                    iconColor: AppTheme.primaryCyan,
+                    collapsedIconColor: Colors.white54,
+                    children: [
+                      // Automations / Push Notifications
+                      if (_selectedType == 'Toggle' || _selectedType == 'Push' || _selectedType == 'Slider') ...[
+                        SwitchListTile(
+                          title: Text(
+                            isArabic ? 'تفعيل الإشعارات التلقائية' : 'Enable Push Notifications',
+                            style: TextStyle(color: Colors.white, fontSize: 13),
+                          ),
+                          activeColor: AppTheme.primaryCyan,
+                          value: _enableAutomation,
+                          contentPadding: EdgeInsets.zero,
+                          onChanged: (val) => setState(() {
+                            _enableAutomation = val;
+                            if (val && _automationValueCtrl.text.isEmpty && (_selectedType == 'Toggle' || _selectedType == 'Push')) {
+                              _automationValueCtrl.text = _onCmdCtrl.text;
+                            }
+                          }),
                         ),
-                        items: [
-                          DropdownMenuItem(value: _onCmdCtrl.text, child: Text('On (${_onCmdCtrl.text})')),
-                          if (_selectedType == 'Toggle')
-                            DropdownMenuItem(value: _offCmdCtrl.text, child: Text('Off (${_offCmdCtrl.text})')),
+                        if (_enableAutomation) ...[
+                          SizedBox(height: 12),
+                          if (_selectedType == 'Toggle' || _selectedType == 'Push')
+                            Theme(
+                              data: Theme.of(context).copyWith(canvasColor: const Color(0xFF16161F)),
+                              child: DropdownButtonFormField<String>(
+                                value: _automationValueCtrl.text.isEmpty ? _onCmdCtrl.text : _automationValueCtrl.text,
+                                style: TextStyle(color: Colors.white),
+                                decoration: InputDecoration(
+                                  labelText: isArabic ? 'عندما تصبح القيمة' : 'When value becomes',
+                                  labelStyle: TextStyle(color: Colors.white54),
+                                  prefixIcon: Icon(Icons.touch_app, color: Colors.white54),
+                                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white24)),
+                                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppTheme.primaryCyan)),
+                                ),
+                                items: [
+                                  DropdownMenuItem(value: _onCmdCtrl.text, child: Text('On (${_onCmdCtrl.text})')),
+                                  if (_selectedType == 'Toggle')
+                                    DropdownMenuItem(value: _offCmdCtrl.text, child: Text('Off (${_offCmdCtrl.text})')),
+                                ],
+                                onChanged: (val) => setState(() => _automationValueCtrl.text = val ?? ''),
+                              ),
+                            )
+                          else if (_selectedType == 'Slider')
+                            _buildTextField(isArabic ? 'عندما يصبح السلايدر بقيمة' : 'When slider value is', _automationValueCtrl, Icons.tune, isNumber: true),
+                          
+                          SizedBox(height: 12),
+                          _buildTextField(isArabic ? 'نص رسالة الإشعار' : 'Alert notification text', _automationMsgCtrl, Icons.notifications_active),
                         ],
-                        onChanged: (val) => setState(() => _automationValueCtrl.text = val ?? ''),
+                        Divider(color: Colors.white12, height: 24),
+                      ],
+                      // Biometric Unlock
+                      if (_selectedType != 'Slider' && _selectedType != 'Joystick' && _selectedType != 'ColorPicker') ...[
+                        SwitchListTile(
+                          title: Text(isArabic ? 'الفتح بالأوامر البصمة/الوجه' : 'Biometric Unlock Authentication', style: TextStyle(color: Colors.white, fontSize: 13)),
+                          activeColor: AppTheme.primaryCyan,
+                          value: _requireBiometric,
+                          contentPadding: EdgeInsets.zero,
+                          onChanged: (val) => setState(() => _requireBiometric = val),
+                        ),
+                        Divider(color: Colors.white12, height: 24),
+                      ],
+                      // NFC Configuration
+                      SwitchListTile(
+                        title: Text(isArabic ? 'تفعيل التحكم عبر NFC' : 'Enable NFC Control', style: TextStyle(color: Colors.white, fontSize: 13)),
+                        activeColor: AppTheme.primaryCyan,
+                        value: _enableNfcControl,
+                        contentPadding: EdgeInsets.zero,
+                        onChanged: (val) => setState(() => _enableNfcControl = val),
                       ),
-                    )
-                  else if (_selectedType == 'Slider')
-                    _buildTextField(isArabic ? 'عندما يصبح السلايدر بقيمة' : 'When slider value is', _automationValueCtrl, Icons.tune, isNumber: true),
-                  
-                  SizedBox(height: 12),
-                  _buildTextField(isArabic ? 'نص رسالة الإشعار' : 'Alert notification text', _automationMsgCtrl, Icons.notifications_active),
-                ]
-              ],
-            ),
-            SizedBox(height: 16),
-          ],
-          
-          _buildGlassSection(
-            isArabic ? 'إعدادات NFC' : 'NFC Configuration',
-            [
-              SwitchListTile(
-                title: Text(isArabic ? 'تفعيل التحكم عبر NFC' : 'Enable NFC Control', style: TextStyle(color: Colors.white, fontSize: 13)),
-                activeColor: AppTheme.primaryCyan,
-                value: _enableNfcControl,
-                contentPadding: EdgeInsets.zero,
-                onChanged: (val) => setState(() => _enableNfcControl = val),
-              ),
-              if (_enableNfcControl) ...[
-                SizedBox(height: 12),
-                SwitchListTile(
-                  title: Text(isArabic ? 'التحكم عبر NFC فقط (إيقاف Cloud)' : 'NFC Control Only (Disable Cloud)', style: TextStyle(color: Colors.white, fontSize: 13)),
-                  activeColor: AppTheme.primaryCyan,
-                  value: _nfcOnly,
-                  contentPadding: EdgeInsets.zero,
-                  onChanged: (val) => setState(() => _nfcOnly = val),
-                ),
-                SizedBox(height: 12),
-                _buildTextField(isArabic ? 'اسم الأداة في جهاز القارئ' : 'Tool Name on Reader Device', _nfcToolNameCtrl, Icons.memory),
-                SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        _nfcAuthCode == null 
-                          ? (isArabic ? 'لم يتم التقاط كود المصادقة بعد' : 'Auth Code not captured yet')
-                          : (isArabic ? 'الكود: $_nfcAuthCode' : 'Code: $_nfcAuthCode'),
-                        style: TextStyle(color: _nfcAuthCode == null ? Colors.redAccent : Colors.greenAccent, fontSize: 12),
-                      ),
-                    ),
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryCyan, foregroundColor: Colors.black),
-                      icon: Icon(Icons.contactless, size: 16),
-                      label: Text(isArabic ? 'إعداد الآن' : 'Setup Now'),
-                      onPressed: _setupNfc,
-                    )
-                  ]
-                )
-              ]
-            ]
-          ),
-          
-          if (_selectedType != 'Slider' && _selectedType != 'Joystick' && _selectedType != 'ColorPicker') ...[
-            SizedBox(height: 16),
-            _buildGlassSection(
-              isArabic ? 'إعدادات الحماية (البصمة/الوجه)' : 'Security (Biometrics/Face ID)',
-              [
-                SwitchListTile(
-                  title: Text(isArabic ? 'طلب المصادقة قبل الإرسال' : 'Require Authentication before send', style: TextStyle(color: Colors.white, fontSize: 13)),
-                  activeColor: AppTheme.primaryCyan,
-                  value: _requireBiometric,
-                  contentPadding: EdgeInsets.zero,
-                  onChanged: (val) => setState(() => _requireBiometric = val),
+                      if (_enableNfcControl) ...[
+                        SizedBox(height: 12),
+                        SwitchListTile(
+                          title: Text(isArabic ? 'التحكم عبر NFC فقط (إيقاف Cloud)' : 'NFC Control Only (Disable Cloud)', style: TextStyle(color: Colors.white, fontSize: 13)),
+                          activeColor: AppTheme.primaryCyan,
+                          value: _nfcOnly,
+                          contentPadding: EdgeInsets.zero,
+                          onChanged: (val) => setState(() => _nfcOnly = val),
+                        ),
+                        SizedBox(height: 12),
+                        _buildTextField(isArabic ? 'اسم الأداة في جهاز القارئ' : 'Tool Name on Reader Device', _nfcToolNameCtrl, Icons.memory),
+                        SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                _nfcAuthCode == null 
+                                  ? (isArabic ? 'لم يتم التقاط كود المصادقة بعد' : 'Auth Code not captured yet')
+                                  : (isArabic ? 'الكود: $_nfcAuthCode' : 'Code: $_nfcAuthCode'),
+                                style: TextStyle(color: _nfcAuthCode == null ? Colors.redAccent : Colors.greenAccent, fontSize: 12),
+                              ),
+                            ),
+                            ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryCyan, foregroundColor: Colors.black),
+                              icon: Icon(Icons.contactless, size: 16),
+                              label: Text(isArabic ? 'إعداد الآن' : 'Setup Now'),
+                              onPressed: _setupNfc,
+                            )
+                          ]
+                        ),
+                        SizedBox(height: 16),
+                      ]
+                    ],
+                  ),
                 ),
               ]
             ),
+            SizedBox(height: 16),
           ],
-          SizedBox(height: 16),
+
 
           _buildGlassSection(
             AppLocalization.get('appearance'),

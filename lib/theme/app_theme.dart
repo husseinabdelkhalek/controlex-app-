@@ -65,19 +65,36 @@ class AppTheme {
   }) {
     final resolvedColor = (baseColor ?? cardBaseColor);
     return BoxDecoration(
+      color: resolvedColor.withValues(alpha: 0.98),
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
-          resolvedColor.withValues(alpha: 0.85),
-          resolvedColor.withValues(alpha: 0.60),
+          resolvedColor.withValues(alpha: 0.98),
+          const Color(0xFF2A1B40).withValues(alpha: 0.98), // Deep Aurora Purple
+          const Color(0xFF0F172A).withValues(alpha: 0.98), // Deep Slate
+          resolvedColor.withValues(alpha: 0.95),
         ],
+        stops: const [0.0, 0.4, 0.8, 1.0],
       ),
       borderRadius: borderRadius ?? const BorderRadius.vertical(top: Radius.circular(24)),
       border: Border.all(
-        color: borderColor ?? glassBorder,
+        color: borderColor ?? glassBorder.withValues(alpha: 0.6),
         width: 1.5,
       ),
+      boxShadow: [
+        BoxShadow(
+          color: glowColor.withValues(alpha: 0.15),
+          blurRadius: 24,
+          spreadRadius: -4,
+        ),
+        BoxShadow(
+          color: primaryBrand.withValues(alpha: 0.15),
+          blurRadius: 24,
+          spreadRadius: -4,
+          offset: const Offset(0, 8),
+        ),
+      ],
     );
   }
 
@@ -184,7 +201,7 @@ class AppTheme {
       ),
       dialogTheme: DialogTheme(
         surfaceTintColor: Colors.transparent,
-        backgroundColor: cardBaseColor.withValues(alpha: 0.8),
+        backgroundColor: cardBaseColor.withValues(alpha: 0.95),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(28),
           side: BorderSide(color: glassBorder, width: 1.5),

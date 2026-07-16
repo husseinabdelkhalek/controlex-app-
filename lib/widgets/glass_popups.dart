@@ -16,11 +16,11 @@ Future<T?> showGlassDialog<T>({
   return showDialog<T>(
     context: context,
     builder: (context) => BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
+      filter: ImageFilter.blur(sigmaX: 30.0, sigmaY: 30.0),
       child: builder(context),
     ),
     barrierDismissible: barrierDismissible,
-    barrierColor: barrierColor ?? Colors.black.withValues(alpha: 0.25),
+    barrierColor: barrierColor ?? Colors.black.withValues(alpha: 0.5),
     barrierLabel: barrierLabel,
     useSafeArea: useSafeArea,
     useRootNavigator: useRootNavigator,
@@ -54,7 +54,7 @@ Future<T?> showGlassModalBottomSheet<T>({
     shape: shape,
     clipBehavior: clipBehavior,
     constraints: constraints,
-    barrierColor: barrierColor ?? Colors.black.withValues(alpha: 0.25),
+    barrierColor: barrierColor ?? Colors.black.withValues(alpha: 0.5),
     isScrollControlled: isScrollControlled,
     useRootNavigator: useRootNavigator,
     isDismissible: isDismissible,
@@ -63,7 +63,7 @@ Future<T?> showGlassModalBottomSheet<T>({
     transitionAnimationController: transitionAnimationController,
     anchorPoint: anchorPoint,
     builder: (context) => BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
+      filter: ImageFilter.blur(sigmaX: 30.0, sigmaY: 30.0),
       child: builder(context),
     ),
   );
